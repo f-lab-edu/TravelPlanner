@@ -7,13 +7,15 @@ import jakarta.persistence.OneToMany;
 import jakarta.persistence.OneToOne;
 import lombok.Data;
 
+import java.util.List;
+
 @Entity
 @Data
 public class SingleTravelPage {
     @Id
     private Long id;
 
-    public TravelCategory travelCategory;
+    public Set<UserTags> travelCategory;
 
     @OneToOne
     public Location location;
