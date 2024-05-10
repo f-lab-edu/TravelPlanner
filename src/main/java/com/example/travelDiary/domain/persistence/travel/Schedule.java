@@ -6,6 +6,8 @@ import jakarta.persistence.Id;
 import jakarta.persistence.OneToMany;
 import jakarta.persistence.OneToOne;
 import lombok.Data;
+import org.hibernate.annotations.Cascade;
+import org.hibernate.annotations.CascadeType;
 
 import java.time.LocalDate;
 import java.time.LocalTime;
@@ -18,11 +20,18 @@ public class Schedule {
     private Long id;
 
     @OneToOne
+    @Cascade(CascadeType.ALL)
     public Place place;
+
+    @OneToOne
+    @Cascade(CascadeType.ALL)
+    public Review review;
 
     public Boolean isActuallyVisited;
 
     public LocalDate travelDate;
+
+    public Integer orderOfTravel;
 
     public LocalTime travelStartTimeEstimate;
 
