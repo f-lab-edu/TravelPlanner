@@ -28,7 +28,7 @@ public class Schedule {
 
     public LocalTime travelDepartTimeEstimate;
 
-    public Set<UserTags> travelCategory;
+//    public Set<UserTags> travelCategory;
 
 
 }

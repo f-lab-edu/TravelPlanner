@@ -12,6 +12,8 @@ public class Place {
     @Id
     private Long id;
 
+    public String googleMapsKeyId;
+
     public String name;
 
     public String country;

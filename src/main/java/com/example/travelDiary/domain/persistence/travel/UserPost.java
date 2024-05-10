@@ -15,8 +15,8 @@ public class UserPost {
     @OneToOne
     public Schedule schedule;
 
-    @OneToMany
-    public List<Image> imageList;
+//    @OneToMany
+//    public List<Image> imageList;
 
     public String userDescription;
 
