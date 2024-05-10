@@ -7,6 +7,7 @@ import lombok.Data;
 import org.hibernate.annotations.Cascade;
 import org.hibernate.annotations.CascadeType;
 
+import java.time.LocalDate;
 import java.util.List;
 
 @Entity
@@ -15,6 +16,12 @@ public class TravelPlan {
 
     @Id
     private Long id;
+
+    public String name;
+
+    public LocalDate travelStartDate;
+
+    public LocalDate travelEndDate;
 
     @OneToMany
     @Cascade(CascadeType.ALL)
