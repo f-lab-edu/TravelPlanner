@@ -1,6 +1,6 @@
-package com.example.travelDiary.service;
+package com.example.travelDiary.application.service;
 
-import com.example.travelDiary.domain.persistence.travel.Schedule;
+import com.example.travelDiary.domain.model.travel.Schedule;
 import com.example.travelDiary.domain.persistence.travel.ScheduleRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
