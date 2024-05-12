@@ -8,9 +8,7 @@ public class ScheduleRequestToEntity implements Converter<ScheduleUpsertRequest,
     @Override
     public Schedule convert(ScheduleUpsertRequest source) {
         Schedule entity = new Schedule();
-        if (source.getTravelPlanId() != null) {
-            entity.setTravelPlanId(source.getTravelPlanId());
-        }
+
         if (source.getPlace() != null) {
             entity.setPlace(source.getPlace());
         }

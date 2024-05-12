@@ -9,6 +9,7 @@ import org.springframework.web.bind.annotation.*;
 import java.time.LocalDate;
 import java.util.UUID;
 
+@RestController
 @RequestMapping("/travelPlan/{travelPlanId}/schedule")
 public class ScheduleController {
     private final ScheduleAccessService scheduleAccessService;
@@ -17,34 +18,40 @@ public class ScheduleController {
         this.scheduleAccessService = scheduleAccessService;
     }
 
-    @PostMapping
-    public Schedule createSchedule(@PathVariable UUID travelPlanId, @RequestBody ScheduleUpsertRequest request) {
-        scheduleAccessService.createSchedule(travelPlanId, request);
+    @PostMapping("/create_schedule")
+    public Schedule createSchedule(@PathVariable("travelPlanId") UUID travelPlanId, @RequestBody ScheduleUpsertRequest request) {
+        return scheduleAccessService.createSchedule(travelPlanId, request);
     }
 
-    @PatchMapping
-    public Schedule modifySchedule(@PathVariable UUID travelPlanId, @RequestBody ScheduleUpsertRequest request) {
-
+    @PatchMapping("/modify_schedule")
+    public Schedule modifySchedule(@PathVariable(value = "travelPlanId") UUID travelPlanId, @RequestBody ScheduleUpsertRequest request) {
+        return scheduleAccessService.modifySchedule(request);
     }
 
-    @DeleteMapping
-    public UUID deleteSchedule(@PathVariable UUID travelPlanId, @RequestParam UUID scheduleId) {
-
+    @DeleteMapping("/delete_schedule")
+    public UUID deleteSchedule(@PathVariable(value = "travelPlanId") UUID travelPlanId, @RequestParam UUID scheduleId) {
+        return scheduleAccessService.deleteSchedule(scheduleId);
     }
 
-    @GetMapping
-    public Page<Schedule> getScheduleWithName(@PathVariable UUID travelPlanId, @RequestParam String name) {
-
+    @GetMapping("/search_by_name")
+    public Page<Schedule> getScheduleContainingPlaceName(@PathVariable(value = "travelPlanId") UUID travelPlanId,
+                                              @RequestParam String name,
+                                              @RequestParam Integer pageNumber,
+                                              @RequestParam Integer pageSize) {
+        return scheduleAccessService.getScheduleContainingName(name, pageNumber, pageSize);
     }
 
-    @GetMapping
-    public Page<Schedule> getScheduleOnDay(@PathVariable UUID travelPlanId, @RequestParam LocalDate date) {
-
+    @GetMapping("/search_by_day")
+    public Page<Schedule> getScheduleOnDay(@PathVariable(value = "travelPlanId") UUID travelPlanId,
+                                           @RequestParam LocalDate date,
+                                           @RequestParam Integer pageNumber,
+                                           @RequestParam Integer pageSize) {
+        return scheduleAccessService.getSchedulesOnGivenDay(date, pageNumber, pageSize);
     }
 
-    @GetMapping
-    public Schedule getSchedule(@PathVariable UUID travelPlanId, @RequestParam UUID scheduleId) {
-
+    @GetMapping("/search_schedule")
+    public Schedule getSchedule(@PathVariable(value = "travelPlanId") UUID travelPlanId, @RequestParam UUID scheduleId) {
+        return scheduleAccessService.getSchedule(scheduleId);
     }
 
 

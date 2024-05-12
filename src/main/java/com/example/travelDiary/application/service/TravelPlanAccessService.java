@@ -27,9 +27,9 @@ public class TravelPlanAccessService {
 
     public Page<TravelPlan> getTravelPageContainingName(String name, int pageNumber, int pageSize) {
         PageRequest pageRequest = PageRequest.of(pageNumber, pageSize);
-        return travelPlanRepository.findByNameContaining(name, pageRequest);
+        return travelPlanRepository.findAllByNameContaining(name, pageRequest);
     }
-    public TravelPlan getTravelPlanwithUUID(UUID planId) {
+    public TravelPlan getTravelPlan(UUID planId) {
         return travelPlanRepository.getReferenceById(planId);
     }
 
