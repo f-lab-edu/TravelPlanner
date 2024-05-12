@@ -2,13 +2,13 @@ package com.example.travelDiary.presentation.controller;
 
 import com.example.travelDiary.domain.model.travel.TravelPlan;
 import com.example.travelDiary.application.service.TravelPlanAccessService;
-import com.example.travelDiary.presentation.dto.request.TravelPlanCreateRequestDTO;
+import com.example.travelDiary.presentation.dto.request.TravelPlanUpsertRequestDTO;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.client.RestTemplate;
 
-import java.time.LocalDate;
+import java.util.List;
 import java.util.UUID;
 
 @RestController
@@ -36,12 +36,18 @@ public class TravelPlanController {
     }
 
     @PostMapping("/createTravelPlan")
-    public UUID createNewTravelPlan(@RequestBody TravelPlanCreateRequestDTO request) {
+    public UUID createNewTravelPlan(@RequestBody TravelPlanUpsertRequestDTO request) {
         return planAccessService.createPlan(request);
     }
 
-    @DeleteMapping()
+    @DeleteMapping("/deleteTravelPlan")
+    public List<UUID> deleteTravelPlan(@RequestBody List<UUID> request) {
+        return planAccessService.deletePlan(request);
+    }
 
-    @PatchMapping()
+    @PatchMapping("/modifyTravelPlan/metaData")
+    public TravelPlan modifyTravelPlanMetadata(TravelPlanUpsertRequestDTO request) {
+        return planAccessService.modifyPlanMetadata(request);
+    }
 
 }
