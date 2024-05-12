@@ -1,4 +1,4 @@
-package com.example.travelDiary.domain.persistence.travel;
+package com.example.travelDiary.domain.model.travel;
 
 import jakarta.persistence.Entity;
 import jakarta.persistence.Id;
@@ -9,12 +9,12 @@ import java.util.HashSet;
 
 @Entity
 @Data
-public class DayLog {
-
+public class Review {
     @Id
     private Long id;
 
-    public LocalDate date;
 
-    Set<SingleTravelPage> new HashSet<>()
+    public String userDescription;
+    public Double rating;
+
 }

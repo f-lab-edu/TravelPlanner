@@ -1,0 +1,29 @@
+package com.example.travelDiary.domain.model.travel;
+
+import jakarta.persistence.*;
+import lombok.Data;
+import org.hibernate.annotations.Cascade;
+import org.hibernate.annotations.CascadeType;
+
+import java.time.LocalDate;
+import java.util.List;
+import java.util.UUID;
+
+@Entity
+@Data
+public class TravelPlan {
+
+    @Id
+    @GeneratedValue(strategy = GenerationType.UUID)
+    private UUID id;
+
+    public String name;
+
+    public LocalDate travelStartDate;
+
+    public LocalDate travelEndDate;
+
+    @OneToMany
+    @Cascade(CascadeType.ALL)
+    public List<Schedule> ScheduleList;
+}
