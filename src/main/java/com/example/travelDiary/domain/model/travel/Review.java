@@ -1,4 +1,4 @@
-package com.example.travelDiary.domain.persistence.travel;
+package com.example.travelDiary.domain.model.travel;
 
 import jakarta.persistence.Entity;
 import jakarta.persistence.Id;

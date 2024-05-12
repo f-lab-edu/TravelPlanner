@@ -1,9 +1,8 @@
-package com.example.travelDiary.domain.persistence.travel;
+package com.example.travelDiary.domain.model.travel;
 
-import com.example.travelDiary.domain.persistence.location.Place;
+import com.example.travelDiary.domain.model.location.Place;
 import jakarta.persistence.Entity;
 import jakarta.persistence.Id;
-import jakarta.persistence.OneToMany;
 import jakarta.persistence.OneToOne;
 import lombok.Data;
 import org.hibernate.annotations.Cascade;
@@ -11,7 +10,6 @@ import org.hibernate.annotations.CascadeType;
 
 import java.time.LocalDate;
 import java.time.LocalTime;
-import java.util.List;
 
 @Entity
 @Data
