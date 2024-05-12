@@ -23,29 +23,29 @@ public class TravelPlanController {
         this.planAccessService = planAccessService;
     }
 
-    @GetMapping("")
+    @GetMapping("/search_travel_plan")
     public TravelPlan getPlanWithId(@RequestParam UUID planId) {
-        return planAccessService.getTravelPlanwithUUID(planId);
+        return planAccessService.getTravelPlan(planId);
     }
 
-    @GetMapping("/page")
+    @GetMapping("/search_by_plan_name")
     public Page<TravelPlan> getPlansContainingName(@RequestParam String name,
                                                    @RequestParam Integer pageNumber,
                                                    @RequestParam int pageSize) {
         return planAccessService.getTravelPageContainingName(name, pageNumber, pageSize);
     }
 
-    @PostMapping("/createTravelPlan")
+    @PostMapping("/create_travel_plan")
     public UUID createNewTravelPlan(@RequestBody TravelPlanUpsertRequestDTO request) {
         return planAccessService.createPlan(request);
     }
 
-    @DeleteMapping("/deleteTravelPlan")
+    @DeleteMapping("/delete_travel_plan")
     public List<UUID> deleteTravelPlan(@RequestBody List<UUID> request) {
         return planAccessService.deletePlan(request);
     }
 
-    @PatchMapping("/modifyTravelPlan/metaData")
+    @PatchMapping("/modify_travel_plan")
     public TravelPlan modifyTravelPlanMetadata(TravelPlanUpsertRequestDTO request) {
         return planAccessService.modifyPlanMetadata(request);
     }
