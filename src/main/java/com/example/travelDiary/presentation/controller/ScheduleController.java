@@ -29,7 +29,7 @@ public class ScheduleController {
     }
 
     @DeleteMapping("/delete_schedule")
-    public UUID deleteSchedule(@PathVariable(value = "travelPlanId") UUID travelPlanId, @RequestParam UUID scheduleId) {
+    public UUID deleteSchedule(@PathVariable(value = "travelPlanId") UUID travelPlanId, @RequestParam(value="scheduleId") UUID scheduleId) {
         return scheduleAccessService.deleteSchedule(scheduleId);
     }
 
@@ -50,7 +50,7 @@ public class ScheduleController {
     }
 
     @GetMapping("/search_schedule")
-    public Schedule getSchedule(@PathVariable(value = "travelPlanId") UUID travelPlanId, @RequestParam UUID scheduleId) {
+    public Schedule getSchedule(@PathVariable(value = "travelPlanId") UUID travelPlanId, @RequestParam(value = "scheduleId") UUID scheduleId) {
         return scheduleAccessService.getSchedule(scheduleId);
     }
 

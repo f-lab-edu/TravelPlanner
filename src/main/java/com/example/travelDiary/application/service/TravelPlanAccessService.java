@@ -5,6 +5,7 @@ import com.example.travelDiary.domain.persistence.travel.TravelPlanRepository;
 import com.example.travelDiary.presentation.dto.request.TravelPlanUpsertRequestDTO;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.convert.ConversionService;
+import org.springframework.data.crossstore.ChangeSetPersister;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.stereotype.Service;
@@ -30,7 +31,7 @@ public class TravelPlanAccessService {
         return travelPlanRepository.findAllByNameContaining(name, pageRequest);
     }
     public TravelPlan getTravelPlan(UUID planId) {
-        return travelPlanRepository.getReferenceById(planId);
+        return travelPlanRepository.findById(planId).orElseThrow();
     }
 
     public UUID createPlan(TravelPlanUpsertRequestDTO request) {
