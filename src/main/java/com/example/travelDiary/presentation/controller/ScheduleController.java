@@ -35,9 +35,9 @@ public class ScheduleController {
 
     @GetMapping("/search_by_name")
     public Page<Schedule> getScheduleContainingPlaceName(@PathVariable(value = "travelPlanId") UUID travelPlanId,
-                                              @RequestParam String name,
-                                              @RequestParam Integer pageNumber,
-                                              @RequestParam Integer pageSize) {
+                                              @RequestParam(value="name") String name,
+                                              @RequestParam(value="pageNumber") Integer pageNumber,
+                                              @RequestParam(value="pageSize") Integer pageSize) {
         return scheduleAccessService.getScheduleContainingName(name, pageNumber, pageSize);
     }
 

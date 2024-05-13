@@ -29,9 +29,9 @@ public class TravelPlanController {
     }
 
     @GetMapping("/search_by_plan_name")
-    public Page<TravelPlan> getPlansContainingName(@RequestParam String name,
-                                                   @RequestParam Integer pageNumber,
-                                                   @RequestParam int pageSize) {
+    public Page<TravelPlan> getPlansContainingName(@RequestParam(value="name") String name,
+                                                   @RequestParam(value="pageNumber") Integer pageNumber,
+                                                   @RequestParam(value="pageSize") int pageSize) {
         return planAccessService.getTravelPageContainingName(name, pageNumber, pageSize);
     }
 

@@ -46,7 +46,7 @@ public class TravelPlanAccessService {
     }
 
     public TravelPlan modifyPlanMetadata(TravelPlanUpsertRequestDTO request) {
-        TravelPlan travelPlan = travelPlanRepository.getReferenceById(request.getUuid());
+        TravelPlan travelPlan = travelPlanRepository.findById(request.getUuid()).orElseThrow();
         updateNonNullFields(request, travelPlan);
         travelPlanRepository.save(travelPlan);
         return travelPlan;
