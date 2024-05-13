@@ -1,4 +1,4 @@
-package com.example.travelDiary.application.service;
+package com.example.travelDiary.application.service.travel;
 
 import com.example.travelDiary.domain.model.travel.Schedule;
 import com.example.travelDiary.domain.model.travel.TravelPlan;

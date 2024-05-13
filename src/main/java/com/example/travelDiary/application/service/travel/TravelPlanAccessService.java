@@ -1,11 +1,10 @@
-package com.example.travelDiary.application.service;
+package com.example.travelDiary.application.service.travel;
 
 import com.example.travelDiary.domain.model.travel.TravelPlan;
 import com.example.travelDiary.domain.persistence.travel.TravelPlanRepository;
 import com.example.travelDiary.presentation.dto.request.TravelPlanUpsertRequestDTO;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.convert.ConversionService;
-import org.springframework.data.crossstore.ChangeSetPersister;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.stereotype.Service;
