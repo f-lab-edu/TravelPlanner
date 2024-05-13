@@ -85,7 +85,6 @@ public class ScheduleAccessService {
 
         // Copy non-null properties from 'from' to 'to'
         to.setPlace(from.getPlace());
-        to.setReview(from.getReview());
         to.setIsActuallyVisited(from.getIsActuallyVisited());
         to.setTravelDate(from.getTravelDate());
         to.setOrderOfTravel(from.getOrderOfTravel());

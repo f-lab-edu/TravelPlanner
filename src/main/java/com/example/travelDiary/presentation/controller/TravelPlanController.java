@@ -24,7 +24,7 @@ public class TravelPlanController {
     }
 
     @GetMapping("/search_travel_plan")
-    public TravelPlan getPlanWithId(@RequestParam UUID planId) {
+    public TravelPlan getPlanWithId(@RequestParam(value="planId") UUID planId) {
         return planAccessService.getTravelPlan(planId);
     }
 
@@ -46,7 +46,7 @@ public class TravelPlanController {
     }
 
     @PatchMapping("/modify_travel_plan")
-    public TravelPlan modifyTravelPlanMetadata(TravelPlanUpsertRequestDTO request) {
+    public TravelPlan modifyTravelPlanMetadata(@RequestBody TravelPlanUpsertRequestDTO request) {
         return planAccessService.modifyPlanMetadata(request);
     }
 

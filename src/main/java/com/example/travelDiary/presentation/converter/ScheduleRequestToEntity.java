@@ -12,9 +12,6 @@ public class ScheduleRequestToEntity implements Converter<ScheduleUpsertRequest,
         if (source.getPlace() != null) {
             entity.setPlace(source.getPlace());
         }
-        if (source.getReview() != null) {
-            entity.setReview(source.getReview());
-        }
         if (source.getIsActuallyVisited() != null) {
             entity.setIsActuallyVisited(source.getIsActuallyVisited());
         }
