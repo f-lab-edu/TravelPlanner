@@ -1,6 +1,6 @@
 package com.example.travelDiary.presentation.controller;
 
-import com.example.travelDiary.application.service.ScheduleAccessService;
+import com.example.travelDiary.application.service.travel.ScheduleAccessService;
 import com.example.travelDiary.domain.model.travel.Schedule;
 import com.example.travelDiary.presentation.dto.request.ScheduleUpsertRequest;
 import org.springframework.data.domain.Page;
