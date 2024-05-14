@@ -22,7 +22,7 @@ public class MediaFile {
 
     public String contentType;
 
-    public String name;
+    public String originalFileName;
 
     public String s3Url;
 
