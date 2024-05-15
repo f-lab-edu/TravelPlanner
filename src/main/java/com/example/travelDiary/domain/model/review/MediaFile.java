@@ -24,7 +24,7 @@ public class MediaFile {
 
     public String originalFileName;
 
-    public String s3Url;
+    public String s3Key;
 
     public Long contentLocation;
 
