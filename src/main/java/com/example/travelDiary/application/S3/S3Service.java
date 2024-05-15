@@ -9,6 +9,8 @@ import com.example.travelDiary.presentation.dto.request.s3.PreSignedUrlCreateReq
 import com.example.travelDiary.presentation.dto.request.s3.PresignedUrlAbortRequest;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
+import software.amazon.awssdk.services.s3.S3Client;
+import software.amazon.awssdk.services.s3.model.CreateMultipartUploadRequest;
 
 import java.net.URL;
 import java.util.ArrayList;
@@ -17,16 +19,21 @@ import java.util.List;
 
 @Service
 public class S3Service {
-    private final AmazonS3 amazonS3Client;
+    private final S3Client amazonS3Client;
     private final String bucketName;
 
-    public S3Service(AmazonS3 amazonS3Client, @Value("${aws.s3.profile.bucket}") String bucketName) {
+    public S3Service(S3Client amazonS3Client, @Value("${aws.s3.profile.bucket}") String bucketName) {
         this.amazonS3Client = amazonS3Client;
         this.bucketName = bucketName;
     }
 
-    public InitiateMultipartUploadResult getInitiateMultipartUploadResult(ObjectMetadata objectMetadata) {
-        InitiateMultipartUploadRequest uploadRequest = new InitiateMultipartUploadRequest(
+    public 햣  getInitiateMultipartUploadResult(ObjectMetadata objectMetadata) {
+        CreateMultipartUploadRequest uploadRequest = CreateMultipartUploadRequest.builder()
+                .bucket(bucketName)
+                .key("objectName")
+                .contentType()
+                .
+                .build();
                 bucketName, "objectName", objectMetadata);
         return amazonS3Client.initiateMultipartUpload(uploadRequest);
     }
