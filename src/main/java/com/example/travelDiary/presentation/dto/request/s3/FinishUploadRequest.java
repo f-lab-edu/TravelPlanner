@@ -7,13 +7,13 @@ import java.util.List;
 @Data
 public class FinishUploadRequest {
     @Data
-    public static class Part {
+    public static class PartData {
         private int partNumber;
         private String eTag;
     }
 
-
     private String uploadId;
-    private List<Part> parts;
+    private String objectKey;
+    private List<PartData> partData;
 }
 

@@ -1,4 +1,4 @@
-package com.example.travelDiary.presentation.controller;
+package com.example.travelDiary.presentation.controller.travel;
 
 import com.example.travelDiary.application.service.travel.ScheduleAccessService;
 import com.example.travelDiary.domain.model.travel.Schedule;
