@@ -4,5 +4,6 @@ import lombok.Data;
 
 @Data
 public class PresignedUrlAbortRequest {
+    public String objectKey;
     public String uploadId;
 }

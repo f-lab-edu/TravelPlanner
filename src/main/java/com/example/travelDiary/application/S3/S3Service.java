@@ -1,18 +1,19 @@
 package com.example.travelDiary.application.S3;
 
-import com.amazonaws.HttpMethod;
-import com.amazonaws.services.s3.AmazonS3;
-
-import com.amazonaws.services.s3.model.*;
 import com.example.travelDiary.presentation.dto.request.s3.FinishUploadRequest;
-import com.example.travelDiary.presentation.dto.request.s3.PreSignedUrlCreateRequest;
 import com.example.travelDiary.presentation.dto.request.s3.PresignedUrlAbortRequest;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import software.amazon.awssdk.services.s3.S3Client;
-import software.amazon.awssdk.services.s3.model.CreateMultipartUploadRequest;
+import software.amazon.awssdk.services.s3.model.*;
+import software.amazon.awssdk.services.s3.presigner.S3Presigner;
+import software.amazon.awssdk.services.s3.presigner.model.*;
 
 import java.net.URL;
+import java.time.Duration;
+import java.time.LocalDateTime;
+import java.time.ZoneId;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
@@ -21,57 +22,124 @@ import java.util.List;
 public class S3Service {
     private final S3Client amazonS3Client;
     private final String bucketName;
+    private final S3Presigner s3Presigner;
 
-    public S3Service(S3Client amazonS3Client, @Value("${aws.s3.profile.bucket}") String bucketName) {
+    @Autowired
+    public S3Service(S3Client amazonS3Client, @Value("${aws.s3.bucket}") String bucketName, S3Presigner s3Presigner) {
         this.amazonS3Client = amazonS3Client;
         this.bucketName = bucketName;
+        this.s3Presigner = s3Presigner;
     }
 
-    public 햣  getInitiateMultipartUploadResult(ObjectMetadata objectMetadata) {
-        CreateMultipartUploadRequest uploadRequest = CreateMultipartUploadRequest.builder()
+    public URL createPresignedUrlForGet(String objectKey) {
+        GetObjectRequest getObjectRequest = GetObjectRequest.builder()
                 .bucket(bucketName)
-                .key("objectName")
-                .contentType()
-                .
+                .key(objectKey)
                 .build();
-                bucketName, "objectName", objectMetadata);
-        return amazonS3Client.initiateMultipartUpload(uploadRequest);
+
+        GetObjectPresignRequest getObjectPresignRequest = GetObjectPresignRequest.builder()
+                .signatureDuration(Duration.ofMinutes(30))
+                .getObjectRequest(getObjectRequest)
+                .build();
+
+        PresignedGetObjectRequest presignedGetObject = s3Presigner.presignGetObject(getObjectPresignRequest);
+
+
+        return presignedGetObject.url();
     }
 
-    public URL getUrl(PreSignedUrlCreateRequest request, Date expirationDate) {
-        GeneratePresignedUrlRequest generatePresignedUrlRequest =
-                new GeneratePresignedUrlRequest(bucketName, "objectName")
-                        .withMethod(HttpMethod.PUT)
-                        .withExpiration(expirationDate);
+    public URL createPresignedUrlForPut(String objectKey, String contentType, Long contentLength) {
+        PutObjectRequest putObjectRequest = PutObjectRequest.builder()
+                .bucket(bucketName)
+                .key(objectKey)
+                .contentType(contentType)
+                .contentLength(contentLength)
+                .build();
 
-        generatePresignedUrlRequest.addRequestParameter("uploadId", request.getUploadId());
-        generatePresignedUrlRequest.addRequestParameter("partNumber", String.valueOf(request.getPartNumber()));
+        PutObjectPresignRequest putObjectPresignRequest = PutObjectPresignRequest.builder()
+                        .signatureDuration(Duration.ofMinutes(30))
+                        .putObjectRequest(putObjectRequest)
+                        .build();
 
-        return amazonS3Client.generatePresignedUrl(generatePresignedUrlRequest);
+        PresignedPutObjectRequest presignedPutObjectRequest = s3Presigner.presignPutObject(putObjectPresignRequest);
+
+
+        return presignedPutObjectRequest.url();
     }
 
-    public CompleteMultipartUploadResult getCompleteMultipartUploadResult(FinishUploadRequest finishUploadRequest) {
-        List<PartETag> partETags = new ArrayList<>();
-        for (FinishUploadRequest.Part part : finishUploadRequest.getParts()) {
-            partETags.add(new PartETag(part.getPartNumber(), part.getETag()));
+
+
+    public URL createPresignedUrlForDelete(String objectKey) {
+        DeleteObjectRequest deleteObjectRequest = DeleteObjectRequest.builder()
+                .bucket(bucketName)
+                .key(objectKey)
+                .build();
+
+        DeleteObjectPresignRequest deleteObjectPresignRequest = DeleteObjectPresignRequest.builder()
+                .signatureDuration(Duration.ofHours(1))
+                .deleteObjectRequest(deleteObjectRequest)
+                .build();
+
+        PresignedDeleteObjectRequest presignedDeleteObjectRequest = s3Presigner.presignDeleteObject(deleteObjectPresignRequest);
+
+
+        return presignedDeleteObjectRequest.url();
+    }
+
+    public URL createMultipartUploadRequest(String objectKey, String contentType) {
+        CreateMultipartUploadRequest multiPartObjectRequest = CreateMultipartUploadRequest.builder()
+                .bucket(bucketName)
+                .key(objectKey)
+                .contentType(contentType)
+                .build();
+
+        CreateMultipartUploadPresignRequest createMultipartUploadPresignRequest = CreateMultipartUploadPresignRequest.builder()
+                .signatureDuration(Duration.ofHours(1))
+                .createMultipartUploadRequest(multiPartObjectRequest)
+                .build();
+
+        PresignedCreateMultipartUploadRequest presignedCreateMultipartUploadRequest = s3Presigner.presignCreateMultipartUpload(createMultipartUploadPresignRequest);
+
+        return presignedCreateMultipartUploadRequest.url();
+    }
+
+    public CompleteMultipartUploadResponse completeMultipartUpload(String objectKey, FinishUploadRequest finishUploadRequest){
+        List<CompletedPart> completedParts = new ArrayList<>();
+        for (FinishUploadRequest.PartData partData : finishUploadRequest.getPartData()) {
+            CompletedPart part = CompletedPart
+                    .builder()
+                    .partNumber(partData.getPartNumber())
+                    .eTag(partData.getETag())
+                    .build();
+            completedParts.add(part);
         }
 
-        CompleteMultipartUploadRequest completeMultipartUploadRequest =
-                new CompleteMultipartUploadRequest(
-                        bucketName,
-                        "objectName",
-                        finishUploadRequest.getUploadId(),
-                        partETags);
+        CompletedMultipartUpload completedMultipartUpload = CompletedMultipartUpload
+                .builder()
+                .parts(completedParts)
+                .build();
+
+        CompleteMultipartUploadRequest completeMultipartUploadRequest = CompleteMultipartUploadRequest
+                .builder()
+                .bucket(bucketName)
+                .key(objectKey)
+                .multipartUpload(completedMultipartUpload)
+                .uploadId(finishUploadRequest.getUploadId())
+                .build();
 
         return amazonS3Client.completeMultipartUpload(completeMultipartUploadRequest);
     }
 
-    public void abortUpload(PresignedUrlAbortRequest request) {
+    public void abortUpload(String objectKey, PresignedUrlAbortRequest request) {
         AbortMultipartUploadRequest abortMultipartUploadRequest =
-                new AbortMultipartUploadRequest(bucketName, "objectName", request.getUploadId());
+                AbortMultipartUploadRequest
+                        .builder()
+                        .bucket(bucketName)
+                        .key(objectKey)
+                        .uploadId(request.getUploadId())
+                        .build();
 
         amazonS3Client.abortMultipartUpload(abortMultipartUploadRequest);
     }
-
 
 }
