@@ -7,6 +7,7 @@ import com.example.travelDiary.domain.persistence.review.MediaFileRepository;
 import com.example.travelDiary.presentation.dto.request.s3.FinishUploadRequest;
 import com.example.travelDiary.presentation.dto.request.s3.PreSignedUploadInitiateRequest;
 import com.example.travelDiary.presentation.dto.request.s3.PresignedUrlAbortRequest;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.convert.ConversionService;
 import org.springframework.stereotype.Service;
@@ -16,6 +17,7 @@ import java.net.URLConnection;
 import java.time.Instant;
 import java.util.UUID;
 
+@Slf4j
 @Service
 public class MediaFileAccessService {
     private final S3Service s3Service;
@@ -68,6 +70,8 @@ public class MediaFileAccessService {
 
     public URL uploadMediaFile(PreSignedUploadInitiateRequest request) {
         String key = saveMediaFile(request);
+        log.info("on upload media file {}", mediaFileRepository.findByS3Key(key));
+        log.info("media file key on upload {}", key);
 
         return s3Service.createPresignedUrlForPut(key,
                 guessContentTypeFromName(request),
@@ -100,9 +104,15 @@ public class MediaFileAccessService {
     }
 
     public void markMediaUploadFinished(String objectKey) {
+        log.info("mark media upload finished {}", objectKey);
         MediaFile mediaFile = mediaFileRepository.findByS3Key(objectKey);
         mediaFile.setMediaFileStatus(MediaFileStatus.UPLOADED);
         mediaFileRepository.save(mediaFile);
     }
 
+
+    public void markMediaDeleteFinished(String objectKey) {
+        log.info("mark media delete finished {}", objectKey);
+        mediaFileRepository.deleteByS3Key(objectKey);
+    }
 }

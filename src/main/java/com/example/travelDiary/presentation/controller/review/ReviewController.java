@@ -15,12 +15,10 @@ import java.util.UUID;
 @RequestMapping("/travelPlan/{travelPlanId}/schedule/{scheduleId}")
 public class ReviewController {
     private final ReviewAccessService reviewAccessService;
-    private final ConversionService conversionService;
 
 
-    public ReviewController(ReviewAccessService reviewAccessService, @Qualifier("conversionService") ConversionService conversionService) {
+    public ReviewController(ReviewAccessService reviewAccessService) {
         this.reviewAccessService = reviewAccessService;
-        this.conversionService = conversionService;
     }
 
     @GetMapping("/review/get")
