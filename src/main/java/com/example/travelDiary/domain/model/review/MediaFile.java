@@ -28,4 +28,6 @@ public class MediaFile {
 
     public Long contentLocation;
 
+    public MediaFileStatus mediaFileStatus;
+
 }

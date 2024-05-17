@@ -4,7 +4,7 @@ import com.example.travelDiary.domain.model.travel.Schedule;
 import com.example.travelDiary.domain.model.travel.TravelPlan;
 import com.example.travelDiary.domain.persistence.travel.ScheduleRepository;
 import com.example.travelDiary.domain.persistence.travel.TravelPlanRepository;
-import com.example.travelDiary.presentation.dto.request.ScheduleUpsertRequest;
+import com.example.travelDiary.presentation.dto.travel.ScheduleUpsertRequest;
 import jakarta.persistence.EntityManager;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.convert.ConversionService;

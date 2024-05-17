@@ -2,6 +2,7 @@ package com.example.travelDiary.application.service.review;
 
 import com.example.travelDiary.application.S3.S3Service;
 import com.example.travelDiary.domain.model.review.MediaFile;
+import com.example.travelDiary.domain.model.review.MediaFileStatus;
 import com.example.travelDiary.domain.persistence.review.MediaFileRepository;
 import com.example.travelDiary.presentation.dto.request.s3.FinishUploadRequest;
 import com.example.travelDiary.presentation.dto.request.s3.PreSignedUploadInitiateRequest;
@@ -88,11 +89,20 @@ public class MediaFileAccessService {
 
     public String uploadMediaFileMultipartComplete(FinishUploadRequest finishUploadRequest) {
         s3Service.completeMultipartUpload(finishUploadRequest.getObjectKey(), finishUploadRequest);
+        markMediaUploadFinished(finishUploadRequest.getObjectKey());
         return "completed";
     }
 
     public String abortUpload(PresignedUrlAbortRequest request) {
         s3Service.abortUpload(request.getObjectKey(), request);
+        mediaFileRepository.deleteByS3Key(request.getObjectKey());
         return "aborted";
     }
+
+    public void markMediaUploadFinished(String objectKey) {
+        MediaFile mediaFile = mediaFileRepository.findByS3Key(objectKey);
+        mediaFile.setMediaFileStatus(MediaFileStatus.UPLOADED);
+        mediaFileRepository.save(mediaFile);
+    }
+
 }

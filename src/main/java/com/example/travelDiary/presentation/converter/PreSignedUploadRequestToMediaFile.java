@@ -1,6 +1,7 @@
 package com.example.travelDiary.presentation.converter;
 
 import com.example.travelDiary.domain.model.review.MediaFile;
+import com.example.travelDiary.domain.model.review.MediaFileStatus;
 import com.example.travelDiary.presentation.dto.request.s3.PreSignedUploadInitiateRequest;
 import org.springframework.core.convert.converter.Converter;
 
@@ -22,6 +23,8 @@ public class PreSignedUploadRequestToMediaFile implements Converter<PreSignedUpl
         if (source.getContentLocation() != null) {
             mediaFile.setContentLocation(source.getContentLocation());
         }
+        mediaFile.setMediaFileStatus(MediaFileStatus.UPLOADING);
+
         return mediaFile;
     }
 }

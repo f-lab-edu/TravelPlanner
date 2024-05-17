@@ -15,13 +15,13 @@ public class Review {
     @GeneratedValue(strategy = GenerationType.UUID)
     private UUID id;
 
+    private UUID scheduleId;
+
     @OneToMany
     @Cascade(CascadeType.ALL)
-    public List<MediaFile> imageList;
+    public List<MediaFile> fileList;
 
     public String userDescription;
 
     public Double rating;
-
-
 }

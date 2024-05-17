@@ -2,7 +2,7 @@ package com.example.travelDiary.presentation.controller.travel;
 
 import com.example.travelDiary.application.service.travel.ScheduleAccessService;
 import com.example.travelDiary.domain.model.travel.Schedule;
-import com.example.travelDiary.presentation.dto.request.ScheduleUpsertRequest;
+import com.example.travelDiary.presentation.dto.travel.ScheduleUpsertRequest;
 import org.springframework.data.domain.Page;
 import org.springframework.web.bind.annotation.*;
 
