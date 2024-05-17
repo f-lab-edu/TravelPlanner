@@ -1,7 +1,7 @@
 package com.example.travelDiary.presentation.converter;
 
 import com.example.travelDiary.domain.model.travel.Schedule;
-import com.example.travelDiary.presentation.dto.request.ScheduleUpsertRequest;
+import com.example.travelDiary.presentation.dto.travel.ScheduleUpsertRequest;
 import org.springframework.core.convert.converter.Converter;
 
 public class ScheduleRequestToEntity implements Converter<ScheduleUpsertRequest, Schedule> {

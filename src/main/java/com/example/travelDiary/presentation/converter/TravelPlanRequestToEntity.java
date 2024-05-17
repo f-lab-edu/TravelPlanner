@@ -1,7 +1,7 @@
 package com.example.travelDiary.presentation.converter;
 
 import com.example.travelDiary.domain.model.travel.TravelPlan;
-import com.example.travelDiary.presentation.dto.request.TravelPlanUpsertRequestDTO;
+import com.example.travelDiary.presentation.dto.travel.TravelPlanUpsertRequestDTO;
 import org.springframework.core.convert.converter.Converter;
 
 public class TravelPlanRequestToEntity implements Converter<TravelPlanUpsertRequestDTO, TravelPlan> {

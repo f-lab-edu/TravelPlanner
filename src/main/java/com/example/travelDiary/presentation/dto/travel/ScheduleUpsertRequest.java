@@ -1,4 +1,4 @@
-package com.example.travelDiary.presentation.dto.request;
+package com.example.travelDiary.presentation.dto.travel;
 
 import com.example.travelDiary.domain.model.location.Place;
 import lombok.Data;

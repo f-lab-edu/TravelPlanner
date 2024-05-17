@@ -12,6 +12,7 @@ public class ConversionConfig implements WebMvcConfigurer {
         registry.addConverter(new TravelPlanRequestToEntity());
         registry.addConverter(new ScheduleRequestToEntity());
         registry.addConverter(new PreSignedUploadRequestToMediaFile());
+        registry.addConverter(new ReviewUpsertRequestToReview());
     }
 
 }
