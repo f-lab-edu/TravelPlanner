@@ -4,6 +4,8 @@ import com.example.travelDiary.application.service.review.MediaFileAccessService
 import com.example.travelDiary.presentation.dto.request.s3.FinishUploadRequest;
 import com.example.travelDiary.presentation.dto.request.s3.PreSignedUploadInitiateRequest;
 import com.example.travelDiary.presentation.dto.request.s3.PresignedUrlAbortRequest;
+import com.example.travelDiary.presentation.dto.request.s3.lambda.LambdaUploadCompleteRequest;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -12,6 +14,7 @@ import java.net.URL;
 
 @RestController
 @RequestMapping("/media-file")
+@Slf4j
 public class MediaFileController {
 
     private final MediaFileAccessService mediaFileAccessService;
@@ -32,10 +35,9 @@ public class MediaFileController {
     }
 
     @PostMapping("/delete-file")
-    public URL uploadFileSmall(@RequestBody String objectKey) {
+    public URL deleteFile(@RequestBody String objectKey) {
         return mediaFileAccessService.deleteMediaFile(objectKey);
     }
-
 
     @PostMapping("/upload-multipart")
     public URL uploadFileMultipart(
@@ -55,6 +57,28 @@ public class MediaFileController {
         return ResponseEntity.ok(responseMessage);
     }
 
+    @PostMapping("/test-complete-upload")
+    public ResponseEntity<String> testCompleteUpload (@RequestBody String objectKey) {
+        log.info("objectKey is {}",objectKey);
+        return ResponseEntity.ok("<TEST> Upload completed with Object key");
+    }
 
+    @PostMapping("/complete-upload")
+    public ResponseEntity<String> completeUpload(@RequestBody LambdaUploadCompleteRequest request) {
+        log.info("Received upload complete request: {}", request);
+        log.info("objectKey at completeUpload is {}", request.getObjectKey());
+
+        mediaFileAccessService.markMediaUploadFinished(request.getObjectKey());
+        return ResponseEntity.ok("Upload completed");
+    }
+
+    @PostMapping("/complete-delete")
+    public ResponseEntity<String> completeDelete(@RequestBody LambdaUploadCompleteRequest request) {
+        log.info("Received delete complete request: {}", request);
+        log.info("objectKey at completeDelete is {}", request.getObjectKey());
+
+        mediaFileAccessService.markMediaDeleteFinished(request.getObjectKey());
+        return ResponseEntity.ok("Delete completed");
+    }
 
 }
