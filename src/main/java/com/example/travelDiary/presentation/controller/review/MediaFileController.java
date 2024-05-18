@@ -9,6 +9,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+import software.amazon.awssdk.services.s3.model.DeleteObjectResponse;
 
 import java.net.URL;
 
@@ -32,11 +33,6 @@ public class MediaFileController {
     @PostMapping("/get-file")
     public URL getFile(@RequestBody String objectKey) {
         return mediaFileAccessService.getMediaFile(objectKey);
-    }
-
-    @PostMapping("/delete-file")
-    public URL deleteFile(@RequestBody String objectKey) {
-        return mediaFileAccessService.deleteMediaFile(objectKey);
     }
 
     @PostMapping("/upload-multipart")
@@ -72,13 +68,9 @@ public class MediaFileController {
         return ResponseEntity.ok("Upload completed");
     }
 
-    @PostMapping("/complete-delete")
-    public ResponseEntity<String> completeDelete(@RequestBody LambdaUploadCompleteRequest request) {
-        log.info("Received delete complete request: {}", request);
-        log.info("objectKey at completeDelete is {}", request.getObjectKey());
-
-        mediaFileAccessService.markMediaDeleteFinished(request.getObjectKey());
-        return ResponseEntity.ok("Delete completed");
+    @PostMapping("/delete-file")
+    public DeleteObjectResponse deleteFile(@RequestBody String objectKey) {
+        return mediaFileAccessService.deleteMediaFile(objectKey);
     }
 
 }

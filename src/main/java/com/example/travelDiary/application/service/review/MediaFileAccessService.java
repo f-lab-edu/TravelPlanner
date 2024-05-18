@@ -11,6 +11,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.convert.ConversionService;
 import org.springframework.stereotype.Service;
+import software.amazon.awssdk.services.s3.model.DeleteObjectResponse;
 
 import java.net.URL;
 import java.net.URLConnection;
@@ -47,7 +48,6 @@ public class MediaFileAccessService {
 
     private String generateKey(PreSignedUploadInitiateRequest request, UUID mediaFileId){
         String timestamp = Instant.now().toString();
-        String uuid = UUID.randomUUID().toString();
         // Sanitize original file name
         String sanitizedFileName = request
                 .getOriginalFileName()
@@ -55,12 +55,11 @@ public class MediaFileAccessService {
                 .toLowerCase();
 
         // Example key structure
-        return String.format("uploads/%s/%s/%s/%s/%s-%s",
+        return String.format("uploads/%s/%s/%s/%s-%s",
                 request.getUserId(),
                 request.getReviewId(),
                 mediaFileId,
                 timestamp,
-                uuid,
                 sanitizedFileName);
     }
 
@@ -78,8 +77,10 @@ public class MediaFileAccessService {
                 request.getFileSize());
     }
 
-    public URL deleteMediaFile(String objectKey) {
-        return s3Service.createPresignedUrlForDelete(objectKey);
+    public DeleteObjectResponse deleteMediaFile(String objectKey) {
+        DeleteObjectResponse deleteObjectResponse = s3Service.deleteS3Object(objectKey);
+        deleteMediaMetadata(objectKey);
+        return deleteObjectResponse;
     }
 
     public URL uploadMediaFileMultipart(PreSignedUploadInitiateRequest request) {
@@ -111,7 +112,7 @@ public class MediaFileAccessService {
     }
 
 
-    public void markMediaDeleteFinished(String objectKey) {
+    public void deleteMediaMetadata(String objectKey) {
         log.info("mark media delete finished {}", objectKey);
         mediaFileRepository.deleteByS3Key(objectKey);
     }

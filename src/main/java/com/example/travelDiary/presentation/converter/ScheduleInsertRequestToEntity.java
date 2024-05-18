@@ -1,12 +1,12 @@
 package com.example.travelDiary.presentation.converter;
 
 import com.example.travelDiary.domain.model.travel.Schedule;
-import com.example.travelDiary.presentation.dto.travel.ScheduleUpsertRequest;
+import com.example.travelDiary.presentation.dto.travel.ScheduleInsertRequest;
 import org.springframework.core.convert.converter.Converter;
 
-public class ScheduleRequestToEntity implements Converter<ScheduleUpsertRequest, Schedule> {
+public class ScheduleInsertRequestToEntity implements Converter<ScheduleInsertRequest, Schedule> {
     @Override
-    public Schedule convert(ScheduleUpsertRequest source) {
+    public Schedule convert(ScheduleInsertRequest source) {
         Schedule entity = new Schedule();
 
         if (source.getPlace() != null) {

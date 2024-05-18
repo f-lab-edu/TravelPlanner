@@ -1,6 +1,8 @@
 package com.example.travelDiary.domain.model.location;
 
 import jakarta.persistence.Entity;
+import jakarta.persistence.GeneratedValue;
+import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import lombok.Data;
 
@@ -11,6 +13,7 @@ import java.util.UUID;
 @Data
 public class Place {
     @Id
+    @GeneratedValue(strategy = GenerationType.UUID)
     private UUID id;
 
     public String googleMapsKeyId;
@@ -18,6 +21,8 @@ public class Place {
     public String name;
 
     public String country;
+
+    public Integer visitedCount;
 
     public BigDecimal Latitude;
 
