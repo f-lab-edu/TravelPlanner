@@ -57,6 +57,8 @@ public class ScheduleController {
         return scheduleAccessService.getSchedule(scheduleId);
     }
 
+    //update PLACE
+
     @PatchMapping("/update_all_linked_place")
     public List<Schedule> modifyPlaceOnAllLinkedSchedule (@PathVariable(value = "travelPlanId") UUID travelPlanId, @RequestBody PlaceUpdateRequest request) {
         return scheduleAccessService.updatePlace(request);
