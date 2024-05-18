@@ -1,6 +1,5 @@
 package com.example.travelDiary.presentation.dto.travel;
 
-import com.example.travelDiary.domain.model.location.Place;
 import lombok.Data;
 
 import java.time.LocalDate;
