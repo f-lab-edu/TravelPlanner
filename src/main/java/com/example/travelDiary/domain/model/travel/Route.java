@@ -1,10 +1,9 @@
 package com.example.travelDiary.domain.model.travel;
 
-import jakarta.persistence.Entity;
-import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.GenerationType;
-import jakarta.persistence.Id;
+import com.example.travelDiary.domain.model.location.Place;
+import jakarta.persistence.*;
 
+import java.math.BigDecimal;
 import java.time.LocalTime;
 import java.util.UUID;
 
@@ -14,7 +13,16 @@ public class Route {
     @GeneratedValue(strategy = GenerationType.UUID)
     private UUID id;
 
-    private LocalTime durationOfTravel;
+    public UUID outBoundScheduleId;
 
+    public UUID inBoundScheduleId;
+
+    public LocalTime durationOfTravel;
+
+    public BigDecimal distanceOfTravel;
+
+    public String methodOfTravel;
+
+    public String GoogleEncodedPolyline;
 
 }
