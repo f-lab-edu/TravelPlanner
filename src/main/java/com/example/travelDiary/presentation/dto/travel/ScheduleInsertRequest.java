@@ -8,8 +8,7 @@ import java.time.LocalTime;
 import java.util.UUID;
 
 @Data
-public class ScheduleUpsertRequest {
-    public UUID scheduleId;
+public class ScheduleInsertRequest {
     public Place place;
     public Boolean isActuallyVisited;
     public LocalDate travelDate;

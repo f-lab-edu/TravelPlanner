@@ -2,7 +2,7 @@ package com.example.travelDiary.presentation.controller.travel;
 
 import com.example.travelDiary.application.service.travel.ScheduleAccessService;
 import com.example.travelDiary.domain.model.travel.Schedule;
-import com.example.travelDiary.presentation.dto.travel.ScheduleUpsertRequest;
+import com.example.travelDiary.presentation.dto.travel.ScheduleInsertRequest;
 import org.springframework.data.domain.Page;
 import org.springframework.web.bind.annotation.*;
 
@@ -19,14 +19,14 @@ public class ScheduleController {
     }
 
     @PostMapping("/create_schedule")
-    public Schedule createSchedule(@PathVariable("travelPlanId") UUID travelPlanId, @RequestBody ScheduleUpsertRequest request) {
+    public Schedule createSchedule(@PathVariable("travelPlanId") UUID travelPlanId, @RequestBody ScheduleInsertRequest request) {
         return scheduleAccessService.createSchedule(travelPlanId, request);
     }
 
-    @PatchMapping("/modify_schedule")
-    public Schedule modifySchedule(@PathVariable(value = "travelPlanId") UUID travelPlanId, @RequestBody ScheduleUpsertRequest request) {
-        return scheduleAccessService.modifySchedule(request);
-    }
+//    @PatchMapping("/modify_schedule")
+//    public Schedule modifySchedule(@PathVariable(value = "travelPlanId") UUID travelPlanId, @RequestBody ScheduleInsertRequest request) {
+//        return scheduleAccessService.modifySchedule(request);
+//    }
 
     @DeleteMapping("/delete_schedule")
     public UUID deleteSchedule(@PathVariable(value = "travelPlanId") UUID travelPlanId, @RequestParam(value="scheduleId") UUID scheduleId) {
