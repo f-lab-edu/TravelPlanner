@@ -6,7 +6,9 @@ import com.example.travelDiary.domain.model.travel.TravelPlan;
 import com.example.travelDiary.domain.persistence.location.PlaceRepository;
 import com.example.travelDiary.domain.persistence.travel.ScheduleRepository;
 import com.example.travelDiary.domain.persistence.travel.TravelPlanRepository;
+import com.example.travelDiary.presentation.dto.travel.PlaceUpdateRequest;
 import com.example.travelDiary.presentation.dto.travel.ScheduleInsertRequest;
+import com.example.travelDiary.presentation.dto.travel.ScheduleMetadataUpdateRequest;
 import jakarta.persistence.EntityManager;
 import jakarta.persistence.EntityNotFoundException;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -75,14 +77,6 @@ public class ScheduleAccessService {
         return schedule;
     }
 
-//    public Schedule modifySchedule(ScheduleInsertRequest request) {
-//        Schedule filteredScheduleModifyFrom = conversionService.convert(request, Schedule.class);
-//        Schedule scheduleToModify = scheduleRepository.getReferenceById(request.getScheduleId());
-//        modifySchedule(scheduleToModify, filteredScheduleModifyFrom);
-//
-//        return scheduleToModify;
-//    }
-
     @Transactional
     public UUID deleteSchedule(UUID scheduleId) {
         Schedule schedule = scheduleRepository.findById(scheduleId).orElseThrow(() -> new EntityNotFoundException("Schedule not found"));
@@ -98,17 +92,24 @@ public class ScheduleAccessService {
     }
 
     @Transactional
-    public void reassignPlace(UUID scheduleId, UUID newPlaceId) {
+    public Schedule reassignPlace(UUID scheduleId, PlaceUpdateRequest request) {
+        Place place = conversionService.convert(request, Place.class);
+        assert place != null;
         Schedule schedule = scheduleRepository.findById(scheduleId).orElseThrow(() -> new EntityNotFoundException("Schedule not found"));
-        Place newPlace = placeRepository.findById(newPlaceId).orElseThrow(() -> new EntityNotFoundException("Place not found"));
+        Place newPlace = placeRepository
+                .findByGoogleMapsKeyId(place.getGoogleMapsKeyId())
+                .orElse(placeRepository.save(place));
 
         schedule.setPlace(newPlace);
-        scheduleRepository.save(schedule);
+        return scheduleRepository.save(schedule);
     }
 
     @Transactional
-    public void updatePlace(Place updatedPlace) {
-        Place existingPlace = placeRepository.findById(updatedPlace.getId()).orElseThrow(() -> new EntityNotFoundException("Place not found"));
+    public List<Schedule> updatePlace(PlaceUpdateRequest updatedPlace) {
+        conversionService.convert(updatedPlace, Place.class);
+        Place existingPlace = placeRepository
+                .findByGoogleMapsKeyId(updatedPlace.getGoogleMapsKeyId())
+                .orElseThrow(() -> new EntityNotFoundException("Place not found"));
         existingPlace.setName(updatedPlace.getName());
         existingPlace.setCountry(updatedPlace.getCountry());
         existingPlace.setLatitude(updatedPlace.getLatitude());
@@ -122,6 +123,23 @@ public class ScheduleAccessService {
             schedule.setOutwardRoute(null);  // Or trigger recalculation
             scheduleRepository.save(schedule);
         }
+
+        return affectedSchedules;
+    }
+
+    public Schedule updateScheduleMetadata(ScheduleMetadataUpdateRequest request) {
+        Schedule schedule = scheduleRepository.findById(request.getScheduleId()).orElseThrow();
+        Schedule sanitizedSchedule = conversionService.convert(request, Schedule.class);
+
+        em.detach(sanitizedSchedule);
+
+        schedule.setIsActuallyVisited(sanitizedSchedule.getIsActuallyVisited());
+        schedule.setTravelDate(sanitizedSchedule.getTravelDate());
+        schedule.setOrderOfTravel(sanitizedSchedule.getOrderOfTravel());
+        schedule.setTravelStartTimeEstimate(sanitizedSchedule.getTravelStartTimeEstimate());
+        schedule.setTravelDepartTimeEstimate(sanitizedSchedule.getTravelDepartTimeEstimate());
+
+        return scheduleRepository.save(schedule);
     }
 
 //    UTILS
@@ -130,31 +148,6 @@ public class ScheduleAccessService {
         List<Schedule> travelPlanSchedule = travelPlan.getScheduleList();
         travelPlanSchedule.add(scheduleToModify);
         travelPlanRepository.save(travelPlan);
-    }
-
-    private void modifySchedule(Schedule to, Schedule from) {
-        if (from == null || to == null) {
-            return;
-        }
-        em.detach(from);
-
-        // Copy non-null properties from 'from' to 'to'
-        to.setPlace(from.getPlace());
-        to.setIsActuallyVisited(from.getIsActuallyVisited());
-        to.setTravelDate(from.getTravelDate());
-        to.setOrderOfTravel(from.getOrderOfTravel());
-        to.setTravelStartTimeEstimate(from.getTravelStartTimeEstimate());
-        to.setTravelDepartTimeEstimate(from.getTravelDepartTimeEstimate());
-        this.flattenPlaceForSchedule(to);
-    }
-
-    private void flattenPlaceForSchedule(Schedule schedule) {
-        Place place = schedule.getPlace();
-        Place existingPlace = place;
-        if(schedule.getPlace().getId() != null) {
-            existingPlace = placeRepository.findById(schedule.getId()).orElse(place);
-        }
-        schedule.setPlace(existingPlace);
     }
 
 }
