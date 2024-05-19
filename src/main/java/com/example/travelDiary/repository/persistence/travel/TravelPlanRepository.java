@@ -1,4 +1,4 @@
-package com.example.travelDiary.domain.persistence.travel;
+package com.example.travelDiary.repository.persistence.travel;
 
 import com.example.travelDiary.domain.model.travel.TravelPlan;
 import org.springframework.data.domain.Page;

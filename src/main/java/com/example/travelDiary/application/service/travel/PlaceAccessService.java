@@ -1,7 +1,7 @@
 package com.example.travelDiary.application.service.travel;
 
 import com.example.travelDiary.domain.model.location.Place;
-import com.example.travelDiary.domain.persistence.location.PlaceRepository;
+import com.example.travelDiary.repository.persistence.location.PlaceRepository;
 import com.example.travelDiary.presentation.dto.travel.PlaceUpdateRequest;
 import jakarta.persistence.EntityNotFoundException;
 import org.springframework.core.convert.ConversionService;
