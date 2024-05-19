@@ -15,6 +15,7 @@ public class ConversionConfig implements WebMvcConfigurer {
         registry.addConverter(new ReviewUpsertRequestToReview());
         registry.addConverter(new ScheduleMetadataUpdateRequestToEntity());
         registry.addConverter(new PlaceUpdateRequestToEntity());
+        registry.addConverter(new ReviewUpsertRequestToReview());
     }
 
 }
