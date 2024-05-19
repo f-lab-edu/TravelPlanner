@@ -1,12 +1,13 @@
 package com.example.travelDiary.application.service.travel;
 
 import com.example.travelDiary.domain.model.location.Place;
+import com.example.travelDiary.domain.model.travel.Route;
 import com.example.travelDiary.domain.model.travel.Schedule;
 import com.example.travelDiary.domain.model.travel.TravelPlan;
-import com.example.travelDiary.domain.persistence.location.PlaceRepository;
 import com.example.travelDiary.domain.persistence.travel.ScheduleRepository;
 import com.example.travelDiary.domain.persistence.travel.TravelPlanRepository;
 import com.example.travelDiary.presentation.dto.travel.PlaceUpdateRequest;
+import com.example.travelDiary.presentation.dto.travel.RouteUpdateRequest;
 import com.example.travelDiary.presentation.dto.travel.ScheduleInsertRequest;
 import com.example.travelDiary.presentation.dto.travel.ScheduleMetadataUpdateRequest;
 import jakarta.persistence.EntityManager;
@@ -20,7 +21,6 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDate;
 import java.util.List;
-import java.util.Optional;
 import java.util.UUID;
 
 @Service
@@ -28,20 +28,23 @@ public class ScheduleAccessService {
     private final ScheduleRepository scheduleRepository;
     private final TravelPlanRepository travelPlanRepository;
     private final EntityManager em;
-    private final PlaceRepository placeRepository;
+    private final PlaceAccessService placeAccessService;
     private final ConversionService conversionService;
+    private final RouteAccessService routeAccessService;
 
     @Autowired
     public ScheduleAccessService(ScheduleRepository scheduleRepository,
                                  TravelPlanRepository travelPlanRepository,
                                  EntityManager em,
-                                 PlaceRepository placeRepository,
-                                 ConversionService conversionService) {
+                                 PlaceAccessService placeAccessService,
+                                 ConversionService conversionService,
+                                 RouteAccessService routeAccessService) {
         this.scheduleRepository = scheduleRepository;
         this.travelPlanRepository = travelPlanRepository;
         this.em = em;
-        this.placeRepository = placeRepository;
+        this.placeAccessService = placeAccessService;
         this.conversionService = conversionService;
+        this.routeAccessService = routeAccessService;
     }
     public Schedule getSchedule(UUID scheduleId) {
         return scheduleRepository.getReferenceById(scheduleId);
@@ -62,17 +65,17 @@ public class ScheduleAccessService {
         Schedule schedule = conversionService.convert(request, Schedule.class);
         assert schedule != null;
 
-        Place place = schedule.getPlace();
-        Optional<Place> existingPlaceOpt = placeRepository.findByGoogleMapsKeyId(place.getGoogleMapsKeyId());
-
-        if (existingPlaceOpt.isPresent()) {
-            place = existingPlaceOpt.get();
-        } else {
-            placeRepository.save(place);
-        }
+        Place place = placeAccessService.createPlace(schedule.getPlace());
         schedule.setPlace(place);
         schedule = scheduleRepository.save(schedule);
         updateTravelPlanOnInsert(travelPlanId, schedule);
+
+        if(request.getPreviousScheduleId() != null) {
+            Schedule previousSchedule = scheduleRepository.getReferenceById(request.getPreviousScheduleId());
+            Route route = routeAccessService.createEmptyRoute();
+            previousSchedule.setOutwardRoute(route);
+            schedule.setInwardRoute(route);
+        }
 
         return schedule;
     }
@@ -85,47 +88,12 @@ public class ScheduleAccessService {
         scheduleRepository.delete(schedule);
 
         if (scheduleRepository.findByPlaceId(place.getId()).isEmpty()) {
-            placeRepository.deleteById(place.getId());
+            placeAccessService.deletePlace(place);
         }
 
         return scheduleId;
     }
 
-    @Transactional
-    public Schedule reassignPlace(UUID scheduleId, PlaceUpdateRequest request) {
-        Place place = conversionService.convert(request, Place.class);
-        assert place != null;
-        Schedule schedule = scheduleRepository.findById(scheduleId).orElseThrow(() -> new EntityNotFoundException("Schedule not found"));
-        Place newPlace = placeRepository
-                .findByGoogleMapsKeyId(place.getGoogleMapsKeyId())
-                .orElse(placeRepository.save(place));
-
-        schedule.setPlace(newPlace);
-        return scheduleRepository.save(schedule);
-    }
-
-    @Transactional
-    public List<Schedule> updatePlace(PlaceUpdateRequest updatedPlace) {
-        conversionService.convert(updatedPlace, Place.class);
-        Place existingPlace = placeRepository
-                .findByGoogleMapsKeyId(updatedPlace.getGoogleMapsKeyId())
-                .orElseThrow(() -> new EntityNotFoundException("Place not found"));
-        existingPlace.setName(updatedPlace.getName());
-        existingPlace.setCountry(updatedPlace.getCountry());
-        existingPlace.setLatitude(updatedPlace.getLatitude());
-        existingPlace.setLongitude(updatedPlace.getLongitude());
-        placeRepository.save(existingPlace);
-
-        // Invalidate or recalculate routes if necessary
-        List<Schedule> affectedSchedules = scheduleRepository.findByPlaceId(existingPlace.getId());
-        for (Schedule schedule : affectedSchedules) {
-            schedule.setInwardRoute(null);  // Or trigger recalculation
-            schedule.setOutwardRoute(null);  // Or trigger recalculation
-            scheduleRepository.save(schedule);
-        }
-
-        return affectedSchedules;
-    }
 
     public Schedule updateScheduleMetadata(ScheduleMetadataUpdateRequest request) {
         Schedule schedule = scheduleRepository.findById(request.getScheduleId()).orElseThrow();
@@ -140,6 +108,64 @@ public class ScheduleAccessService {
         schedule.setTravelDepartTimeEstimate(sanitizedSchedule.getTravelDepartTimeEstimate());
 
         return scheduleRepository.save(schedule);
+    }
+
+    //PLACE UPDATES
+
+
+    @Transactional
+    public Schedule reassignPlace(UUID scheduleId, PlaceUpdateRequest request) {
+        Place place = placeAccessService.reassignPlace(request);
+        assert place != null;
+        Schedule schedule = scheduleRepository.findById(scheduleId).orElseThrow(() -> new EntityNotFoundException("Schedule not found"));
+        schedule.setPlace(place);
+        return scheduleRepository.save(schedule);
+    }
+
+    @Transactional
+    public List<Schedule> updatePlace(PlaceUpdateRequest updateRequest) {
+
+        Place updatedPlace = placeAccessService.updatePlace(updateRequest);
+        // Invalidate or recalculate routes if necessary
+        List<Schedule> affectedSchedules = scheduleRepository.findByPlaceId(updatedPlace.getId());
+        for (Schedule schedule : affectedSchedules) {
+
+            Route originalInwardRoute = schedule.getInwardRoute();
+            Route originalOutwardRoute = schedule.getOutwardRoute();
+            routeAccessService.resetRoute(originalInwardRoute);
+            routeAccessService.resetRoute(originalOutwardRoute);
+
+            scheduleRepository.save(schedule);
+        }
+
+        return affectedSchedules;
+    }
+
+    //ROUTE related
+    @Transactional
+    public Route updateRouteDetails(RouteUpdateRequest request) {
+        return routeAccessService.updateRoute(request);
+    }
+
+    @Deprecated
+    public Route updateRouteManually(RouteUpdateRequest updateRequest) {
+        Schedule inboundSchedule = scheduleRepository
+                .findById(
+                        updateRequest
+                                .getInBoundScheduleId())
+                .orElseThrow(() -> new EntityNotFoundException("Inbound Schedule not found"));
+
+        Schedule outBoundSchedule = scheduleRepository
+                .findById(
+                        updateRequest
+                                .getOutBoundScheduleId())
+                .orElseThrow(() -> new EntityNotFoundException("Outbound Schedule not found"));
+
+        Route route = conversionService.convert(updateRequest, Route.class);
+        inboundSchedule.setInwardRoute(route);
+        outBoundSchedule.setOutwardRoute(route);
+
+        return route;
     }
 
 //    UTILS

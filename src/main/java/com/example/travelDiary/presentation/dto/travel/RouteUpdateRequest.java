@@ -1,19 +1,15 @@
-package com.example.travelDiary.domain.model.travel;
+package com.example.travelDiary.presentation.dto.travel;
 
-import com.example.travelDiary.domain.model.location.Place;
-import jakarta.persistence.*;
 import lombok.Data;
 
 import java.math.BigDecimal;
 import java.time.LocalTime;
 import java.util.UUID;
 
-@Entity
 @Data
-public class Route {
-    @Id
-    @GeneratedValue(strategy = GenerationType.UUID)
-    private UUID id;
+public class RouteUpdateRequest {
+
+    public UUID id;
 
     public UUID outBoundScheduleId;
 
