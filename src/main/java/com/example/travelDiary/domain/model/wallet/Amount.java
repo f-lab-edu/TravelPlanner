@@ -28,6 +28,11 @@ public class Amount {
         return new Amount(value.add(addend));
     }
 
+    public <T extends Number> Amount subtract(final T subtrahendValue) {
+        final BigDecimal subtrahend = new BigDecimal(subtrahendValue.toString());
+        return new Amount(value.subtract(subtrahend));
+    }
+
     public <T extends Number> Amount multiply(final T multiplicandValue) {
         final BigDecimal multiplicand = new BigDecimal(multiplicandValue.toString());
         return new Amount(value.multiply(multiplicand));
