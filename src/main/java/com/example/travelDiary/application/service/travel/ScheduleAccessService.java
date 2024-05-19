@@ -119,6 +119,8 @@ public class ScheduleAccessService {
         assert place != null;
         Schedule schedule = scheduleRepository.findById(scheduleId).orElseThrow(() -> new EntityNotFoundException("Schedule not found"));
         schedule.setPlace(place);
+        routeAccessService.resetRoute(schedule.getInwardRoute());
+        routeAccessService.resetRoute(schedule.getOutwardRoute());
         return scheduleRepository.save(schedule);
     }
 
