@@ -12,7 +12,7 @@ import java.math.RoundingMode;
 @Embeddable
 @Data
 @NoArgsConstructor(access= AccessLevel.PROTECTED)
-public class Amount {
+public class Amount extends Number {
 
     public static final Amount ZERO = new Amount(0);
 
@@ -45,5 +45,25 @@ public class Amount {
 
     public <T extends Number> int compareTo(final T targetValue) {
         return this.value.compareTo(new BigDecimal(targetValue.toString()));
+    }
+
+    @Override
+    public int intValue() {
+        return value.intValue();
+    }
+
+    @Override
+    public long longValue() {
+        return value.longValue();
+    }
+
+    @Override
+    public float floatValue() {
+        return value.floatValue();
+    }
+
+    @Override
+    public double doubleValue() {
+        return value.doubleValue();
     }
 }
