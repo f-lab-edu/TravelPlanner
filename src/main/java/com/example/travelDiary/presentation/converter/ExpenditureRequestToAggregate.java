@@ -1,10 +1,8 @@
 package com.example.travelDiary.presentation.converter;
 
-import com.example.travelDiary.domain.model.wallet.aggregate.Expenditure;
-import com.example.travelDiary.domain.model.wallet.aggregate.Income;
+import com.example.travelDiary.application.service.wallet.aggregate.Expenditure;
 import com.example.travelDiary.presentation.dto.request.wallet.ExpenditureRequest;
 import org.springframework.core.convert.converter.Converter;
-import org.springframework.core.convert.converter.GenericConverter;
 
 import java.util.Currency;
 

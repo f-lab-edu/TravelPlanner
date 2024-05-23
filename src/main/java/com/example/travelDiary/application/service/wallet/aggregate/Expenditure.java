@@ -1,6 +1,6 @@
-package com.example.travelDiary.domain.model.wallet.aggregate;
+package com.example.travelDiary.application.service.wallet.aggregate;
 
-import com.example.travelDiary.domain.model.wallet.Amount;
+import com.example.travelDiary.application.service.wallet.Amount;
 import lombok.*;
 
 import java.util.Currency;

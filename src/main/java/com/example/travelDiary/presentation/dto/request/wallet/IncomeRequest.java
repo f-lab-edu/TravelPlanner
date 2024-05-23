@@ -1,6 +1,6 @@
 package com.example.travelDiary.presentation.dto.request.wallet;
 
-import com.example.travelDiary.domain.model.wallet.Amount;
+import com.example.travelDiary.application.service.wallet.Amount;
 import lombok.Data;
 
 import java.time.Instant;
