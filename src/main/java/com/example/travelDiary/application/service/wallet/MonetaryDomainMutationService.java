@@ -1,10 +1,11 @@
-package com.example.travelDiary.application.service.wallet.wallet;
+package com.example.travelDiary.application.service.wallet;
 
-import com.example.travelDiary.application.service.wallet.aggregate.MonetaryEvent;
-import com.example.travelDiary.application.service.wallet.aggregate.CurrencyConversion;
-import com.example.travelDiary.application.service.wallet.aggregate.Expenditure;
-import com.example.travelDiary.application.service.wallet.aggregate.Income;
-import com.example.travelDiary.application.service.wallet.entity.MonetaryEventEntity;
+import com.example.travelDiary.repository.persistence.wallet.MonetaryEventEntityRepository;
+import com.example.travelDiary.domain.model.wallet.aggregate.MonetaryEvent;
+import com.example.travelDiary.domain.model.wallet.aggregate.CurrencyConversion;
+import com.example.travelDiary.domain.model.wallet.aggregate.Expenditure;
+import com.example.travelDiary.domain.model.wallet.aggregate.Income;
+import com.example.travelDiary.domain.model.wallet.entity.MonetaryEventEntity;
 
 import jakarta.transaction.Transactional;
 import org.springframework.beans.factory.annotation.Autowired;

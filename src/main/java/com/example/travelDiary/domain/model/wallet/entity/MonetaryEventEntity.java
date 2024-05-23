@@ -1,6 +1,6 @@
-package com.example.travelDiary.application.service.wallet.entity;
+package com.example.travelDiary.domain.model.wallet.entity;
 
-import com.example.travelDiary.application.service.wallet.Amount;
+import com.example.travelDiary.domain.model.wallet.Amount;
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
