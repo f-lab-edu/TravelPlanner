@@ -18,6 +18,7 @@ public class CurrencyConversion extends MonetaryEvent {
 
     private Amount amountFrom;
     private String currencyFrom;
+
     private Amount amountTo;
     private String currencyTo;
     private Amount rate;
