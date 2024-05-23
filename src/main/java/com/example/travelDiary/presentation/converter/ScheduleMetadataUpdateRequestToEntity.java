@@ -1,7 +1,7 @@
 package com.example.travelDiary.presentation.converter;
 
 import com.example.travelDiary.domain.model.travel.Schedule;
-import com.example.travelDiary.presentation.dto.travel.ScheduleMetadataUpdateRequest;
+import com.example.travelDiary.presentation.dto.request.travel.ScheduleMetadataUpdateRequest;
 import org.springframework.core.convert.converter.Converter;
 
 public class ScheduleMetadataUpdateRequestToEntity implements Converter<ScheduleMetadataUpdateRequest, Schedule> {

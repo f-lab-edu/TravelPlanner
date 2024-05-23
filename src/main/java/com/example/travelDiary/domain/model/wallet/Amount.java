@@ -23,6 +23,10 @@ public class Amount extends Number {
         this.value = new BigDecimal(value.toString());
     }
 
+    public Amount negate() {
+        return new Amount(value.negate());
+    }
+
     public <T extends Number> Amount add(final T addendValue) {
         final BigDecimal addend = new BigDecimal(addendValue.toString());
         return new Amount(value.add(addend));

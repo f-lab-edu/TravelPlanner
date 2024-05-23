@@ -1,7 +1,7 @@
 package com.example.travelDiary.presentation.converter;
 
 import com.example.travelDiary.domain.model.travel.Route;
-import com.example.travelDiary.presentation.dto.travel.RouteUpdateRequest;
+import com.example.travelDiary.presentation.dto.request.travel.RouteUpdateRequest;
 import org.springframework.core.convert.converter.Converter;
 
 import java.math.BigDecimal;

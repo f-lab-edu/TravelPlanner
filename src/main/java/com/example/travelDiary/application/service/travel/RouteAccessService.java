@@ -2,7 +2,7 @@ package com.example.travelDiary.application.service.travel;
 
 import com.example.travelDiary.domain.model.travel.Route;
 import com.example.travelDiary.repository.persistence.travel.RouteRepository;
-import com.example.travelDiary.presentation.dto.travel.RouteUpdateRequest;
+import com.example.travelDiary.presentation.dto.request.travel.RouteUpdateRequest;
 import org.springframework.core.convert.ConversionService;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;

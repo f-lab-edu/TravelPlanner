@@ -1,7 +1,7 @@
 package com.example.travelDiary.presentation.converter;
 
 import com.example.travelDiary.domain.model.review.Review;
-import com.example.travelDiary.presentation.dto.review.ReviewUpsertRequest;
+import com.example.travelDiary.presentation.dto.request.review.ReviewUpsertRequest;
 import org.springframework.core.convert.converter.Converter;
 
 public class ReviewUpsertRequestToReview implements Converter<ReviewUpsertRequest, Review> {
