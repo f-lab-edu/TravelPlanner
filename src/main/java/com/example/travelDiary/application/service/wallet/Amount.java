@@ -1,14 +1,16 @@
-package com.example.travelDiary.domain.model.wallet;
+package com.example.travelDiary.application.service.wallet;
 
 import jakarta.persistence.Column;
 import jakarta.persistence.Embeddable;
 import lombok.AccessLevel;
 import lombok.Data;
+import lombok.EqualsAndHashCode;
 import lombok.NoArgsConstructor;
 
 import java.math.BigDecimal;
 import java.math.RoundingMode;
 
+@EqualsAndHashCode(callSuper = true)
 @Embeddable
 @Data
 @NoArgsConstructor(access= AccessLevel.PROTECTED)

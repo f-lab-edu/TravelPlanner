@@ -1,10 +1,10 @@
 package com.example.travelDiary.presentation.controller.monetaryEvent;
 
-import com.example.travelDiary.domain.model.wallet.aggregate.CurrencyConversion;
-import com.example.travelDiary.domain.model.wallet.aggregate.Expenditure;
-import com.example.travelDiary.domain.model.wallet.aggregate.Income;
-import com.example.travelDiary.domain.model.wallet.entity.MonetaryEventEntity;
-import com.example.travelDiary.domain.model.wallet.service.MonetaryDomainMutationService;
+import com.example.travelDiary.application.service.wallet.aggregate.CurrencyConversion;
+import com.example.travelDiary.application.service.wallet.aggregate.Expenditure;
+import com.example.travelDiary.application.service.wallet.aggregate.Income;
+import com.example.travelDiary.application.service.wallet.entity.MonetaryEventEntity;
+import com.example.travelDiary.application.service.wallet.wallet.MonetaryDomainMutationService;
 import com.example.travelDiary.presentation.dto.request.wallet.CurrencyConvertRequest;
 import com.example.travelDiary.presentation.dto.request.wallet.ExpenditureRequest;
 import com.example.travelDiary.presentation.dto.request.wallet.IncomeRequest;

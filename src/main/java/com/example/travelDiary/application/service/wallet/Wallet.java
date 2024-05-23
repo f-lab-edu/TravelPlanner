@@ -1,4 +1,4 @@
-package com.example.travelDiary.domain.model.wallet;
+package com.example.travelDiary.application.service.wallet;
 
 import jakarta.persistence.*;
 import lombok.Data;
