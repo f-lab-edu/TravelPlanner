@@ -1,7 +1,7 @@
-package com.example.travelDiary.application.service;
+package com.example.travelDiary.application.service.tags;
 
-import com.example.travelDiary.domain.repository.tags.CategoryRepository;
-import com.example.travelDiary.domain.tags.Category;
+import com.example.travelDiary.repository.persistence.tags.CategoryRepository;
+import com.example.travelDiary.domain.model.tags.Category;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 

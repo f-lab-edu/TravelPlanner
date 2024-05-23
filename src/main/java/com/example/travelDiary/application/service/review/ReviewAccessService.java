@@ -3,7 +3,7 @@ package com.example.travelDiary.application.service.review;
 import com.example.travelDiary.domain.model.review.MediaFile;
 import com.example.travelDiary.domain.model.review.Review;
 import com.example.travelDiary.repository.persistence.review.ReviewRepository;
-import com.example.travelDiary.presentation.dto.review.ReviewUpsertRequest;
+import com.example.travelDiary.presentation.dto.request.review.ReviewUpsertRequest;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.convert.ConversionService;
 import org.springframework.data.domain.Page;

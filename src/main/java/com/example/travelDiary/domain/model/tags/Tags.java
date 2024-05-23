@@ -1,4 +1,4 @@
-package com.example.travelDiary.domain.tags;
+package com.example.travelDiary.domain.model.tags;
 
 import jakarta.persistence.*;
 

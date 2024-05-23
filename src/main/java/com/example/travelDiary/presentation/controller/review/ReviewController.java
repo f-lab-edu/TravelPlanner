@@ -2,13 +2,10 @@ package com.example.travelDiary.presentation.controller.review;
 
 import com.example.travelDiary.application.service.review.ReviewAccessService;
 import com.example.travelDiary.domain.model.review.Review;
-import com.example.travelDiary.presentation.dto.review.ReviewUpsertRequest;
-import org.springframework.beans.factory.annotation.Qualifier;
-import org.springframework.core.convert.ConversionService;
+import com.example.travelDiary.presentation.dto.request.review.ReviewUpsertRequest;
 import org.springframework.data.domain.Page;
 import org.springframework.web.bind.annotation.*;
 
-import java.util.List;
 import java.util.UUID;
 
 @RestController

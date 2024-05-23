@@ -1,6 +1,6 @@
-package com.example.travelDiary.domain.repository.tags;
+package com.example.travelDiary.repository.persistence.tags;
 
-import com.example.travelDiary.domain.tags.Category;
+import com.example.travelDiary.domain.model.tags.Category;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
 
