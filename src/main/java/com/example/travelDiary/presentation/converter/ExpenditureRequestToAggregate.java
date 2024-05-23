@@ -1,6 +1,6 @@
 package com.example.travelDiary.presentation.converter;
 
-import com.example.travelDiary.application.service.wallet.aggregate.Expenditure;
+import com.example.travelDiary.domain.model.wallet.aggregate.Expenditure;
 import com.example.travelDiary.presentation.dto.request.wallet.ExpenditureRequest;
 import org.springframework.core.convert.converter.Converter;
 

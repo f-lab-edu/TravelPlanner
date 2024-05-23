@@ -1,6 +1,6 @@
-package com.example.travelDiary.application.service.wallet.wallet;
+package com.example.travelDiary.repository.persistence.wallet;
 
-import com.example.travelDiary.application.service.wallet.entity.MonetaryEventEntity;
+import com.example.travelDiary.domain.model.wallet.entity.MonetaryEventEntity;
 import org.springframework.data.jpa.repository.JpaRepository;
 
 import java.util.UUID;
