@@ -35,8 +35,7 @@ public class ScheduleEventService {
     }
 
     public UUID deleteEvent(UUID eventId) {
-        UUID deletedId = eventAccessService.deleteEvent(eventId);
-        return deletedId;
+        return eventAccessService.deleteEvent(eventId);
     }
 
     public Event updateEvent(EventMetaDataUpsertRequest request) {
@@ -46,11 +45,17 @@ public class ScheduleEventService {
         return event;
     }
 
-    public Page<MonetaryEvent> getAssociatedMonetaryEvent(UUID scheduleId, PageRequest pageRequest) {
+    public Page<MonetaryEvent> getAssociatedMonetaryEventPage(UUID scheduleId, PageRequest pageRequest) {
         List<Event> events = scheduleRepository.findById(scheduleId).orElseThrow().getEvents();
         List<MonetaryEvent> monetaryEvents = events.stream().flatMap(event -> eventAccessService.getAllMonetaryEvents(event.getId()).stream()).toList();
-        return new PageImpl<>(monetaryEvents, pageRequest, events.size());
+        return new PageImpl<>(monetaryEvents, pageRequest, monetaryEvents.size());
     }
+
+    public List<MonetaryEvent> getAssociatedMonetaryEvent(UUID scheduleId) {
+        List<Event> events = scheduleRepository.findById(scheduleId).orElseThrow().getEvents();
+        return events.stream().flatMap(event -> eventAccessService.getAllMonetaryEvents(event.getId()).stream()).toList();
+    }
+
 
 
 }
