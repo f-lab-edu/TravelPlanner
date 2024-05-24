@@ -43,7 +43,7 @@ public class MonetaryDomainMutationService {
                         .amount((currencyConversion.getConvertedAmountFrom()).negate())
                         .currency(currencyConversion.getCurrencyFrom())
                         .timestamp(now)
-                        .eventType(EventType.CURRENCYCONVERSION)
+                        .eventType(EventType.CURRENCY_CONVERSION)
                         .build();
                 MonetaryEventEntity to = MonetaryEventEntity
                         .builder()
@@ -52,7 +52,7 @@ public class MonetaryDomainMutationService {
                         .amount((currencyConversion.getConvertedAmountTo()))
                         .currency(currencyConversion.getCurrencyTo())
                         .timestamp(now)
-                        .eventType(EventType.CURRENCYCONVERSION)
+                        .eventType(EventType.CURRENCY_CONVERSION)
                         .build();
                 return List.of(
                         monetaryEventEntityRepository.save(from),
@@ -69,6 +69,7 @@ public class MonetaryDomainMutationService {
                                         .amount(expenditure.getAmount())
                                         .currency(expenditure.getCurrency())
                                         .timestamp(Instant.now())
+                                        .description(expenditure.getDescription())
                                         .eventType(EventType.EXPENDITURE)
                                         .build()
                         )
@@ -83,6 +84,7 @@ public class MonetaryDomainMutationService {
                                         .source("source")
                                         .amount(income.getAmount())
                                         .currency(income.getCurrency())
+                                        .description(income.getDescription())
                                         .timestamp(Instant.now())
                                         .eventType(EventType.INCOME)
                                         .build()

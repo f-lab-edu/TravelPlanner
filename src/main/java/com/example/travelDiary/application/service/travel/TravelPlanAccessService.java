@@ -1,5 +1,6 @@
 package com.example.travelDiary.application.service.travel;
 
+import com.example.travelDiary.application.service.travel.schedule.ScheduleMutationService;
 import com.example.travelDiary.domain.model.travel.TravelPlan;
 import com.example.travelDiary.repository.persistence.travel.TravelPlanRepository;
 import com.example.travelDiary.presentation.dto.request.travel.TravelPlanUpsertRequestDTO;
@@ -16,13 +17,13 @@ import java.util.UUID;
 public class TravelPlanAccessService {
     private final TravelPlanRepository travelPlanRepository;
     private final ConversionService conversionService;
-    private final ScheduleAccessService scheduleAccessService;
+    private final ScheduleMutationService scheduleMutationService;
 
     @Autowired
-    public TravelPlanAccessService(TravelPlanRepository travelPlanRepository, ConversionService conversionService, ScheduleAccessService scheduleAccessService) {
+    public TravelPlanAccessService(TravelPlanRepository travelPlanRepository, ConversionService conversionService, ScheduleMutationService scheduleMutationService) {
         this.travelPlanRepository = travelPlanRepository;
         this.conversionService = conversionService;
-        this.scheduleAccessService = scheduleAccessService;
+        this.scheduleMutationService = scheduleMutationService;
     }
 
     public Page<TravelPlan> getTravelPageContainingName(String name, int pageNumber, int pageSize) {

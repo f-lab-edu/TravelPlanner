@@ -31,5 +31,5 @@ public class MonetaryEventEntity {
     private String source;
     private Instant timestamp;
     private EventType eventType;
-
+    private String description;
 }
