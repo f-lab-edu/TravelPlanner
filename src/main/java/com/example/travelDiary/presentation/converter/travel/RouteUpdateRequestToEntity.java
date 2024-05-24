@@ -1,4 +1,4 @@
-package com.example.travelDiary.presentation.converter;
+package com.example.travelDiary.presentation.converter.travel;
 
 import com.example.travelDiary.domain.model.travel.Route;
 import com.example.travelDiary.presentation.dto.request.travel.RouteUpdateRequest;

@@ -1,7 +1,7 @@
-package com.example.travelDiary.presentation.converter;
+package com.example.travelDiary.presentation.converter.location;
 
 import com.example.travelDiary.domain.model.location.Place;
-import com.example.travelDiary.presentation.dto.request.travel.PlaceUpdateRequest;
+import com.example.travelDiary.presentation.dto.request.travel.location.PlaceUpdateRequest;
 import org.springframework.core.convert.converter.Converter;
 
 public class PlaceUpdateRequestToEntity implements Converter<PlaceUpdateRequest, Place> {
