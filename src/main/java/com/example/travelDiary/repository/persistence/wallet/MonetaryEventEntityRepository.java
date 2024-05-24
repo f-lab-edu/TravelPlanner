@@ -11,7 +11,6 @@ import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 
 import java.time.Instant;
-import java.time.LocalDateTime;
 import java.util.UUID;
 
 public interface MonetaryEventEntityRepository extends JpaRepository<MonetaryEventEntity, UUID> {
@@ -24,15 +23,16 @@ public interface MonetaryEventEntityRepository extends JpaRepository<MonetaryEve
     @Query("SELECT e FROM MonetaryEventEntity e WHERE e.eventType = 'CURRENCYCONVERSION' GROUP BY e.transactionId")
     Page<CurrencyConversion> findAllCurrencyConversion(Pageable page);
 
-    @Query("SELECT e FROM MonetaryEventEntity e WHERE e.eventType = 'INCOME'")
+    @Query("SELECT e FROM MonetaryEventEntity e WHERE e.eventType = 'INCOME' AND e.timestamp >= :from AND e.timestamp <= :to")
     Page<Income> findAllIncomesBetweenTimeStamp(Pageable pageable, Instant from, Instant to);
 
-    @Query("SELECT e FROM MonetaryEventEntity e WHERE e.eventType = 'EXPENDITURE'")
+    @Query("SELECT e FROM MonetaryEventEntity e WHERE e.eventType = 'EXPENDITURE' AND e.timestamp >= :from AND e.timestamp <= :to")
     Page<Expenditure> findAllExpenditureBetweenTimeStamp(Pageable page, Instant from, Instant to);
 
-    @Query("SELECT e FROM MonetaryEventEntity e WHERE e.eventType = 'CURRENCYCONVERSION' GROUP BY e.transactionId")
+    @Query("SELECT e FROM MonetaryEventEntity e WHERE e.eventType = 'CURRENCYCONVERSION'AND e.timestamp >= :from AND e.timestamp <= :to GROUP BY e.transactionId")
     Page<CurrencyConversion> findAllCurrencyConversionBetweenTimeStamp(Pageable page, Instant from, Instant to);
 
+    @Query("SELECT e FROM MonetaryEventEntity e WHERE e.timestamp >= :from AND e.timestamp <= :to GROUP BY e.transactionId")
     Page<MonetaryEvent> findAllMonetaryEventBetweenTimeStamp(Pageable page, Instant from, Instant to);
 
 }

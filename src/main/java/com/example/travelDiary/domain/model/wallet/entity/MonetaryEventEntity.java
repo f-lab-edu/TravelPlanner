@@ -1,10 +1,7 @@
 package com.example.travelDiary.domain.model.wallet.entity;
 
 import com.example.travelDiary.domain.model.wallet.Amount;
-import jakarta.persistence.Entity;
-import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.GenerationType;
-import jakarta.persistence.Id;
+import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
@@ -29,7 +26,9 @@ public class MonetaryEventEntity {
     private Amount amount;
     private Currency currency;
     private String source;
+    private Boolean isSource; // true if it's the source entity, false if it's the destination
     private Instant timestamp;
+    @Enumerated(EnumType.STRING)
     private EventType eventType;
     private String description;
 }
