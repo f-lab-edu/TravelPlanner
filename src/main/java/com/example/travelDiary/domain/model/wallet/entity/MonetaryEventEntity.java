@@ -30,5 +30,6 @@ public class MonetaryEventEntity {
     private Currency currency;
     private String source;
     private Instant timestamp;
+    private EventType eventType;
 
 }

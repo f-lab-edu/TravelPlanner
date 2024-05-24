@@ -2,6 +2,7 @@ package com.example.travelDiary.domain.model.travel;
 
 import com.example.travelDiary.domain.model.location.Place;
 import com.example.travelDiary.domain.model.review.Review;
+import com.example.travelDiary.domain.model.tags.Tags;
 import jakarta.persistence.*;
 import lombok.Data;
 import org.hibernate.annotations.Cascade;
@@ -9,6 +10,8 @@ import org.hibernate.annotations.CascadeType;
 
 import java.time.LocalDate;
 import java.time.LocalTime;
+import java.util.List;
+import java.util.Set;
 import java.util.UUID;
 
 @Entity
@@ -45,5 +48,8 @@ public class Schedule {
     @Cascade(CascadeType.ALL)
     public Route outwardRoute;
 
-//    public Set<UserTags> travelCategory;
+    @OneToMany
+    @Cascade(CascadeType.ALL)
+    public List<Event> events;
+//    public Set<Tags> travelCategory;
 }
