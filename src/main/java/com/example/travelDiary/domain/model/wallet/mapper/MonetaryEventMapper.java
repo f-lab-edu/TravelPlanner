@@ -58,7 +58,7 @@ public class MonetaryEventMapper {
 
     public static List<MonetaryEvent> toAggregates(List<MonetaryEventEntity> entities) {
         Map<String, List<MonetaryEventEntity>> groupedByTransactionId = entities.stream()
-                .collect(Collectors.groupingBy(MonetaryEventEntity::getTransactionId));
+                .collect(Collectors.groupingByConcurrent(MonetaryEventEntity::getTransactionId));
 
         return groupedByTransactionId.values().stream()
                 .flatMap(group -> {
