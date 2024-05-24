@@ -3,6 +3,8 @@ package com.example.travelDiary.application.service.wallet;
 import com.example.travelDiary.domain.model.wallet.aggregate.CurrencyConversion;
 import com.example.travelDiary.domain.model.wallet.aggregate.Expenditure;
 import com.example.travelDiary.domain.model.wallet.aggregate.Income;
+import com.example.travelDiary.domain.model.wallet.aggregate.MonetaryEvent;
+import com.example.travelDiary.domain.model.wallet.entity.MonetaryEventEntity;
 import com.example.travelDiary.repository.persistence.wallet.MonetaryEventEntityRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
@@ -10,6 +12,8 @@ import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
+import java.util.List;
+import java.util.stream.Collectors;
 
 
 @Service
@@ -21,6 +25,14 @@ public class MonetaryDomainQueryService {
     public MonetaryDomainQueryService(MonetaryEventEntityRepository repository) {
         this.repository = repository;
     }
+
+    public List<MonetaryEvent> getAllMonetaryEvents() {
+        List<MonetaryEventEntity> entities = repository.findAll();
+        return entities.stream()
+                .map(com.example.travelDiary.domain.model.wallet.mapper.MonetaryEventMapper::toAggregate)
+                .collect(Collectors.toList());
+    }
+
 
     public Page<Income> getAllIncome(Integer pageSize, Integer pageNumber) {
         Pageable page = PageRequest.of(pageNumber, pageSize);

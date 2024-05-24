@@ -15,4 +15,6 @@ public class Expenditure implements MonetaryEvent {
     private Amount amount;
     private Currency currency;
     private String description;
+
+
 }

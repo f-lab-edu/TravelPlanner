@@ -18,4 +18,5 @@ public class Income implements MonetaryEvent{
     private String source;
     private String description;
     private Instant timestamp;
+
 }
