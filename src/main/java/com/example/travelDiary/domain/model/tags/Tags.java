@@ -3,6 +3,7 @@ package com.example.travelDiary.domain.model.tags;
 import jakarta.persistence.*;
 
 import java.util.List;
+import java.util.Set;
 import java.util.UUID;
 
 @Entity
@@ -13,7 +14,8 @@ public class Tags {
     private UUID id;
 
     @OneToMany
-    public List<Category> category;
+    public Set<Category> category;
 
+    public String name;
 
 }
