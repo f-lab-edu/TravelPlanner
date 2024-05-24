@@ -13,8 +13,8 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
-import java.util.stream.Collectors;
 
+import static com.example.travelDiary.domain.model.wallet.mapper.MonetaryEventMapper.toAggregates;
 
 @Service
 public class MonetaryDomainQueryService {
@@ -28,9 +28,7 @@ public class MonetaryDomainQueryService {
 
     public List<MonetaryEvent> getAllMonetaryEvents() {
         List<MonetaryEventEntity> entities = repository.findAll();
-        return entities.stream()
-                .map(com.example.travelDiary.domain.model.wallet.mapper.MonetaryEventMapper::toAggregate)
-                .collect(Collectors.toList());
+        return toAggregates(entities);
     }
 
 

@@ -2,13 +2,12 @@ package com.example.travelDiary.application.service.travel;
 
 import com.example.travelDiary.domain.model.travel.Event;
 import com.example.travelDiary.domain.model.wallet.aggregate.MonetaryEvent;
-import com.example.travelDiary.domain.model.wallet.mapper.MonetaryEventMapper;
 import com.example.travelDiary.presentation.dto.request.travel.event.EventMetaDataUpsertRequest;
 import com.example.travelDiary.repository.persistence.travel.EventRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.convert.ConversionService;
 import org.springframework.stereotype.Service;
-import static com.example.travelDiary.domain.model.wallet.mapper.MonetaryEventMapper.toAggregate;
+import static com.example.travelDiary.domain.model.wallet.mapper.MonetaryEventMapper.toAggregates;
 
 import java.util.List;
 import java.util.UUID;
@@ -48,7 +47,7 @@ public class EventAccessService {
 
     public List<MonetaryEvent> getAllMonetaryEvents(UUID eventId) {
         Event event = eventRepository.findById(eventId).orElseThrow();
-        return event.getMonetaryEvents().stream().map(MonetaryEventMapper::toAggregate).toList();
+        return toAggregates(event.getMonetaryEvents());
     }
 
 
