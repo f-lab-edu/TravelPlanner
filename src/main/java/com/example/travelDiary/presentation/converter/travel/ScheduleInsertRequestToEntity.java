@@ -1,7 +1,7 @@
-package com.example.travelDiary.presentation.converter;
+package com.example.travelDiary.presentation.converter.travel;
 
 import com.example.travelDiary.domain.model.travel.Schedule;
-import com.example.travelDiary.presentation.dto.request.travel.ScheduleInsertRequest;
+import com.example.travelDiary.presentation.dto.request.travel.schedule.ScheduleInsertRequest;
 import org.springframework.core.convert.converter.Converter;
 
 public class ScheduleInsertRequestToEntity implements Converter<ScheduleInsertRequest, Schedule> {

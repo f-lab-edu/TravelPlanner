@@ -3,10 +3,10 @@ package com.example.travelDiary.presentation.controller.travel;
 import com.example.travelDiary.application.service.travel.ScheduleAccessService;
 import com.example.travelDiary.domain.model.travel.Route;
 import com.example.travelDiary.domain.model.travel.Schedule;
-import com.example.travelDiary.presentation.dto.request.travel.PlaceUpdateRequest;
+import com.example.travelDiary.presentation.dto.request.travel.location.PlaceUpdateRequest;
 import com.example.travelDiary.presentation.dto.request.travel.RouteUpdateRequest;
-import com.example.travelDiary.presentation.dto.request.travel.ScheduleInsertRequest;
-import com.example.travelDiary.presentation.dto.request.travel.ScheduleMetadataUpdateRequest;
+import com.example.travelDiary.presentation.dto.request.travel.schedule.ScheduleInsertRequest;
+import com.example.travelDiary.presentation.dto.request.travel.schedule.ScheduleMetadataUpdateRequest;
 import org.springframework.data.domain.Page;
 import org.springframework.web.bind.annotation.*;
 

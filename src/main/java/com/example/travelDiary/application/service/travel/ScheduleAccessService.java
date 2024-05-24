@@ -6,10 +6,10 @@ import com.example.travelDiary.domain.model.travel.Schedule;
 import com.example.travelDiary.domain.model.travel.TravelPlan;
 import com.example.travelDiary.repository.persistence.travel.ScheduleRepository;
 import com.example.travelDiary.repository.persistence.travel.TravelPlanRepository;
-import com.example.travelDiary.presentation.dto.request.travel.PlaceUpdateRequest;
+import com.example.travelDiary.presentation.dto.request.travel.location.PlaceUpdateRequest;
 import com.example.travelDiary.presentation.dto.request.travel.RouteUpdateRequest;
-import com.example.travelDiary.presentation.dto.request.travel.ScheduleInsertRequest;
-import com.example.travelDiary.presentation.dto.request.travel.ScheduleMetadataUpdateRequest;
+import com.example.travelDiary.presentation.dto.request.travel.schedule.ScheduleInsertRequest;
+import com.example.travelDiary.presentation.dto.request.travel.schedule.ScheduleMetadataUpdateRequest;
 import jakarta.persistence.EntityManager;
 import jakarta.persistence.EntityNotFoundException;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -111,8 +111,6 @@ public class ScheduleAccessService {
     }
 
     //PLACE UPDATES
-
-
     @Transactional
     public Schedule reassignPlace(UUID scheduleId, PlaceUpdateRequest request) {
         Place place = placeAccessService.reassignPlace(request);

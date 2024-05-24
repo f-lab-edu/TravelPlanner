@@ -1,4 +1,4 @@
-package com.example.travelDiary.presentation.converter;
+package com.example.travelDiary.presentation.converter.mediaFile;
 
 import com.example.travelDiary.domain.model.review.MediaFile;
 import com.example.travelDiary.domain.model.review.MediaFileStatus;
