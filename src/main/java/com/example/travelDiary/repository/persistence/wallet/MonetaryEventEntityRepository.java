@@ -11,6 +11,7 @@ import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 
 import java.time.Instant;
+import java.util.List;
 import java.util.UUID;
 
 public interface MonetaryEventEntityRepository extends JpaRepository<MonetaryEventEntity, UUID> {
@@ -35,4 +36,7 @@ public interface MonetaryEventEntityRepository extends JpaRepository<MonetaryEve
     @Query("SELECT e FROM MonetaryEventEntity e WHERE e.timestamp >= :from AND e.timestamp <= :to GROUP BY e.transactionId")
     Page<MonetaryEvent> findAllMonetaryEventBetweenTimeStamp(Pageable page, Instant from, Instant to);
 
+    MonetaryEventEntity findByTransactionId(String transactionId);
+
+    List<MonetaryEventEntity> findAllByTransactionId(String transactionId);
 }

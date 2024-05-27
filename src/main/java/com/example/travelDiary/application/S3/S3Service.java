@@ -22,7 +22,7 @@ public class S3Service {
     private final S3Presigner s3Presigner;
 
     @Autowired
-    public S3Service(S3Client amazonS3Client, @Value("${aws.s3.bucket}") String bucketName, S3Presigner s3Presigner) {
+    public S3Service(S3Client amazonS3Client, @Value("${aws.s3.profile.bucket}") String bucketName, S3Presigner s3Presigner) {
         this.amazonS3Client = amazonS3Client;
         this.bucketName = bucketName;
         this.s3Presigner = s3Presigner;
