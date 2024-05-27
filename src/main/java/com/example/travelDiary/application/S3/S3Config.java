@@ -20,9 +20,9 @@ class S3Config {
     private final AwsCredentials awsCredentials;
     private final AwsCredentialsProvider provider;
 
-    public S3Config(@Value("${aws.credentials.access-key}")String accessKey,
-                    @Value("${aws.credentials.secret-key}")String secretKey,
-                    @Value("${aws.region.static}") String region) {
+    public S3Config(@Value("${aws.s3.access-key}")String accessKey,
+                    @Value("${aws.s3.secret-key}")String secretKey,
+                    @Value("${aws.s3.region.static}") String region) {
         this.region = region;
         this.awsCredentials = AwsBasicCredentials.create(accessKey, secretKey);
         this.provider = StaticCredentialsProvider.create(awsCredentials);
