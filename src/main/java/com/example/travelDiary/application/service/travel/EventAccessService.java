@@ -49,6 +49,4 @@ public class EventAccessService {
         Event event = eventRepository.findById(eventId).orElseThrow();
         return toAggregates(event.getMonetaryEvents());
     }
-
-
 }

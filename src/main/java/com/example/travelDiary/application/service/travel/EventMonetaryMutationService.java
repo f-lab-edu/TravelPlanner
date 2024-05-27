@@ -14,13 +14,13 @@ import java.util.List;
 import java.util.UUID;
 
 @Service
-public class EventMonetaryService {
+public class EventMonetaryMutationService {
     private final EventRepository eventRepository;
     private final ConversionService conversionService;
     private final MonetaryDomainMutationService monetaryDomainMutationService;
 
     @Autowired
-    public EventMonetaryService(EventRepository eventRepository, ConversionService conversionService, MonetaryDomainMutationService monetaryDomainMutationService) {
+    public EventMonetaryMutationService(EventRepository eventRepository, ConversionService conversionService, MonetaryDomainMutationService monetaryDomainMutationService) {
         this.eventRepository = eventRepository;
         this.conversionService = conversionService;
         this.monetaryDomainMutationService = monetaryDomainMutationService;
