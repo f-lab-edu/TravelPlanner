@@ -59,6 +59,7 @@ public class PlaceAccessService {
         return place;
     }
 
+    @Transactional
     public void deletePlace(Place place) {
         placeRepository.deleteById(place.getId());
     }

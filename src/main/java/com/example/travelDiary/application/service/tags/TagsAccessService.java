@@ -60,4 +60,5 @@ public class TagsAccessService {
         List<TagAssociation> associations = tagAssociationRepository.findByTagIdAndEntityId(tagId, entityId);
         tagAssociationRepository.deleteAll(associations);
     }
+
 }

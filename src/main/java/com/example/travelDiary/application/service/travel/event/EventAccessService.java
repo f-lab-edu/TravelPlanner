@@ -1,4 +1,4 @@
-package com.example.travelDiary.application.service.travel;
+package com.example.travelDiary.application.service.travel.event;
 
 import com.example.travelDiary.application.service.tags.TagsAccessService;
 import com.example.travelDiary.application.service.wallet.MonetaryDomainQueryService;
@@ -10,9 +10,7 @@ import com.example.travelDiary.repository.persistence.travel.EventRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.convert.ConversionService;
 import org.springframework.stereotype.Service;
-import static com.example.travelDiary.domain.model.wallet.mapper.MonetaryEventMapper.toAggregates;
 
-import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
 

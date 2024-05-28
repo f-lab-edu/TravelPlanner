@@ -1,5 +1,7 @@
 package com.example.travelDiary.application.service.wallet;
 
+import com.example.travelDiary.application.service.tags.TagsAccessService;
+import com.example.travelDiary.domain.model.tags.Tags;
 import com.example.travelDiary.domain.model.wallet.entity.EventType;
 import com.example.travelDiary.repository.persistence.wallet.MonetaryEventEntityRepository;
 import com.example.travelDiary.domain.model.wallet.aggregate.MonetaryEvent;
@@ -15,20 +17,52 @@ import org.springframework.core.convert.ConversionService;
 import org.springframework.stereotype.Service;
 
 import java.time.Instant;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
 import java.util.stream.IntStream;
+
+import static com.example.travelDiary.domain.model.wallet.entity.EventType.*;
 
 @Service
 public class MonetaryDomainMutationService {
 
     private final MonetaryEventEntityRepository monetaryEventEntityRepository;
     private final ConversionService conversionService;
+    private final TagsAccessService tagsAccessService;
 
     @Autowired
-    public MonetaryDomainMutationService(MonetaryEventEntityRepository monetaryEventEntityRepository, ConversionService conversionService) {
+    public MonetaryDomainMutationService(MonetaryEventEntityRepository monetaryEventEntityRepository, ConversionService conversionService, TagsAccessService tagsAccessService) {
         this.monetaryEventEntityRepository = monetaryEventEntityRepository;
         this.conversionService = conversionService;
+        this.tagsAccessService = tagsAccessService;
+    }
+
+    @Transactional
+    public void addTag(UUID transactionId, Tags tag){
+        MonetaryEventEntity monetaryEventEntity = monetaryEventEntityRepository.findById(transactionId).orElseThrow();
+        UUID monetaryEventEntityId = monetaryEventEntity.getId();
+        switch (monetaryEventEntity.getEventType()) {
+            case CURRENCY_CONVERSION:
+                tagsAccessService.addTagToEntity(tag.getId(), CURRENCY_CONVERSION.name(), monetaryEventEntityId);
+                break;
+            case EXPENDITURE:
+                tagsAccessService.addTagToEntity(tag.getId(), EXPENDITURE.name(), monetaryEventEntityId);
+                break;
+            case INCOME:
+                tagsAccessService.addTagToEntity(tag.getId(), INCOME.name(), monetaryEventEntityId);
+                break;
+            default:
+                // Handle default case if needed
+                break;
+        }
+    }
+
+    @Transactional
+    public void deleteTags(UUID transactionId, Tags tag) {
+        MonetaryEventEntity monetaryEventEntity = monetaryEventEntityRepository.findById(transactionId).orElseThrow();
+        UUID monetaryEventEntityId = monetaryEventEntity.getId();
+        tagsAccessService.deleteTagFromEntity(tag.getId(), monetaryEventEntityId);
     }
 
     @Transactional
@@ -78,7 +112,7 @@ public class MonetaryDomainMutationService {
                         .amount((currencyConversion.getConvertedAmountFrom()).negate())
                         .currency(currencyConversion.getCurrencyFrom())
                         .timestamp(now)
-                        .eventType(EventType.CURRENCY_CONVERSION)
+                        .eventType(CURRENCY_CONVERSION)
                         .build();
                 MonetaryEventEntity to = MonetaryEventEntity
                         .builder()
@@ -87,7 +121,7 @@ public class MonetaryDomainMutationService {
                         .amount((currencyConversion.getConvertedAmountTo()))
                         .currency(currencyConversion.getCurrencyTo())
                         .timestamp(now)
-                        .eventType(EventType.CURRENCY_CONVERSION)
+                        .eventType(CURRENCY_CONVERSION)
                         .build();
                 return List.of(from, to);
             }

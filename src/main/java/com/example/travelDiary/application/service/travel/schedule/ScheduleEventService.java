@@ -1,6 +1,6 @@
 package com.example.travelDiary.application.service.travel.schedule;
 
-import com.example.travelDiary.application.service.travel.EventAccessService;
+import com.example.travelDiary.application.service.travel.event.EventAccessService;
 import com.example.travelDiary.domain.model.travel.Event;
 import com.example.travelDiary.domain.model.travel.Schedule;
 import com.example.travelDiary.domain.model.wallet.aggregate.MonetaryEvent;

@@ -1,4 +1,4 @@
-package com.example.travelDiary.application.service.travel;
+package com.example.travelDiary.application.service.travel.event;
 
 import com.example.travelDiary.application.service.wallet.MonetaryDomainMutationService;
 import com.example.travelDiary.domain.model.travel.Event;
