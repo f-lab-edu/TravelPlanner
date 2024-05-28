@@ -11,6 +11,7 @@ import java.time.LocalDate;
 import java.time.LocalTime;
 import java.util.UUID;
 
+
 @Entity
 @Data
 public class Schedule {
@@ -45,5 +46,4 @@ public class Schedule {
     @Cascade(CascadeType.ALL)
     public Route outwardRoute;
 
-//    public Set<UserTags> travelCategory;
 }
