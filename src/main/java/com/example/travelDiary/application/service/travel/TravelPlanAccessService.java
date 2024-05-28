@@ -1,8 +1,8 @@
-package com.example.travelDiary.application.service;
+package com.example.travelDiary.application.service.travel;
 
 import com.example.travelDiary.domain.model.travel.TravelPlan;
 import com.example.travelDiary.domain.persistence.travel.TravelPlanRepository;
-import com.example.travelDiary.presentation.dto.request.TravelPlanUpsertRequestDTO;
+import com.example.travelDiary.presentation.dto.travel.TravelPlanUpsertRequestDTO;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.convert.ConversionService;
 import org.springframework.data.domain.Page;
@@ -30,7 +30,7 @@ public class TravelPlanAccessService {
         return travelPlanRepository.findAllByNameContaining(name, pageRequest);
     }
     public TravelPlan getTravelPlan(UUID planId) {
-        return travelPlanRepository.getReferenceById(planId);
+        return travelPlanRepository.findById(planId).orElseThrow();
     }
 
     public UUID createPlan(TravelPlanUpsertRequestDTO request) {
@@ -45,7 +45,7 @@ public class TravelPlanAccessService {
     }
 
     public TravelPlan modifyPlanMetadata(TravelPlanUpsertRequestDTO request) {
-        TravelPlan travelPlan = travelPlanRepository.getReferenceById(request.getUuid());
+        TravelPlan travelPlan = travelPlanRepository.findById(request.getUuid()).orElseThrow();
         updateNonNullFields(request, travelPlan);
         travelPlanRepository.save(travelPlan);
         return travelPlan;

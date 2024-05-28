@@ -10,6 +10,11 @@ public class ConversionConfig implements WebMvcConfigurer {
     @Override
     public void addFormatters(FormatterRegistry registry) {
         registry.addConverter(new TravelPlanRequestToEntity());
+        registry.addConverter(new ScheduleInsertRequestToEntity());
+        registry.addConverter(new PreSignedUploadRequestToMediaFile());
+        registry.addConverter(new ReviewUpsertRequestToReview());
+        registry.addConverter(new ScheduleMetadataUpdateRequestToEntity());
+        registry.addConverter(new PlaceUpdateRequestToEntity());
     }
 
 }

@@ -4,10 +4,12 @@ spring:
 
   profiles:
     active: dev
+    include: secrets
 
   security:
     # Disable Spring Security
     enabled: false
+
 
 
 

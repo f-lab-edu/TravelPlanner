@@ -1,8 +1,8 @@
-package com.example.travelDiary.presentation.controller;
+package com.example.travelDiary.presentation.controller.travel;
 
 import com.example.travelDiary.domain.model.travel.TravelPlan;
-import com.example.travelDiary.application.service.TravelPlanAccessService;
-import com.example.travelDiary.presentation.dto.request.TravelPlanUpsertRequestDTO;
+import com.example.travelDiary.application.service.travel.TravelPlanAccessService;
+import com.example.travelDiary.presentation.dto.travel.TravelPlanUpsertRequestDTO;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.web.bind.annotation.*;
@@ -24,14 +24,14 @@ public class TravelPlanController {
     }
 
     @GetMapping("/search_travel_plan")
-    public TravelPlan getPlanWithId(@RequestParam UUID planId) {
+    public TravelPlan getPlanWithId(@RequestParam(value="planId") UUID planId) {
         return planAccessService.getTravelPlan(planId);
     }
 
     @GetMapping("/search_by_plan_name")
-    public Page<TravelPlan> getPlansContainingName(@RequestParam String name,
-                                                   @RequestParam Integer pageNumber,
-                                                   @RequestParam int pageSize) {
+    public Page<TravelPlan> getPlansContainingName(@RequestParam(value="name") String name,
+                                                   @RequestParam(value="pageNumber") Integer pageNumber,
+                                                   @RequestParam(value="pageSize") int pageSize) {
         return planAccessService.getTravelPageContainingName(name, pageNumber, pageSize);
     }
 
@@ -46,7 +46,7 @@ public class TravelPlanController {
     }
 
     @PatchMapping("/modify_travel_plan")
-    public TravelPlan modifyTravelPlanMetadata(TravelPlanUpsertRequestDTO request) {
+    public TravelPlan modifyTravelPlanMetadata(@RequestBody TravelPlanUpsertRequestDTO request) {
         return planAccessService.modifyPlanMetadata(request);
     }
 
