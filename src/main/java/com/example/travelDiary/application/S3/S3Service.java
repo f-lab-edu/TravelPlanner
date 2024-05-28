@@ -66,21 +66,13 @@ public class S3Service {
 
 
 
-    public URL createPresignedUrlForDelete(String objectKey) {
+    public DeleteObjectResponse deleteS3Object(String objectKey) {
         DeleteObjectRequest deleteObjectRequest = DeleteObjectRequest.builder()
                 .bucket(bucketName)
                 .key(objectKey)
                 .build();
 
-        DeleteObjectPresignRequest deleteObjectPresignRequest = DeleteObjectPresignRequest.builder()
-                .signatureDuration(Duration.ofHours(1))
-                .deleteObjectRequest(deleteObjectRequest)
-                .build();
-
-        PresignedDeleteObjectRequest presignedDeleteObjectRequest = s3Presigner.presignDeleteObject(deleteObjectPresignRequest);
-
-
-        return presignedDeleteObjectRequest.url();
+        return amazonS3Client.deleteObject(deleteObjectRequest);
     }
 
     public URL createMultipartUploadRequest(String objectKey, String contentType) {

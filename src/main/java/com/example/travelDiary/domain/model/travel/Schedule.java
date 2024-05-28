@@ -20,8 +20,7 @@ public class Schedule {
 
     private UUID TravelPlanId;
 
-    @OneToOne
-    @Cascade(CascadeType.ALL)
+    @ManyToOne(fetch = FetchType.EAGER)
     public Place place;
 
     @OneToOne
@@ -38,7 +37,13 @@ public class Schedule {
 
     public LocalTime travelDepartTimeEstimate;
 
+    @OneToOne
+    @Cascade(CascadeType.ALL)
+    public Route inwardRoute;
+
+    @OneToOne
+    @Cascade(CascadeType.ALL)
+    public Route outwardRoute;
+
 //    public Set<UserTags> travelCategory;
-
-
 }
