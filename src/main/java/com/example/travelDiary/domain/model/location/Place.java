@@ -1,16 +1,17 @@
-package com.example.travelDiary.domain.persistence.location;
+package com.example.travelDiary.domain.model.location;
 
 import jakarta.persistence.Entity;
 import jakarta.persistence.Id;
 import lombok.Data;
 
 import java.math.BigDecimal;
+import java.util.UUID;
 
 @Entity
 @Data
-public class Location {
+public class Place {
     @Id
-    private Long id;
+    private UUID id;
 
     public String name;
 
