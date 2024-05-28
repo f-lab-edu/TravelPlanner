@@ -1,8 +1,10 @@
 package com.example.travelDiary.presentation.controller.travel;
 
 import com.example.travelDiary.application.service.travel.ScheduleAccessService;
+import com.example.travelDiary.domain.model.travel.Route;
 import com.example.travelDiary.domain.model.travel.Schedule;
 import com.example.travelDiary.presentation.dto.travel.PlaceUpdateRequest;
+import com.example.travelDiary.presentation.dto.travel.RouteUpdateRequest;
 import com.example.travelDiary.presentation.dto.travel.ScheduleInsertRequest;
 import com.example.travelDiary.presentation.dto.travel.ScheduleMetadataUpdateRequest;
 import org.springframework.data.domain.Page;
@@ -57,6 +59,8 @@ public class ScheduleController {
         return scheduleAccessService.getSchedule(scheduleId);
     }
 
+    //update PLACE
+
     @PatchMapping("/update_all_linked_place")
     public List<Schedule> modifyPlaceOnAllLinkedSchedule (@PathVariable(value = "travelPlanId") UUID travelPlanId, @RequestBody PlaceUpdateRequest request) {
         return scheduleAccessService.updatePlace(request);
@@ -66,5 +70,12 @@ public class ScheduleController {
     public Schedule reassignPlaceOnSchedule (@PathVariable(value = "travelPlanId") UUID travelPlanId, @RequestBody PlaceUpdateRequest request) {
         return scheduleAccessService.reassignPlace(request.scheduleId, request);
     }
+
+    //update Route
+    @PatchMapping("/udpate_route_details")
+    public Route updateRoute(@PathVariable(value = "travelPlanId") UUID travelPlanId, @RequestBody RouteUpdateRequest request) {
+        return scheduleAccessService.updateRouteDetails(request);
+    }
+
 
 }

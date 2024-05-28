@@ -10,6 +10,7 @@ import java.util.UUID;
 @Data
 public class ScheduleInsertRequest {
     public Place place;
+    public UUID previousScheduleId;
     public Boolean isActuallyVisited;
     public LocalDate travelDate;
     public Integer orderOfTravel;

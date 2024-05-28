@@ -29,6 +29,7 @@ public class TravelPlanAccessService {
         PageRequest pageRequest = PageRequest.of(pageNumber, pageSize);
         return travelPlanRepository.findAllByNameContaining(name, pageRequest);
     }
+
     public TravelPlan getTravelPlan(UUID planId) {
         return travelPlanRepository.findById(planId).orElseThrow();
     }
@@ -51,8 +52,13 @@ public class TravelPlanAccessService {
         return travelPlan;
     }
 
-    private static void updateNonNullFields(TravelPlanUpsertRequestDTO request, TravelPlan travelPlan) {
-        // Map non-null fields from the request DTO to the entity
+    public TravelPlan importPlan (TravelPlan travelPlan) {
+        return travelPlanRepository.save(travelPlan);
+    }
+
+
+    private void updateNonNullFields(TravelPlanUpsertRequestDTO request, TravelPlan travelPlan) {
+
         if (request.getEndDate() != null) {
             travelPlan.setTravelEndDate(request.getEndDate());
         }
@@ -64,5 +70,3 @@ public class TravelPlanAccessService {
         }
     }
 }
-
-//   travelPlan/{travelPlanId}/schedule/order/{order_number}
