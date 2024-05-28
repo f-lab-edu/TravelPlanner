@@ -1,4 +1,4 @@
-package com.example.travelDiary.application.service.travel;
+package com.example.travelDiary.application.service.travel.place;
 
 import com.example.travelDiary.domain.model.location.Place;
 import com.example.travelDiary.repository.persistence.location.PlaceRepository;
@@ -11,17 +11,19 @@ import org.springframework.transaction.annotation.Transactional;
 import java.util.Optional;
 
 @Service
-public class PlaceAccessService {
+public class PlaceMutationService {
     private final PlaceRepository placeRepository;
     private final ConversionService conversionService;
 
-    public PlaceAccessService(PlaceRepository placeRepository, ConversionService conversionService) {
+    public PlaceMutationService(PlaceRepository placeRepository, ConversionService conversionService) {
         this.placeRepository = placeRepository;
         this.conversionService = conversionService;
     }
 
+
+
     @Transactional
-    public Place reassignPlace(PlaceUpdateRequest request) {
+    public Place createNewPlaceIfNotExists(PlaceUpdateRequest request) {
         Place place = conversionService.convert(request, Place.class);
         assert place != null;
         Place newPlace = placeRepository

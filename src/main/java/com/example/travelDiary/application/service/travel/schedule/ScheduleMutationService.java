@@ -1,6 +1,6 @@
 package com.example.travelDiary.application.service.travel.schedule;
 
-import com.example.travelDiary.application.service.travel.PlaceAccessService;
+import com.example.travelDiary.application.service.travel.place.PlaceMutationService;
 import com.example.travelDiary.application.service.travel.RouteAccessService;
 import com.example.travelDiary.domain.model.location.Place;
 import com.example.travelDiary.domain.model.travel.Route;
@@ -27,7 +27,7 @@ public class ScheduleMutationService {
     private final ScheduleRepository scheduleRepository;
     private final TravelPlanRepository travelPlanRepository;
     private final EntityManager em;
-    private final PlaceAccessService placeAccessService;
+    private final PlaceMutationService placeAccessService;
     private final ConversionService conversionService;
     private final RouteAccessService routeAccessService;
 
@@ -35,7 +35,7 @@ public class ScheduleMutationService {
     public ScheduleMutationService(ScheduleRepository scheduleRepository,
                                    TravelPlanRepository travelPlanRepository,
                                    EntityManager em,
-                                   PlaceAccessService placeAccessService,
+                                   PlaceMutationService placeAccessService,
                                    ConversionService conversionService,
                                    RouteAccessService routeAccessService) {
         this.scheduleRepository = scheduleRepository;
@@ -99,7 +99,7 @@ public class ScheduleMutationService {
     //PLACE UPDATES
     @Transactional
     public Schedule reassignPlace(UUID scheduleId, PlaceUpdateRequest request) {
-        Place place = placeAccessService.reassignPlace(request);
+        Place place = placeAccessService.createNewPlaceIfNotExists(request);
         assert place != null;
         Schedule schedule = scheduleRepository.findById(scheduleId).orElseThrow(() -> new EntityNotFoundException("Schedule not found"));
         schedule.setPlace(place);

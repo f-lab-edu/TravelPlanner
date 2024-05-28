@@ -56,7 +56,7 @@ public class EventAccessService {
         return monetaryDomainQueryService.convertAllToAggregates(event.getMonetaryEvents());
     }
 
-    public List<MonetaryEvent> getAllMonetaryEventsByTag(UUID eventId, List<String> tagNames) {
+    public List<MonetaryEvent> getAllMonetaryEventsInEventsByTag(UUID eventId, List<String> tagNames) {
         Event event = eventRepository.findById(eventId).orElseThrow();
         List<UUID> monetaryEventsId = event.getMonetaryEvents().stream().map(MonetaryEventEntity::getId).toList();
         List<UUID> filteredMonetaryEventsId = tagsAccessService
