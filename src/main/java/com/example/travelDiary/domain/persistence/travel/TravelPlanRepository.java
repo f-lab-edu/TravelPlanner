@@ -8,5 +8,5 @@ import org.springframework.data.jpa.repository.JpaRepository;
 import java.util.UUID;
 
 public interface TravelPlanRepository extends JpaRepository<TravelPlan, UUID> {
-    public Page<TravelPlan> findByNameContaining(String name, Pageable pageable);
+    public Page<TravelPlan> findAllByNameContaining(String name, Pageable pageable);
 }

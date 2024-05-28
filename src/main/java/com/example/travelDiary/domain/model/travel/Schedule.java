@@ -1,24 +1,27 @@
 package com.example.travelDiary.domain.model.travel;
 
 import com.example.travelDiary.domain.model.location.Place;
-import jakarta.persistence.Entity;
-import jakarta.persistence.Id;
-import jakarta.persistence.OneToOne;
+import com.example.travelDiary.domain.model.review.Review;
+import jakarta.persistence.*;
 import lombok.Data;
 import org.hibernate.annotations.Cascade;
 import org.hibernate.annotations.CascadeType;
 
 import java.time.LocalDate;
 import java.time.LocalTime;
+import java.util.UUID;
+
 
 @Entity
 @Data
 public class Schedule {
     @Id
-    private Long id;
+    @GeneratedValue(strategy = GenerationType.UUID)
+    private UUID id;
 
-    @OneToOne
-    @Cascade(CascadeType.ALL)
+    private UUID TravelPlanId;
+
+    @ManyToOne(fetch = FetchType.EAGER)
     public Place place;
 
     @OneToOne
@@ -35,7 +38,12 @@ public class Schedule {
 
     public LocalTime travelDepartTimeEstimate;
 
-//    public Set<UserTags> travelCategory;
+    @OneToOne
+    @Cascade(CascadeType.ALL)
+    public Route inwardRoute;
 
+    @OneToOne
+    @Cascade(CascadeType.ALL)
+    public Route outwardRoute;
 
 }

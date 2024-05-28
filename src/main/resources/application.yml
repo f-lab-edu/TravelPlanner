@@ -1,0 +1,15 @@
+spring:
+  application:
+    name: travelDiary
+
+  profiles:
+    active: dev
+    include: secrets
+
+  security:
+    # Disable Spring Security
+    enabled: false
+
+
+
+

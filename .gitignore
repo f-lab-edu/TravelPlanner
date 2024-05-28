@@ -1,4 +1,5 @@
 HELP.md
+src/main/resources/application-secrets.yml
 .gradle
 build/
 !gradle/wrapper/gradle-wrapper.jar
