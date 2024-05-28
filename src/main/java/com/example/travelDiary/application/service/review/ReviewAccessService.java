@@ -2,7 +2,7 @@ package com.example.travelDiary.application.service.review;
 
 import com.example.travelDiary.domain.model.review.MediaFile;
 import com.example.travelDiary.domain.model.review.Review;
-import com.example.travelDiary.domain.persistence.review.ReviewRepository;
+import com.example.travelDiary.repository.persistence.review.ReviewRepository;
 import com.example.travelDiary.presentation.dto.review.ReviewUpsertRequest;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.convert.ConversionService;

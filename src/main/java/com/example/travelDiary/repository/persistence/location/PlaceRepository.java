@@ -1,4 +1,4 @@
-package com.example.travelDiary.domain.persistence.location;
+package com.example.travelDiary.repository.persistence.location;
 
 import com.example.travelDiary.domain.model.location.Place;
 import org.springframework.data.jpa.repository.JpaRepository;

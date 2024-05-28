@@ -1,7 +1,7 @@
 package com.example.travelDiary.application.service.travel;
 
 import com.example.travelDiary.domain.model.travel.TravelPlan;
-import com.example.travelDiary.domain.persistence.travel.TravelPlanRepository;
+import com.example.travelDiary.repository.persistence.travel.TravelPlanRepository;
 import com.example.travelDiary.presentation.dto.travel.TravelPlanUpsertRequestDTO;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.convert.ConversionService;

@@ -1,4 +1,4 @@
-package com.example.travelDiary.domain.persistence.review;
+package com.example.travelDiary.repository.persistence.review;
 
 import com.example.travelDiary.domain.model.review.Review;
 import org.springframework.data.domain.Page;
