@@ -13,6 +13,7 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
+import java.util.UUID;
 
 import static com.example.travelDiary.domain.model.wallet.mapper.MonetaryEventMapper.toAggregates;
 
@@ -45,5 +46,14 @@ public class MonetaryDomainQueryService {
     public Page<CurrencyConversion> getAllCurrencyConversion(Integer pageSize, Integer pageNumber){
         Pageable page = PageRequest.of(pageNumber, pageSize);
         return repository.findAllCurrencyConversion(page);
+    }
+
+    public List<MonetaryEvent> findAllById(List<UUID> ids) {
+        List<MonetaryEventEntity> entity = repository.findAllById(ids);
+        return toAggregates(entity);
+    }
+
+    public List<MonetaryEvent> convertAllToAggregates(List<MonetaryEventEntity> monetaryEvents) {
+        return toAggregates(monetaryEvents);
     }
 }

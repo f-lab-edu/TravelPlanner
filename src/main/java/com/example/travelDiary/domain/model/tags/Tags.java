@@ -1,21 +1,20 @@
 package com.example.travelDiary.domain.model.tags;
 
 import jakarta.persistence.*;
+import lombok.Data;
 
-import java.util.List;
-import java.util.Set;
 import java.util.UUID;
 
 @Entity
+@Table(name = "tags")
+@Data
 public class Tags {
-
     @Id
     @GeneratedValue(strategy = GenerationType.UUID)
-    private UUID id;
+    private UUID Id;
 
-    @OneToMany
-    public Set<Category> category;
+    private String name;
+    private String description;
 
-    public String name;
-
+    // Getters and setters
 }
