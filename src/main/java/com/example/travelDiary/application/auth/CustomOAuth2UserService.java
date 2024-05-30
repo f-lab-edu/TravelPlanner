@@ -1,11 +1,11 @@
 package com.example.travelDiary.application.auth;
 
+import com.example.travelDiary.application.auth.dto.OAuth2Attribute;
 import com.example.travelDiary.application.service.user.UserMutationService;
-import com.example.travelDiary.application.auth.dto.OAuthAttributes;
-import com.example.travelDiary.application.auth.dto.SessionUser;
 import com.example.travelDiary.domain.model.user.Users;
 import com.example.travelDiary.repository.persistence.user.UserRepository;
 import jakarta.servlet.http.HttpSession;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.oauth2.client.userinfo.DefaultOAuth2UserService;
@@ -19,6 +19,7 @@ import org.springframework.stereotype.Service;
 import java.util.Collections;
 
 @Service
+@Slf4j
 public class CustomOAuth2UserService implements OAuth2UserService<OAuth2UserRequest, OAuth2User> {
     private final UserRepository userRepository;
     private final HttpSession httpSession;
@@ -31,30 +32,55 @@ public class CustomOAuth2UserService implements OAuth2UserService<OAuth2UserRequ
         this.userMutationService = userMutationService;
     }
 
-    @Override
     public OAuth2User loadUser(OAuth2UserRequest userRequest) throws OAuth2AuthenticationException {
-        OAuth2UserService<OAuth2UserRequest, OAuth2User> delegate = new DefaultOAuth2UserService();
-        OAuth2User oAuth2User = delegate.loadUser(userRequest);
+        //  1번
+        OAuth2UserService<OAuth2UserRequest, OAuth2User> oAuth2UserService = new DefaultOAuth2UserService();
 
+        //	2번
+        OAuth2User oAuth2User = oAuth2UserService.loadUser(userRequest);
+
+        //	3번
         String registrationId = userRequest.getClientRegistration().getRegistrationId();
-        String userNameAttributeName = userRequest.getClientRegistration().getProviderDetails().getUserInfoEndpoint().getUserNameAttributeName();
+        String userNameAttributeName = userRequest.getClientRegistration()
+                .getProviderDetails().getUserInfoEndpoint().getUserNameAttributeName();
+        log.info("registrationId = {}", registrationId);
+        log.info("userNameAttributeName = {}", userNameAttributeName);
 
-        OAuthAttributes attributes = OAuthAttributes.of(registrationId, userNameAttributeName, oAuth2User.getAttributes());
+        // 4번
+        OAuth2Attribute oAuth2Attribute =
+                OAuth2Attribute.of(registrationId, userNameAttributeName, oAuth2User.getAttributes());
 
-        Users users = saveOrUpdate(attributes);
+        var memberAttribute = oAuth2Attribute.convertToMap();
 
-        httpSession.setAttribute("user", new SessionUser(users));
-
-        return new DefaultOAuth2User(Collections.singleton(new SimpleGrantedAuthority(users.getRole().getKey())),
-                attributes.getAttributes(),
-                attributes.getNameAttributeKey());
+        return new DefaultOAuth2User(
+                Collections.singleton(new SimpleGrantedAuthority("ROLE_USER")),
+                memberAttribute, "email");
     }
 
-    private Users saveOrUpdate(OAuthAttributes attributes) {
-        Users users = userRepository.findByEmail(attributes.getEmail())
-                .map(entity -> userMutationService.update(entity, attributes.getName(), attributes.getPicture()))
-                .orElse(attributes.toEntity());
+//    @Override
+//    public OAuth2User loadUser(OAuth2UserRequest userRequest) throws OAuth2AuthenticationException {
+//        OAuth2UserService<OAuth2UserRequest, OAuth2User> delegate = new DefaultOAuth2UserService();
+//        OAuth2User oAuth2User = delegate.loadUser(userRequest);
+//
+//        String registrationId = userRequest.getClientRegistration().getRegistrationId();
+//        String userNameAttributeName = userRequest.getClientRegistration().getProviderDetails().getUserInfoEndpoint().getUserNameAttributeName();
+//
+//        OAuthAttributes attributes = OAuthAttributes.of(registrationId, userNameAttributeName, oAuth2User.getAttributes());
+//
+//        Users users = saveOrUpdate(attributes);
+//
+//        httpSession.setAttribute("user", new SessionUser(users));
+//
+//        return new DefaultOAuth2User(Collections.singleton(new SimpleGrantedAuthority(users.getRole().getKey())),
+//                attributes.getAttributes(),
+//                attributes.getNameAttributeKey());
+//    }
 
-        return userRepository.save(users);
-    }
+//    private Users saveOrUpdate(OAuthAttributes attributes) {
+//        Users users = userRepository.findByEmail(attributes.getEmail())
+//                .map(entity -> userMutationService.update(entity, attributes.getName(), attributes.getPicture()))
+//                .orElse(attributes.toEntity());
+//
+//        return userRepository.save(users);
+//    }
 }

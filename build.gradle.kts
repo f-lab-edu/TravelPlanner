@@ -38,7 +38,7 @@ dependencies {
 	implementation("software.amazon.awssdk:s3:2.25.52")
 	implementation("org.modelmapper:modelmapper:3.2.0")
 	compileOnly("org.projectlombok:lombok")
-	runtimeOnly("com.h2database:h2")
+	implementation("com.h2database:h2")
 	runtimeOnly("org.postgresql:postgresql")
 	annotationProcessor("org.projectlombok:lombok")
 	testImplementation("org.springframework.boot:spring-boot-starter-test")
