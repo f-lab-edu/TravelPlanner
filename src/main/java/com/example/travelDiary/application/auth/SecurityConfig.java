@@ -1,16 +1,26 @@
 package com.example.travelDiary.application.auth;
 
+import io.jsonwebtoken.security.Keys;
 import lombok.RequiredArgsConstructor;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
-import org.springframework.security.config.Customizer;
+import org.springframework.core.convert.converter.Converter;
+import org.springframework.security.authentication.AbstractAuthenticationToken;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.config.annotation.web.configurers.AbstractHttpConfigurer;
+import org.springframework.security.config.http.SessionCreationPolicy;
+import org.springframework.security.core.authority.SimpleGrantedAuthority;
+import org.springframework.security.oauth2.jwt.Jwt;
+import org.springframework.security.oauth2.jwt.JwtDecoder;
+import org.springframework.security.oauth2.jwt.NimbusJwtDecoder;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 
-import static org.springframework.security.config.Customizer.withDefaults;
+import java.util.Collection;
+import java.util.Map;
+import java.util.stream.Collectors;
 
 @RequiredArgsConstructor
 @EnableWebSecurity
@@ -19,31 +29,65 @@ public class SecurityConfig {
     private final CustomOAuth2UserService customOAuth2UserService;
     private final OAuth2SuccessHandler successHandler;
     private final TokenService tokenService;
+//    @Bean
+//    public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
+//        return http
+//                .authorizeHttpRequests(authorize -> authorize
+//                        .requestMatchers("/token/**").permitAll()
+//                        .anyRequest().authenticated()
+//                ).addFilterBefore(new JwtAuthFilter(tokenService), UsernamePasswordAuthenticationFilter.class)
+//                .oauth2Login(oauth2 -> oauth2
+////                        .loginPage("/token/expired")
+//                                .successHandler(successHandler)
+//                                .userInfoEndpoint(userInfo -> userInfo
+//                                        .userService(customOAuth2UserService)
+//                                )
+//                ).oauth2ResourceServer(resource -> resource
+//                        .jwt(jwtConfigurer -> jwtConfigurer
+//                                .jwtAuthenticationConverter(actualJwtAuthenticationConverter())
+//                        )
+//                ).sessionManagement(policy -> policy.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
+//                .csrf(AbstractHttpConfigurer::disable)
+//                .build();
+//    }
+//
+//    @Bean
+//    public JwtDecoder jwtDecoder() {
+//        return NimbusJwtDecoder.withSecretKey(Keys.hmacShaKeyFor(jwtSecret.getBytes())).build();
+//    }
+//
+//    private Converter<Jwt, ? extends AbstractAuthenticationToken> actualJwtAuthenticationConverter() {
+//
+//        return jwt -> {
+//            Map<String, Object> claims = jwt.getClaims();
+//            Collection<String> authorities = (Collection<String>) claims.get("authorities");
+//            return authorities.stream()
+//                    .map(SimpleGrantedAuthority::new)
+//                    .collect(Collectors.toList());
+//        };
+//    }
 
 
     @Bean
-    public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
+    public SecurityFilterChain testfilterChain(HttpSecurity http) throws Exception {
         return http
+                .httpBasic(AbstractHttpConfigurer::disable)
                 .csrf(AbstractHttpConfigurer::disable)
-                .cors(withDefaults())
-                .logout(Customizer.withDefaults())
+                .cors(AbstractHttpConfigurer::disable)
+                .sessionManagement(customizer -> customizer.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
                 .authorizeHttpRequests(authorize -> authorize
                         .requestMatchers("/token/**").permitAll()
-                        .requestMatchers("/login/**").permitAll()
-                        //private로 시작하는 uri는 로그인 필수
-                        .anyRequest().authenticated() //나머지 uri는 모든 접근 허용
+                        .requestMatchers("/login").permitAll()
+                        .anyRequest().authenticated()
                 ).addFilterBefore(new JwtAuthFilter(tokenService), UsernamePasswordAuthenticationFilter.class)
                 .oauth2Login(oauth2 -> oauth2
-                        .loginPage("/token/expired") //로그인이 필요한데 로그인을 하지 않았다면 이동할 uri 설정
-                        .successHandler(successHandler)
-//                        .defaultSuccessUrl("/oauth/loginInfo", true)  //OAuth 구글 로그인이 성공하면 이동할 uri 설정
-                        .userInfoEndpoint(userInfo -> userInfo  //로그인 완료 후 회원 정보 받기
-                                .userService(customOAuth2UserService)
-                        )
+//                        .loginPage("/token/expired")
+                                .successHandler(successHandler)
+                                .userInfoEndpoint(userInfo -> userInfo
+                                        .userService(customOAuth2UserService)
+                                )
                 )
-//                .addFilterBefore(new JwtAuthFilter(tokenService), UsernamePasswordAuthenticationFilter.class)
-//                .addFilterBefore(new JwtAuthenticationFilter(), OAuth2LoginAuthenticationFilter.class)
-                .httpBasic(withDefaults())
+                .addFilterBefore(new JwtAuthFilter(tokenService), UsernamePasswordAuthenticationFilter.class)
                 .build(); //로그인 후 받아온 유저 정보
     }
 }

@@ -42,6 +42,8 @@ dependencies {
 	runtimeOnly("org.postgresql:postgresql")
 	annotationProcessor("org.projectlombok:lombok")
 	testImplementation("org.springframework.boot:spring-boot-starter-test")
+	testAnnotationProcessor("org.projectlombok:lombok")
+	testCompileOnly("org.projectlombok:lombok")
 	testImplementation("org.springframework.security:spring-security-test")
     implementation(kotlin("stdlib-jdk8"))
 }

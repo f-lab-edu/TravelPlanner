@@ -1,6 +1,5 @@
 package com.example.travelDiary.application.auth;
 
-import com.example.travelDiary.application.auth.TokenService;
 import com.example.travelDiary.application.auth.dto.Token;
 import com.example.travelDiary.application.auth.dto.UserDto;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -37,8 +36,9 @@ public class OAuth2SuccessHandler extends SimpleUrlAuthenticationSuccessHandler 
 
         Token token = tokenService.generateToken(userDto.getEmail(), "USER");
         log.info("{}", token);
+        response.setHeader("Authorization", token.getToken());
         targetUrl = UriComponentsBuilder.fromUriString("/home")
-                .queryParam("token", "token")
+                .queryParam("Authorization", token.getToken())
                 .build().toUriString();
         getRedirectStrategy().sendRedirect(request, response, targetUrl);
     }

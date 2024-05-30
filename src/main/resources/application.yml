@@ -5,3 +5,7 @@ spring:
   profiles:
     active: dev
     include: secrets
+
+#logging:
+#  level:
+#    root: debug
