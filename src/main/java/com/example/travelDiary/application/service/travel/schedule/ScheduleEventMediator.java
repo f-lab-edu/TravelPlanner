@@ -2,7 +2,7 @@ package com.example.travelDiary.application.service.travel.schedule;
 
 import com.example.travelDiary.application.service.travel.event.EventAccessService;
 import com.example.travelDiary.domain.model.travel.Event;
-import com.example.travelDiary.domain.model.travel.Schedule;
+import com.example.travelDiary.domain.model.travel.schedule.Schedule;
 import com.example.travelDiary.domain.model.wallet.aggregate.MonetaryEvent;
 import com.example.travelDiary.presentation.dto.request.travel.event.EventMetaDataUpsertRequest;
 import com.example.travelDiary.repository.persistence.travel.ScheduleRepository;
@@ -16,13 +16,13 @@ import java.util.List;
 import java.util.UUID;
 
 @Service
-public class ScheduleEventService {
+public class ScheduleEventMediator {
 
     private final EventAccessService eventAccessService;
     private final ScheduleRepository scheduleRepository;
 
     @Autowired
-    public ScheduleEventService(EventAccessService eventAccessService, ScheduleRepository scheduleRepository) {
+    public ScheduleEventMediator(EventAccessService eventAccessService, ScheduleRepository scheduleRepository) {
         this.eventAccessService = eventAccessService;
         this.scheduleRepository = scheduleRepository;
     }
@@ -55,7 +55,5 @@ public class ScheduleEventService {
         List<Event> events = scheduleRepository.findById(scheduleId).orElseThrow().getEvents();
         return events.stream().flatMap(event -> eventAccessService.getAllMonetaryEvents(event.getId()).stream()).toList();
     }
-
-
 
 }

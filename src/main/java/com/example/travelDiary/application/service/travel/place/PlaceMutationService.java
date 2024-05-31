@@ -1,5 +1,8 @@
 package com.example.travelDiary.application.service.travel.place;
 
+import com.example.travelDiary.application.events.EventPublisher;
+import com.example.travelDiary.application.events.location.PlaceDeletedEvent;
+import com.example.travelDiary.application.events.location.PlaceUpdatedEvent;
 import com.example.travelDiary.domain.model.location.Place;
 import com.example.travelDiary.repository.persistence.location.PlaceRepository;
 import com.example.travelDiary.presentation.dto.request.travel.location.PlaceUpdateRequest;
@@ -9,18 +12,19 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.Optional;
+import java.util.UUID;
 
 @Service
 public class PlaceMutationService {
     private final PlaceRepository placeRepository;
     private final ConversionService conversionService;
+    private final EventPublisher eventPublisher;
 
-    public PlaceMutationService(PlaceRepository placeRepository, ConversionService conversionService) {
+    public PlaceMutationService(PlaceRepository placeRepository, ConversionService conversionService, EventPublisher eventPublisher) {
         this.placeRepository = placeRepository;
         this.conversionService = conversionService;
+        this.eventPublisher = eventPublisher;
     }
-
-
 
     @Transactional
     public Place createNewPlaceIfNotExists(PlaceUpdateRequest request) {
@@ -44,7 +48,9 @@ public class PlaceMutationService {
         existingPlace.setCountry(updatedPlace.getCountry());
         existingPlace.setLatitude(updatedPlace.getLatitude());
         existingPlace.setLongitude(updatedPlace.getLongitude());
-        return placeRepository.save(existingPlace);
+        placeRepository.save(existingPlace);
+        eventPublisher.publishEvent(new PlaceUpdatedEvent(existingPlace));
+        return existingPlace;
     }
 
     @Transactional
@@ -64,6 +70,11 @@ public class PlaceMutationService {
     @Transactional
     public void deletePlace(Place place) {
         placeRepository.deleteById(place.getId());
+    }
+    @Transactional
+    public void deletePlace(UUID placeId) {
+        placeRepository.deleteById(placeId);
+        eventPublisher.publishEvent(new PlaceDeletedEvent(placeId));
     }
 
 }

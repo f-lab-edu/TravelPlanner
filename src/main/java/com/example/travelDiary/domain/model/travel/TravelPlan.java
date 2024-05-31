@@ -1,5 +1,6 @@
 package com.example.travelDiary.domain.model.travel;
 
+import com.example.travelDiary.domain.model.travel.schedule.Schedule;
 import jakarta.persistence.*;
 import lombok.Data;
 import org.hibernate.annotations.Cascade;

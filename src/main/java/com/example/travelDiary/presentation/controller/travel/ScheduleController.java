@@ -1,9 +1,11 @@
 package com.example.travelDiary.presentation.controller.travel;
 
+import com.example.travelDiary.application.service.travel.place.PlaceMutationService;
 import com.example.travelDiary.application.service.travel.schedule.ScheduleMutationService;
 import com.example.travelDiary.application.service.travel.schedule.ScheduleQueryService;
+import com.example.travelDiary.domain.model.location.Place;
 import com.example.travelDiary.domain.model.travel.Route;
-import com.example.travelDiary.domain.model.travel.Schedule;
+import com.example.travelDiary.domain.model.travel.schedule.Schedule;
 import com.example.travelDiary.presentation.dto.request.travel.location.PlaceUpdateRequest;
 import com.example.travelDiary.presentation.dto.request.travel.RouteUpdateRequest;
 import com.example.travelDiary.presentation.dto.request.travel.schedule.ScheduleInsertRequest;
@@ -19,10 +21,12 @@ import java.util.UUID;
 @RequestMapping("/travelPlan/{travelPlanId}/schedule")
 public class ScheduleController {
     private final ScheduleMutationService scheduleMutationService;
+    private final PlaceMutationService placeMutationService;
     private final ScheduleQueryService scheduleQueryService;
 
-    public ScheduleController(ScheduleMutationService scheduleMutationService, ScheduleQueryService scheduleQueryService) {
+    public ScheduleController(ScheduleMutationService scheduleMutationService, PlaceMutationService placeMutationService, ScheduleQueryService scheduleQueryService) {
         this.scheduleMutationService = scheduleMutationService;
+        this.placeMutationService = placeMutationService;
         this.scheduleQueryService = scheduleQueryService;
     }
 
@@ -63,10 +67,9 @@ public class ScheduleController {
     }
 
     //update PLACE
-
     @PatchMapping("/update_all_linked_place")
-    public List<Schedule> modifyPlaceOnAllLinkedSchedule (@PathVariable(value = "travelPlanId") UUID travelPlanId, @RequestBody PlaceUpdateRequest request) {
-        return scheduleMutationService.updatePlace(request);
+    public Place modifyPlaceOnAllLinkedSchedule (@PathVariable(value = "travelPlanId") UUID travelPlanId, @RequestBody PlaceUpdateRequest request) {
+        return placeMutationService.updatePlace(request);
     }
 
     @PatchMapping("/update_place_on_schedule")

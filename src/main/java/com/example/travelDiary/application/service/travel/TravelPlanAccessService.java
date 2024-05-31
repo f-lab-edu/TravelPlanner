@@ -1,8 +1,7 @@
 package com.example.travelDiary.application.service.travel;
 
-import com.example.travelDiary.application.service.travel.schedule.ScheduleEventService;
+import com.example.travelDiary.application.service.travel.schedule.ScheduleEventMediator;
 import com.example.travelDiary.application.service.travel.schedule.ScheduleMutationService;
-import com.example.travelDiary.domain.model.travel.Event;
 import com.example.travelDiary.domain.model.travel.TravelPlan;
 import com.example.travelDiary.domain.model.wallet.aggregate.MonetaryEvent;
 import com.example.travelDiary.repository.persistence.travel.TravelPlanRepository;
@@ -22,14 +21,14 @@ public class TravelPlanAccessService {
     private final TravelPlanRepository travelPlanRepository;
     private final ConversionService conversionService;
     private final ScheduleMutationService scheduleMutationService;
-    private final ScheduleEventService scheduleEventService;
+    private final ScheduleEventMediator scheduleEventMediator;
 
     @Autowired
-    public TravelPlanAccessService(TravelPlanRepository travelPlanRepository, ConversionService conversionService, ScheduleMutationService scheduleMutationService, ScheduleEventService scheduleEventService) {
+    public TravelPlanAccessService(TravelPlanRepository travelPlanRepository, ConversionService conversionService, ScheduleMutationService scheduleMutationService, ScheduleEventMediator scheduleEventMediator) {
         this.travelPlanRepository = travelPlanRepository;
         this.conversionService = conversionService;
         this.scheduleMutationService = scheduleMutationService;
-        this.scheduleEventService = scheduleEventService;
+        this.scheduleEventMediator = scheduleEventMediator;
     }
 
     public Page<TravelPlan> getTravelPageContainingName(String name, int pageNumber, int pageSize) {
@@ -69,7 +68,7 @@ public class TravelPlanAccessService {
                 .orElseThrow()
                 .getScheduleList()
                 .stream()
-                .flatMap(schedule -> scheduleEventService
+                .flatMap(schedule -> scheduleEventMediator
                         .getAssociatedMonetaryEvent(
                                 schedule
                                         .getId()

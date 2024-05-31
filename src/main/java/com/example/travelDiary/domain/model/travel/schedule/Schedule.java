@@ -1,8 +1,9 @@
-package com.example.travelDiary.domain.model.travel;
+package com.example.travelDiary.domain.model.travel.schedule;
 
 import com.example.travelDiary.domain.model.location.Place;
 import com.example.travelDiary.domain.model.review.Review;
-import com.example.travelDiary.domain.model.tags.Tags;
+import com.example.travelDiary.domain.model.travel.Event;
+import com.example.travelDiary.domain.model.travel.Route;
 import jakarta.persistence.*;
 import lombok.Data;
 import org.hibernate.annotations.Cascade;
@@ -11,7 +12,6 @@ import org.hibernate.annotations.CascadeType;
 import java.time.LocalDate;
 import java.time.LocalTime;
 import java.util.List;
-import java.util.Set;
 import java.util.UUID;
 
 @Entity

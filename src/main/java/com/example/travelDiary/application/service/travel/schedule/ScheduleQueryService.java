@@ -1,6 +1,6 @@
 package com.example.travelDiary.application.service.travel.schedule;
 
-import com.example.travelDiary.domain.model.travel.Schedule;
+import com.example.travelDiary.domain.model.travel.schedule.Schedule;
 import com.example.travelDiary.repository.persistence.travel.ScheduleRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
