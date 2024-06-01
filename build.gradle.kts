@@ -29,8 +29,6 @@ dependencies {
 	implementation("io.jsonwebtoken:jjwt-api:0.12.5")
 	implementation("io.jsonwebtoken:jjwt-impl:0.12.5")
 	implementation("io.jsonwebtoken:jjwt-jackson:0.12.5")
-	implementation("com.fasterxml.jackson.core:jackson-core:2.17.1")
-	implementation("com.fasterxml.jackson.datatype:jackson-datatype-jsr310:2.17.1")
 	implementation("org.springframework.boot:spring-boot-starter-data-jpa")
 	implementation("org.springframework.boot:spring-boot-starter-thymeleaf")
 	implementation("org.springframework.boot:spring-boot-starter-web")
