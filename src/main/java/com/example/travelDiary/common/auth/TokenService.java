@@ -1,6 +1,6 @@
-package com.example.travelDiary.application.auth;
+package com.example.travelDiary.common.auth;
 
-import com.example.travelDiary.application.auth.dto.Token;
+import com.example.travelDiary.common.auth.dto.Token;
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.ClaimsBuilder;
 import io.jsonwebtoken.Jws;

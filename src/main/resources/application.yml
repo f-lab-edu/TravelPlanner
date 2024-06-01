@@ -3,7 +3,8 @@ spring:
     name: travelDiary
 
   profiles:
-    active: dev
+#    active: dev
+    active: test
     include: secrets
 
 #logging:

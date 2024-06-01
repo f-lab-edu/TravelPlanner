@@ -1,4 +1,4 @@
-package com.example.travelDiary.application.auth;
+package com.example.travelDiary.common.auth;
 
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;

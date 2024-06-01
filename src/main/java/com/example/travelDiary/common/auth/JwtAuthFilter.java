@@ -1,6 +1,6 @@
-package com.example.travelDiary.application.auth;
+package com.example.travelDiary.common.auth;
 
-import com.example.travelDiary.application.auth.dto.UserDto;
+import com.example.travelDiary.common.auth.dto.UserDto;
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.ServletRequest;

@@ -1,4 +1,4 @@
-package com.example.travelDiary.application.auth.dto;
+package com.example.travelDiary.common.auth.dto;
 
 import com.example.travelDiary.domain.model.user.Users;
 import lombok.AllArgsConstructor;

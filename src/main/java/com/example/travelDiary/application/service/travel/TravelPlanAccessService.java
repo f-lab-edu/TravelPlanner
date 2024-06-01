@@ -90,4 +90,8 @@ public class TravelPlanAccessService {
             travelPlan.setName(request.getName());
         }
     }
+
+    public List<TravelPlan> getAllTravelPlan() {
+        return travelPlanRepository.findAll();
+    }
 }

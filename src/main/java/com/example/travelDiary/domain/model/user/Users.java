@@ -1,6 +1,6 @@
 package com.example.travelDiary.domain.model.user;
 
-import com.example.travelDiary.application.auth.Role;
+import com.example.travelDiary.common.auth.Role;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Builder;

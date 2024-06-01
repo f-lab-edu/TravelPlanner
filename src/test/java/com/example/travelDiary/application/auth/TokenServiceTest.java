@@ -1,6 +1,7 @@
 package com.example.travelDiary.application.auth;
 
-import com.example.travelDiary.application.auth.dto.Token;
+import com.example.travelDiary.common.auth.TokenService;
+import com.example.travelDiary.common.auth.dto.Token;
 import lombok.extern.slf4j.Slf4j;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;

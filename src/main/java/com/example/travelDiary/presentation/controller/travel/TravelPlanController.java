@@ -3,6 +3,7 @@ package com.example.travelDiary.presentation.controller.travel;
 import com.example.travelDiary.domain.model.travel.TravelPlan;
 import com.example.travelDiary.application.service.travel.TravelPlanAccessService;
 import com.example.travelDiary.presentation.dto.request.travel.TravelPlanUpsertRequestDTO;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.web.bind.annotation.*;
@@ -13,6 +14,7 @@ import java.util.UUID;
 
 @RestController
 @RequestMapping("/travelPlan")
+@Slf4j
 public class TravelPlanController {
     private final RestTemplate restTemplate;
     private final TravelPlanAccessService planAccessService;
@@ -35,8 +37,16 @@ public class TravelPlanController {
         return planAccessService.getTravelPageContainingName(name, pageNumber, pageSize);
     }
 
+
+    @GetMapping("/get_all")
+    public List<TravelPlan> getPlansContainingName() {
+        log.info("get METHOD TRIGGERED BY REACT");
+        return planAccessService.getAllTravelPlan();
+    }
+
     @PostMapping("/create_travel_plan")
     public UUID createNewTravelPlan(@RequestBody TravelPlanUpsertRequestDTO request) {
+        log.info("create METHOD TRIGGERED BY REACT");
         return planAccessService.createPlan(request);
     }
 

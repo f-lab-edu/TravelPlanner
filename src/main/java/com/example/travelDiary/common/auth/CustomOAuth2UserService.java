@@ -1,8 +1,7 @@
-package com.example.travelDiary.application.auth;
+package com.example.travelDiary.common.auth;
 
-import com.example.travelDiary.application.auth.dto.OAuth2Attribute;
+import com.example.travelDiary.common.auth.dto.OAuth2Attribute;
 import com.example.travelDiary.application.service.user.UserMutationService;
-import com.example.travelDiary.domain.model.user.Users;
 import com.example.travelDiary.repository.persistence.user.UserRepository;
 import jakarta.servlet.http.HttpSession;
 import lombok.extern.slf4j.Slf4j;

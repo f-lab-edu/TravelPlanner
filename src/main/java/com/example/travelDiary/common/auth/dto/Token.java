@@ -1,4 +1,4 @@
-package com.example.travelDiary.application.auth.dto;
+package com.example.travelDiary.common.auth.dto;
 
 import lombok.Getter;
 import lombok.NoArgsConstructor;

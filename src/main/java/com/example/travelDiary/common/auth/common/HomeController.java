@@ -1,4 +1,4 @@
-package com.example.travelDiary.application.auth.common;
+package com.example.travelDiary.common.auth.common;
 
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;

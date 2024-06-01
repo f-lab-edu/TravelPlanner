@@ -1,4 +1,4 @@
-package com.example.travelDiary.application.auth;
+package com.example.travelDiary.common.auth;
 
 import org.springframework.security.core.Authentication;
 import org.springframework.security.oauth2.core.user.OAuth2User;
