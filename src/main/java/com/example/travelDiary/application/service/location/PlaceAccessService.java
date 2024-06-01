@@ -1,4 +1,4 @@
-package com.example.travelDiary.application.service.travel.place;
+package com.example.travelDiary.application.service.location;
 
 import com.example.travelDiary.application.service.tags.TagsAccessService;
 import com.example.travelDiary.domain.model.location.Place;

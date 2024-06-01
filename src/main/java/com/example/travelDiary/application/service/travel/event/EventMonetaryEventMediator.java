@@ -6,7 +6,6 @@ import com.example.travelDiary.domain.model.wallet.aggregate.MonetaryEvent;
 import com.example.travelDiary.domain.model.wallet.entity.MonetaryEventEntity;
 import com.example.travelDiary.repository.persistence.travel.EventRepository;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.core.convert.ConversionService;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -14,15 +13,13 @@ import java.util.List;
 import java.util.UUID;
 
 @Service
-public class EventMonetaryMutationService {
+public class EventMonetaryEventMediator {
     private final EventRepository eventRepository;
-    private final ConversionService conversionService;
     private final MonetaryDomainMutationService monetaryDomainMutationService;
 
     @Autowired
-    public EventMonetaryMutationService(EventRepository eventRepository, ConversionService conversionService, MonetaryDomainMutationService monetaryDomainMutationService) {
+    public EventMonetaryEventMediator(EventRepository eventRepository, MonetaryDomainMutationService monetaryDomainMutationService) {
         this.eventRepository = eventRepository;
-        this.conversionService = conversionService;
         this.monetaryDomainMutationService = monetaryDomainMutationService;
     }
 

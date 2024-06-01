@@ -19,36 +19,17 @@ public class EventAccessService {
     private final EventRepository eventRepository;
     private final TagsAccessService tagsAccessService;
     private final MonetaryDomainQueryService monetaryDomainQueryService;
-    private final ConversionService conversionService;
 
     @Autowired
-    public EventAccessService(EventRepository eventRepository, TagsAccessService tagsAccessService, MonetaryDomainQueryService monetaryDomainQueryService, ConversionService conversionService) {
+    public EventAccessService(EventRepository eventRepository, TagsAccessService tagsAccessService, MonetaryDomainQueryService monetaryDomainQueryService) {
         this.eventRepository = eventRepository;
         this.tagsAccessService = tagsAccessService;
         this.monetaryDomainQueryService = monetaryDomainQueryService;
-        this.conversionService = conversionService;
     }
 
-    public Event createEvent(EventMetaDataUpsertRequest request) {
-        Event event = conversionService.convert(request, Event.class);
-        assert event != null;
-        return eventRepository.save(event);
-    }
 
     public Event getEventById(UUID id) {
         return eventRepository.findById(id).orElseThrow();
-    }
-
-    public Event updateEventMetaData(EventMetaDataUpsertRequest request) {
-        Event event = eventRepository.findById(request.getId()).orElseThrow();
-        event.setEventEndTime(request.getEventEndTime());
-        event.setEventStartTime(request.getEventStartTime());
-        return eventRepository.save(event);
-    }
-
-    public UUID deleteEvent(UUID eventId) {
-        eventRepository.deleteById(eventId);
-        return eventId;
     }
 
     public List<MonetaryEvent> getAllMonetaryEvents(UUID eventId) {

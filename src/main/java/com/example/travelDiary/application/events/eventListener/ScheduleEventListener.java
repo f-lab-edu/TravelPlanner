@@ -1,12 +1,11 @@
-package com.example.travelDiary.application.events;
+package com.example.travelDiary.application.events.eventListener;
 
 import com.example.travelDiary.application.events.travel.ScheduleCreatedEvent;
 import com.example.travelDiary.application.events.travel.ScheduleDeletedEvent;
 import com.example.travelDiary.application.events.travel.ScheduleUpdatedEvent;
-import com.example.travelDiary.application.service.travel.place.PlaceMutationService;
+import com.example.travelDiary.application.service.location.PlaceMutationService;
 import com.example.travelDiary.domain.model.location.Place;
-import com.example.travelDiary.domain.model.travel.Route;
-import com.example.travelDiary.domain.model.travel.schedule.Schedule;
+import com.example.travelDiary.domain.model.travel.Schedule;
 import com.example.travelDiary.repository.persistence.travel.ScheduleRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.event.EventListener;

@@ -1,4 +1,4 @@
-package com.example.travelDiary.application.service.travel.place;
+package com.example.travelDiary.application.service.location;
 
 import com.example.travelDiary.application.events.EventPublisher;
 import com.example.travelDiary.application.events.location.PlaceDeletedEvent;

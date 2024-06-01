@@ -1,6 +1,6 @@
 package com.example.travelDiary.presentation.converter.travel;
 
-import com.example.travelDiary.domain.model.travel.schedule.Schedule;
+import com.example.travelDiary.domain.model.travel.Schedule;
 import com.example.travelDiary.presentation.dto.request.travel.schedule.ScheduleMetadataUpdateRequest;
 import org.springframework.core.convert.converter.Converter;
 

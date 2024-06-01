@@ -1,8 +1,9 @@
 package com.example.travelDiary.application.service.travel.schedule;
 
 import com.example.travelDiary.application.service.travel.event.EventAccessService;
+import com.example.travelDiary.application.service.travel.event.EventMutationService;
 import com.example.travelDiary.domain.model.travel.Event;
-import com.example.travelDiary.domain.model.travel.schedule.Schedule;
+import com.example.travelDiary.domain.model.travel.Schedule;
 import com.example.travelDiary.domain.model.wallet.aggregate.MonetaryEvent;
 import com.example.travelDiary.presentation.dto.request.travel.event.EventMetaDataUpsertRequest;
 import com.example.travelDiary.repository.persistence.travel.ScheduleRepository;
@@ -18,29 +19,32 @@ import java.util.UUID;
 @Service
 public class ScheduleEventMediator {
 
+    private final EventMutationService eventMutationService;
     private final EventAccessService eventAccessService;
     private final ScheduleRepository scheduleRepository;
 
     @Autowired
-    public ScheduleEventMediator(EventAccessService eventAccessService, ScheduleRepository scheduleRepository) {
+    public ScheduleEventMediator(EventMutationService eventMutationService, EventAccessService eventAccessService, ScheduleRepository scheduleRepository) {
+        this.eventMutationService = eventMutationService;
         this.eventAccessService = eventAccessService;
         this.scheduleRepository = scheduleRepository;
     }
 
+
     public Event addEvent(EventMetaDataUpsertRequest request) {
         Schedule schedule = scheduleRepository.findById(request.getScheduleId()).orElseThrow();
-        Event event = eventAccessService.createEvent(request);
+        Event event = eventMutationService.createEvent(request);
         schedule.getEvents().add(event);
         return event;
     }
 
     public UUID deleteEvent(UUID eventId) {
-        return eventAccessService.deleteEvent(eventId);
+        return eventMutationService.deleteEvent(eventId);
     }
 
     public Event updateEvent(EventMetaDataUpsertRequest request) {
         Schedule schedule = scheduleRepository.findById(request.getScheduleId()).orElseThrow();
-        Event event = eventAccessService.updateEventMetaData(request);
+        Event event = eventMutationService.updateEventMetaData(request);
         schedule.getEvents().add(event);
         return event;
     }
@@ -51,9 +55,6 @@ public class ScheduleEventMediator {
         return new PageImpl<>(monetaryEvents, pageRequest, monetaryEvents.size());
     }
 
-    public List<MonetaryEvent> getAssociatedMonetaryEvent(UUID scheduleId) {
-        List<Event> events = scheduleRepository.findById(scheduleId).orElseThrow().getEvents();
-        return events.stream().flatMap(event -> eventAccessService.getAllMonetaryEvents(event.getId()).stream()).toList();
-    }
+
 
 }

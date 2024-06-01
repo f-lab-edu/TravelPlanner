@@ -1,11 +1,11 @@
 package com.example.travelDiary.presentation.controller.travel;
 
-import com.example.travelDiary.application.service.travel.place.PlaceMutationService;
+import com.example.travelDiary.application.service.location.PlaceMutationService;
 import com.example.travelDiary.application.service.travel.schedule.ScheduleMutationService;
 import com.example.travelDiary.application.service.travel.schedule.ScheduleQueryService;
 import com.example.travelDiary.domain.model.location.Place;
 import com.example.travelDiary.domain.model.travel.Route;
-import com.example.travelDiary.domain.model.travel.schedule.Schedule;
+import com.example.travelDiary.domain.model.travel.Schedule;
 import com.example.travelDiary.presentation.dto.request.travel.location.PlaceUpdateRequest;
 import com.example.travelDiary.presentation.dto.request.travel.RouteUpdateRequest;
 import com.example.travelDiary.presentation.dto.request.travel.schedule.ScheduleInsertRequest;
@@ -14,7 +14,6 @@ import org.springframework.data.domain.Page;
 import org.springframework.web.bind.annotation.*;
 
 import java.time.LocalDate;
-import java.util.List;
 import java.util.UUID;
 
 @RestController

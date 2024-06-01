@@ -1,6 +1,6 @@
 package com.example.travelDiary.repository.persistence.travel;
 
-import com.example.travelDiary.domain.model.travel.schedule.Schedule;
+import com.example.travelDiary.domain.model.travel.Schedule;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
