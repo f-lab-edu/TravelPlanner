@@ -10,6 +10,7 @@ import com.example.travelDiary.repository.persistence.travel.ScheduleRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.event.EventListener;
 import org.springframework.stereotype.Component;
+import org.springframework.transaction.event.TransactionalEventListener;
 
 import java.util.List;
 
@@ -25,7 +26,7 @@ public class PlaceEventListener {
         this.routeAccessService = routeAccessService;
     }
 
-    @EventListener
+    @TransactionalEventListener(fallbackExecution=true)
     public void handlePlaceUpdatedEvent(PlaceUpdatedEvent event) {
         Place updatedPlace = event.getPlace();
         List<Schedule> schedules = scheduleRepository.findByPlaceId(updatedPlace.getId());

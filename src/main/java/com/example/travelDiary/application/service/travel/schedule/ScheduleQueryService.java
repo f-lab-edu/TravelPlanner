@@ -1,7 +1,7 @@
 package com.example.travelDiary.application.service.travel.schedule;
 
-import com.example.travelDiary.application.service.travel.event.EventAccessService;
-import com.example.travelDiary.domain.model.travel.Event;
+import com.example.travelDiary.application.service.travel.event.ActivityAccessService;
+import com.example.travelDiary.domain.model.travel.Activity;
 import com.example.travelDiary.domain.model.travel.Schedule;
 import com.example.travelDiary.domain.model.wallet.aggregate.MonetaryEvent;
 import com.example.travelDiary.repository.persistence.travel.ScheduleRepository;
@@ -17,12 +17,12 @@ import java.util.UUID;
 @Service
 public class ScheduleQueryService {
     private final ScheduleRepository scheduleRepository;
-    private final EventAccessService eventAccessService;
+    private final ActivityAccessService activityAccessService;
 
     @Autowired
-    public ScheduleQueryService(ScheduleRepository scheduleRepository, EventAccessService eventAccessService) {
+    public ScheduleQueryService(ScheduleRepository scheduleRepository, ActivityAccessService activityAccessService) {
         this.scheduleRepository = scheduleRepository;
-        this.eventAccessService = eventAccessService;
+        this.activityAccessService = activityAccessService;
     }
 
     public Schedule getSchedule(UUID scheduleId) {
@@ -40,8 +40,8 @@ public class ScheduleQueryService {
     }
 
     public List<MonetaryEvent> getAssociatedMonetaryEvent(UUID scheduleId) {
-        List<Event> events = scheduleRepository.findById(scheduleId).orElseThrow().getEvents();
-        return events.stream().flatMap(event -> eventAccessService.getAllMonetaryEvents(event.getId()).stream()).toList();
+        List<Activity> activities = scheduleRepository.findById(scheduleId).orElseThrow().getActivities();
+        return activities.stream().flatMap(event -> activityAccessService.getAllMonetaryEvents(event.getId()).stream()).toList();
     }
 
 }

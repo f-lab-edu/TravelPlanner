@@ -99,7 +99,10 @@ public class ScheduleMutationService {
     //PLACE UPDATES
     @Transactional
     public Schedule reassignPlace(UUID scheduleId, PlaceUpdateRequest request) {
+        //move to controller
         Place place = placeMutationService.createNewPlaceIfNotExists(request);
+
+
         assert place != null;
         Schedule schedule = scheduleRepository.findById(scheduleId).orElseThrow(() -> new EntityNotFoundException("Schedule not found"));
         UUID oldPlaceId = schedule.getPlace().getId();

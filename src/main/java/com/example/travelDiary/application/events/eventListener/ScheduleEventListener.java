@@ -10,6 +10,7 @@ import com.example.travelDiary.repository.persistence.travel.ScheduleRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.event.EventListener;
 import org.springframework.stereotype.Component;
+import org.springframework.transaction.event.TransactionalEventListener;
 
 import java.util.UUID;
 
@@ -25,7 +26,7 @@ public class ScheduleEventListener {
         this.placeMutationService = placeMutationService;
     }
 
-    @EventListener
+    @TransactionalEventListener(fallbackExecution=true)
     public void handleScheduleCreatedEvent(ScheduleCreatedEvent event) {
         Schedule schedule = event.getSchedule();
 
@@ -36,7 +37,7 @@ public class ScheduleEventListener {
         // Additional logic if needed for Schedule creation
     }
 
-    @EventListener
+    @TransactionalEventListener(fallbackExecution=true)
     public void handleScheduleDeletedEvent(ScheduleDeletedEvent event) {
         UUID placeId = event.getPlaceId();
         if (scheduleRepository.findByPlaceId(placeId).isEmpty()) {
