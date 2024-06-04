@@ -11,5 +11,4 @@ public class TravelPlanUpsertRequestDTO {
     public String name;
     public LocalDate startDate;
     public LocalDate endDate;
-
 }

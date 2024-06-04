@@ -84,8 +84,7 @@ public class ScheduleMutationService {
         Schedule sanitizedSchedule = conversionService.convert(request, Schedule.class);
 
         schedule.setIsActuallyVisited(sanitizedSchedule.getIsActuallyVisited());
-        schedule.setTravelDate(sanitizedSchedule.getTravelDate());
-        schedule.setOrderOfTravel(sanitizedSchedule.getOrderOfTravel());
+//        schedule.setTravelDate(sanitizedSchedule.getTravelDate());
         schedule.setTravelStartTimeEstimate(sanitizedSchedule.getTravelStartTimeEstimate());
         schedule.setTravelDepartTimeEstimate(sanitizedSchedule.getTravelDepartTimeEstimate());
 

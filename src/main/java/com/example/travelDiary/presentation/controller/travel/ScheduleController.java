@@ -10,6 +10,7 @@ import com.example.travelDiary.presentation.dto.request.travel.location.PlaceUpd
 import com.example.travelDiary.presentation.dto.request.travel.RouteUpdateRequest;
 import com.example.travelDiary.presentation.dto.request.travel.schedule.ScheduleInsertRequest;
 import com.example.travelDiary.presentation.dto.request.travel.schedule.ScheduleMetadataUpdateRequest;
+import com.example.travelDiary.repository.persistence.travel.TravelPlanRepository;
 import org.springframework.data.domain.Page;
 import org.springframework.web.bind.annotation.*;
 
@@ -20,18 +21,22 @@ import java.util.UUID;
 @RequestMapping("/travelPlan/{travelPlanId}/schedule")
 public class ScheduleController {
     private final ScheduleMutationService scheduleMutationService;
+    private final TravelPlanRepository travelPlanRepository;
     private final PlaceMutationService placeMutationService;
     private final ScheduleQueryService scheduleQueryService;
 
-    public ScheduleController(ScheduleMutationService scheduleMutationService, PlaceMutationService placeMutationService, ScheduleQueryService scheduleQueryService) {
+    public ScheduleController(ScheduleMutationService scheduleMutationService, TravelPlanRepository travelPlanRepository, PlaceMutationService placeMutationService, ScheduleQueryService scheduleQueryService) {
         this.scheduleMutationService = scheduleMutationService;
+        this.travelPlanRepository = travelPlanRepository;
         this.placeMutationService = placeMutationService;
         this.scheduleQueryService = scheduleQueryService;
     }
 
-    @PostMapping("/create_schedule")
+    @PutMapping("/create_schedule")
     public Schedule createSchedule(@PathVariable("travelPlanId") UUID travelPlanId, @RequestBody ScheduleInsertRequest request) {
-        return scheduleMutationService.createSchedule(travelPlanId, request);
+        Schedule schedule = scheduleMutationService.createSchedule(travelPlanId, request);
+        travelPlanRepository.findById(travelPlanId).ifPresent(travelPlan -> {travelPlan.getScheduleList().add(schedule);});
+        return schedule;
     }
 
     @PatchMapping("/update_schedule_metadata")

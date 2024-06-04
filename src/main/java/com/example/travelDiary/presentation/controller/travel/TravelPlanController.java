@@ -25,8 +25,9 @@ public class TravelPlanController {
         this.planAccessService = planAccessService;
     }
 
-    @GetMapping("/search_travel_plan")
+    @GetMapping("/get_by_id")
     public TravelPlan getPlanWithId(@RequestParam(value="planId") UUID planId) {
+        log.info("get by id METHOD TRIGGERED BY REACT");
         return planAccessService.getTravelPlan(planId);
     }
 
@@ -40,7 +41,7 @@ public class TravelPlanController {
 
     @GetMapping("/get_all")
     public List<TravelPlan> getPlansContainingName() {
-        log.info("get METHOD TRIGGERED BY REACT");
+        log.info("get all METHOD TRIGGERED BY REACT");
         return planAccessService.getAllTravelPlan();
     }
 
@@ -52,6 +53,7 @@ public class TravelPlanController {
 
     @DeleteMapping("/delete_travel_plan")
     public List<UUID> deleteTravelPlan(@RequestBody List<UUID> request) {
+        log.info("delete METHOD TRIGGERED BY REACT");
         return planAccessService.deletePlan(request);
     }
 

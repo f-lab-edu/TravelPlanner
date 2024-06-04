@@ -13,17 +13,17 @@ public class ScheduleMetadataUpdateRequestToEntity implements Converter<Schedule
             schedule.setId(source.getScheduleId());
         }
 
+        if (source.getName() != null) {
+            schedule.setName(source.getName());
+        }
+
         if (source.getIsActuallyVisited() != null) {
             schedule.setIsActuallyVisited(source.getIsActuallyVisited());
         }
 
-        if (source.getTravelDate() != null) {
-            schedule.setTravelDate(source.getTravelDate());
-        }
-
-        if (source.getOrderOfTravel() != null) {
-            schedule.setOrderOfTravel(source.getOrderOfTravel());
-        }
+//        if (source.getTravelDate() != null) {
+//            schedule.setTravelDate(source.getTravelDate());
+//        }
 
         if (source.getTravelStartTimeEstimate() != null) {
             schedule.setTravelStartTimeEstimate(source.getTravelStartTimeEstimate());
