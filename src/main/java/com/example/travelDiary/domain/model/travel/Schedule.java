@@ -33,7 +33,6 @@ public class Schedule {
 
     public Boolean isActuallyVisited;
 
-//    public LocalDate travelDate;
 
     public LocalDateTime travelStartTimeEstimate;
 
