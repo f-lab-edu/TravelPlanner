@@ -11,6 +11,7 @@ import com.example.travelDiary.presentation.dto.request.travel.RouteUpdateReques
 import com.example.travelDiary.presentation.dto.request.travel.schedule.ScheduleInsertRequest;
 import com.example.travelDiary.presentation.dto.request.travel.schedule.ScheduleMetadataUpdateRequest;
 import com.example.travelDiary.repository.persistence.travel.TravelPlanRepository;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Page;
 import org.springframework.web.bind.annotation.*;
 
@@ -19,6 +20,7 @@ import java.util.UUID;
 
 @RestController
 @RequestMapping("/travelPlan/{travelPlanId}/schedule")
+@Slf4j
 public class ScheduleController {
     private final ScheduleMutationService scheduleMutationService;
     private final TravelPlanRepository travelPlanRepository;
@@ -46,7 +48,7 @@ public class ScheduleController {
 
     @DeleteMapping("/delete_schedule")
     public UUID deleteSchedule(@PathVariable(value = "travelPlanId") UUID travelPlanId, @RequestParam(value="scheduleId") UUID scheduleId) {
-        return scheduleMutationService.deleteSchedule(scheduleId);
+        return scheduleMutationService.deleteSchedule(travelPlanId, scheduleId);
     }
 
     @GetMapping("/search_schedule_by_place_name")
@@ -62,6 +64,7 @@ public class ScheduleController {
                                            @RequestParam LocalDate date,
                                            @RequestParam Integer pageNumber,
                                            @RequestParam Integer pageSize) {
+        log.info("search schedule by day reached");
         return scheduleQueryService.getSchedulesOnGivenDay(date, pageNumber, pageSize);
     }
 

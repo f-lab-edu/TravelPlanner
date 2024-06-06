@@ -333,3 +333,12 @@ Caused by: org.h2.jdbc.JdbcSQLInvalidAuthorizationSpecException: Wrong user name
 	at org.h2.message.DbException.getJdbcSQLException(DbException.java:522)
 	at org.h2.message.DbException.getJdbcSQLException(DbException.java:489)
 	... 62 more
+2024-06-06 02:12:35.079732+09:00 jdbc[13]: exception
+org.h2.jdbc.JdbcSQLSyntaxErrorException: Syntax error in SQL statement "Delete [*]* FROM SCHEDULE"; expected "identifier"; SQL statement:
+Delete * FROM SCHEDULE [42001-224]
+2024-06-06 02:13:33.718592+09:00 jdbc[13]: exception
+org.h2.jdbc.JdbcSQLSyntaxErrorException: Table "TRAVELPLAN" not found; SQL statement:
+Delete FROM TravelPlan [42102-224]
+2024-06-06 02:14:23.465012+09:00 jdbc[13]: exception
+org.h2.jdbc.JdbcSQLSyntaxErrorException: Table "TRAVEL_PLAN_SCHEDULE" not found; SQL statement:
+Delete FROM travel_plan_schedule [42102-224]
