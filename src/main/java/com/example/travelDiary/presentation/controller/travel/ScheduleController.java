@@ -16,6 +16,8 @@ import org.springframework.data.domain.Page;
 import org.springframework.web.bind.annotation.*;
 
 import java.time.LocalDate;
+import java.time.LocalDateTime;
+import java.util.List;
 import java.util.UUID;
 
 @RestController
@@ -72,6 +74,13 @@ public class ScheduleController {
     public Schedule getSchedule(@PathVariable(value = "travelPlanId") UUID travelPlanId, @RequestParam(value = "scheduleId") UUID scheduleId) {
         return scheduleQueryService.getSchedule(scheduleId);
     }
+
+//    @GetMapping("/search_schedule_by_day")
+//    public List<Schedule> getImmediatePrecedingAndSucceedingSchedule(@PathVariable(value = "travelPlanId") UUID travelPlanId,
+//                                           @RequestParam LocalDateTime date) {
+//        log.info("search schedule by day reached");
+//        return scheduleQueryService.getImmediatePrecedingAndSucceedingSchedule(travelPlanId, date);
+//    }
 
     //update PLACE
     @PatchMapping("/update_all_linked_place")

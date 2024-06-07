@@ -48,4 +48,6 @@ public class ScheduleQueryService {
         return activities.stream().flatMap(event -> activityAccessService.getAllMonetaryEvents(event.getId()).stream()).toList();
     }
 
+//"    public List<Schedule> getImmediatePrecedingAndSucceedingSchedule(UUID travelPlanId, LocalDateTime date) {
+//    }"
 }
