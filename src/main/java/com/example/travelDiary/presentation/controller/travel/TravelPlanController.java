@@ -40,7 +40,7 @@ public class TravelPlanController {
 
 
     @GetMapping("/get_all")
-    public List<TravelPlan> getPlansContainingName() {
+    public List<TravelPlan> getAll() {
         log.info("get all METHOD TRIGGERED BY REACT");
         return planAccessService.getAllTravelPlan();
     }

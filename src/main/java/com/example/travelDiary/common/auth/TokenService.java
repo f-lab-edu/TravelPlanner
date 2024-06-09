@@ -8,6 +8,7 @@ import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.security.Keys;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.context.annotation.Profile;
 import org.springframework.stereotype.Service;
 
 import javax.crypto.SecretKey;
@@ -16,6 +17,7 @@ import java.util.Date;
 
 @Service
 @Slf4j
+@Profile("test2")
 public class TokenService{
     @Value("${jjwt.key}")
     private String secretKey;

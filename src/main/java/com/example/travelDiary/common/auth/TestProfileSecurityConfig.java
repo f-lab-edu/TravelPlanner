@@ -9,7 +9,7 @@ import org.springframework.security.config.annotation.web.configurers.AbstractHt
 import org.springframework.security.web.SecurityFilterChain;
 
 @Configuration
-@Profile("test")
+@Profile("test2")
 public class TestProfileSecurityConfig {
 
     @Bean
