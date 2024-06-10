@@ -1,6 +1,5 @@
 package com.example.travelDiary.common.auth.dto;
 
-import com.example.travelDiary.domain.model.user.Users;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;

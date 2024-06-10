@@ -1,16 +1,16 @@
 package com.example.travelDiary.application.service.user;
 
-import com.example.travelDiary.domain.model.user.Users;
+import com.example.travelDiary.common.auth.domain.AuthUser;
 import org.springframework.stereotype.Service;
 
 @Service
 public class UserMutationService {
-    public Users update(Users users, String name, String picture) {
+    public AuthUser update(AuthUser authUser, String name, String picture) {
 
-        users.setName(name);
-        users.setPicture(picture);
+        authUser.setName(name);
+        authUser.setPicture(picture);
 
-        return users;
+        return authUser;
 
     }
 }
