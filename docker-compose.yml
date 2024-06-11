@@ -1,7 +1,7 @@
 services:
   spring-boot-app:
     build: .
-    container_name: spring-boot-h2-container
+    container_name: roamGram
     ports:
       - "8080:8080"
     volumes:

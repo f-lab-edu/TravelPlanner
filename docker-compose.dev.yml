@@ -3,4 +3,4 @@ services:
     image: "redis:alpine"
     container_name: redis-dev
     ports:
-      - "6379:6379"
+      - "6380:6379"  # Changed the external port to 6380

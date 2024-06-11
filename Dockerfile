@@ -8,8 +8,11 @@ WORKDIR /app
 # Copy the Spring Boot application source code
 COPY . .
 
-# Package the application
-RUN ./mvnw package -DskipTests
+# Set execute permission for gradlew script
+RUN chmod +x gradlew
+
+# Build the application using Gradle, skipping tests
+RUN ./gradlew build -x test
 
 # Create a custom JRE using jlink
 RUN jlink --module-path $JAVA_HOME/jmods --add-modules java.base,java.logging,java.sql \
@@ -22,7 +25,7 @@ FROM eclipse-temurin:21-jre
 WORKDIR /app
 
 # Copy the packaged application from the builder stage
-COPY --from=builder /app/target/*.jar /app/app.jar
+COPY --from=builder /app/build/libs/*.jar /app/app.jar
 
 # Copy the custom JRE from the builder stage
 COPY --from=builder /custom-jre /opt/custom-jre
@@ -31,7 +34,7 @@ COPY --from=builder /custom-jre /opt/custom-jre
 ENV PATH="/opt/custom-jre/bin:$PATH"
 
 # Copy H2 database files if needed
-COPY --from=builder /app/h2-data /app/h2-data
+COPY --from=builder /app/roamGram.mv.db /app/roamGram.mv.db
 
 # Expose the port on which the application will run
 EXPOSE 8080

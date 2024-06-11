@@ -49,16 +49,12 @@ public class AppUserAuthenticationController {
     }
 
     @PostMapping("/refresh")
-    public ResponseEntity<JwtToken> refresh(@RequestBody String refreshToken) {
+    public ResponseEntity<String> refresh(@RequestBody String refreshToken) {
         // Verify the refresh token and generate a new access token
 
         if (jwtProvider.validateToken(refreshToken)) {
             String newAccessToken = jwtAuthService.refresh(refreshToken);
-            return ResponseEntity.ok(JwtToken.builder()
-                    .grantType("Bearer")
-                    .accessToken(newAccessToken)
-                    .refreshToken(refreshToken) // Optionally refresh the refresh token as well
-                    .build());
+            return ResponseEntity.ok(newAccessToken);
         } else {
             return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
         }
