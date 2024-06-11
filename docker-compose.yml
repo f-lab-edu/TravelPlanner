@@ -1,0 +1,19 @@
+services:
+  spring-boot-app:
+    build: .
+    container_name: spring-boot-h2-container
+    ports:
+      - "8080:8080"
+    volumes:
+      - h2-data:/app/h2-data
+    depends_on:
+      - redis
+
+  redis:
+    image: "redis:alpine"
+    container_name: redis
+    ports:
+      - "6379:6379"
+
+volumes:
+  h2-data:

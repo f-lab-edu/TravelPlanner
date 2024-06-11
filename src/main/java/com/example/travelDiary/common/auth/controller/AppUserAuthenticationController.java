@@ -1,32 +1,31 @@
 package com.example.travelDiary.common.auth.controller;
 
-import com.example.travelDiary.common.auth.domain.AuthUser;
 import com.example.travelDiary.common.auth.dto.AuthRequest;
 import com.example.travelDiary.common.auth.dto.JwtToken;
 import com.example.travelDiary.common.auth.dto.RegistrationRequest;
 import com.example.travelDiary.common.auth.service.AuthUserServiceImpl;
 import com.example.travelDiary.common.auth.service.JwtAuthService;
-import com.example.travelDiary.common.auth.service.TokenBlacklistService;
 import com.example.travelDiary.common.auth.v2.jwt.JwtProvider;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 @RestController
 @RequestMapping("/authentication")
+@Slf4j
 public class AppUserAuthenticationController {
 
     private final AuthUserServiceImpl authUserService;
-    private final TokenBlacklistService tokenBlacklistService;
     private final JwtAuthService jwtAuthService;
     private final JwtProvider jwtProvider;
 
     @Autowired
-    public AppUserAuthenticationController(AuthUserServiceImpl userService, AuthUserServiceImpl authUserService, TokenBlacklistService tokenBlacklistService, JwtAuthService jwtAuthService, JwtProvider jwtProvider) {
+    public AppUserAuthenticationController(AuthUserServiceImpl userService, JwtAuthService jwtAuthService, JwtProvider jwtProvider, JwtProvider jwtProvider1) {
         this.authUserService = userService;
-        this.tokenBlacklistService = tokenBlacklistService;
         this.jwtAuthService = jwtAuthService;
-        this.jwtProvider = jwtProvider;
+        this.jwtProvider = jwtProvider1;
     }
 
     @PostMapping("/sign-in")
@@ -37,6 +36,7 @@ public class AppUserAuthenticationController {
 
     @PostMapping("/sign-up")
     public ResponseEntity<String> signup(@RequestBody RegistrationRequest registrationRequest) {
+        log.info("register user : {}", registrationRequest.getUsername());
         authUserService.register(registrationRequest);
         return ResponseEntity.ok("success");
     }
@@ -46,5 +46,21 @@ public class AppUserAuthenticationController {
         String cleanedToken = token.replace("Bearer ", "");
         authUserService.logout(cleanedToken);
         return ResponseEntity.ok("Logged out successfully");
+    }
+
+    @PostMapping("/refresh")
+    public ResponseEntity<JwtToken> refresh(@RequestBody String refreshToken) {
+        // Verify the refresh token and generate a new access token
+
+        if (jwtProvider.validateToken(refreshToken)) {
+            String newAccessToken = jwtAuthService.refresh(refreshToken);
+            return ResponseEntity.ok(JwtToken.builder()
+                    .grantType("Bearer")
+                    .accessToken(newAccessToken)
+                    .refreshToken(refreshToken) // Optionally refresh the refresh token as well
+                    .build());
+        } else {
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
+        }
     }
 }

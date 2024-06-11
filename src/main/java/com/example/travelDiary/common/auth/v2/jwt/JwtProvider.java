@@ -8,6 +8,7 @@ import io.jsonwebtoken.*;
 import io.jsonwebtoken.io.Decoders;
 import io.jsonwebtoken.security.Keys;
 import lombok.extern.slf4j.Slf4j;
+import org.jetbrains.annotations.NotNull;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
@@ -38,26 +39,14 @@ public class JwtProvider {
     // Generate a JWT token
     public JwtToken generateToken(PrincipalDetails authentication) {
         // get authorities
-        String authorities = authentication.getAuthorities().stream()
-                .map(GrantedAuthority::getAuthority)
-                .collect(Collectors.joining(","));
+        String authorities = getAuthorities(authentication);
 
         Instant now = Instant.now();
 
         // Create Access Token
-        Instant accessTokenExpiresIn = now.plusMillis(ACCESS_EXPIRATION_TIME);
-        String accessToken = Jwts.builder().subject(authentication.getName())
-                .claim("auth", authorities)
-                .expiration(Date.from(accessTokenExpiresIn))
-                .signWith(KEY, Jwts.SIG.HS512)
-                .compact();
-
+        String accessToken = generateAccessToken(authentication);
         // Create Refresh Token
-        Instant refreshTokenExpiresIn = now.plusMillis(REFRESH_EXPIRATION_TIME);
-        String refreshToken = Jwts.builder()
-                .expiration(Date.from(refreshTokenExpiresIn))
-                .signWith(KEY, Jwts.SIG.HS512)
-                .compact();
+        String refreshToken = generateRefreshToken(authentication);
 
         return JwtToken.builder()
                 .grantType("Bearer")
@@ -65,6 +54,41 @@ public class JwtProvider {
                 .refreshToken(refreshToken)
                 .build();
     }
+
+    public String generateAccessToken(PrincipalDetails principal) {
+        Instant now = Instant.now();
+        String authorities = getAuthorities(principal);
+        Instant accessTokenExpiresIn = now.plusMillis(ACCESS_EXPIRATION_TIME);
+        String accessToken = Jwts.builder()
+                .subject(principal.getName())
+                .claim("auth", authorities)
+                .expiration(Date.from(accessTokenExpiresIn))
+                .signWith(KEY, Jwts.SIG.HS512)
+                .compact();
+        return accessToken;
+    }
+
+
+    private String generateRefreshToken(PrincipalDetails principal) {
+        Instant now = Instant.now();
+        String authorities = getAuthorities(principal);
+        Instant refreshTokenExpiresIn = now.plusMillis(REFRESH_EXPIRATION_TIME);
+        String refreshToken = Jwts.builder()
+                .subject(principal.getName())
+                .claim("auth", authorities)
+                .expiration(Date.from(refreshTokenExpiresIn))
+                .signWith(KEY, Jwts.SIG.HS512)
+                .compact();
+        return refreshToken;
+    }
+
+    private @NotNull String getAuthorities(PrincipalDetails authentication) {
+        String authorities = authentication.getAuthorities().stream()
+                .map(GrantedAuthority::getAuthority)
+                .collect(Collectors.joining(","));
+        return authorities;
+    }
+
 
     //refresh -> server accept refresh -> validate refresh token -> generate new token
     //refresh token need to have a much longer expiration time then accesstoken. ( accesstoken 15 mins / refresh token 1week )
@@ -113,7 +137,7 @@ public class JwtProvider {
     }
 
     // accessToken decode to get payload
-    private Claims parseClaims(String accessToken) {
+    public Claims parseClaims(String accessToken) {
         try {
             return Jwts.parser()
                     .verifyWith(KEY)

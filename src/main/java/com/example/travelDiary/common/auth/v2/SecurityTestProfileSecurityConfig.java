@@ -1,5 +1,6 @@
 package com.example.travelDiary.common.auth.v2;
 
+import com.example.travelDiary.common.auth.GlobalCorsConfig;
 import com.example.travelDiary.common.auth.service.PrincipalOauth2Service;
 import com.example.travelDiary.common.auth.v2.jwt.JwtAuthenticationFilter;
 import com.example.travelDiary.common.auth.v2.oauth2.CustomOAuth2SuccessHandler;
@@ -7,6 +8,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.context.annotation.Import;
 import org.springframework.context.annotation.Profile;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.config.Customizer;
@@ -23,18 +25,12 @@ import org.springframework.security.oauth2.client.web.HttpSessionOAuth2Authoriza
 import org.springframework.security.oauth2.core.endpoint.OAuth2AuthorizationRequest;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
-import org.springframework.web.cors.CorsConfiguration;
-import org.springframework.web.cors.CorsConfigurationSource;
-import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
-
-import java.util.Arrays;
-import java.util.Collections;
-import java.util.List;
 
 @Configuration
 @EnableWebSecurity
 @Profile("test")
 @Slf4j
+@Import(GlobalCorsConfig.class)
 public class SecurityTestProfileSecurityConfig {
     private final PrincipalOauth2Service principalOauth2Service;
     private final JwtAuthenticationFilter jwtAuthenticationFilter;
@@ -55,6 +51,7 @@ public class SecurityTestProfileSecurityConfig {
                 .cors(Customizer.withDefaults())
                 .authorizeHttpRequests(authorize -> authorize
                         .requestMatchers("/token/**").permitAll()
+                        .requestMatchers("/authentication/**").permitAll()
                         .requestMatchers("/", "/login**", "/oauth2/**").permitAll()
                         .requestMatchers(
                                 "/swagger-ui/**",
@@ -81,21 +78,7 @@ public class SecurityTestProfileSecurityConfig {
         return http.build();
     }
 
-    @Bean
-    public CorsConfigurationSource corsConfigurationSource() {
-        CorsConfiguration configuration = new CorsConfiguration();
-        configuration.setAllowedOrigins(List.of("http://localhost:5173"));
-        configuration.setAllowedMethods(Arrays.asList("GET", "POST", "PUT", "PATCH", "DELETE", "OPTIONS"));
-        configuration.setAllowedHeaders(Arrays.asList("Authorization", "Cache-Control", "Content-Type", "X-Requested-With"));
-        configuration.setExposedHeaders(Collections.singletonList("Authorization"));
-        configuration.setAllowCredentials(true);
-        configuration.setMaxAge(3600L);
 
-        UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
-        source.registerCorsConfiguration("/**", configuration);
-        log.info("CORS ENABLED");
-        return source;
-    }
 
     @Bean
     public AuthenticationManager authenticationManager(AuthenticationConfiguration authenticationConfiguration) throws Exception {
