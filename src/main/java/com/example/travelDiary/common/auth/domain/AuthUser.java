@@ -9,6 +9,7 @@ import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 
+import java.time.Instant;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.Collection;
@@ -36,7 +37,7 @@ public class AuthUser {
 
     private String picture;
 
-    private LocalDateTime createdAt;
+    private Instant createdAt;
 
     private String provider;
     private String providerId;
@@ -44,7 +45,5 @@ public class AuthUser {
     @Enumerated(EnumType.STRING)
     @Column(nullable = false)
     private Role role;
-
-
 
 }

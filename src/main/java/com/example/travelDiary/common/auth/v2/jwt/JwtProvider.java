@@ -5,7 +5,10 @@ import com.example.travelDiary.common.auth.domain.PrincipalDetails;
 import com.example.travelDiary.common.auth.domain.Role;
 import com.example.travelDiary.common.auth.dto.JwtToken;
 import io.jsonwebtoken.*;
+import io.jsonwebtoken.io.Decoders;
+import io.jsonwebtoken.security.Keys;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.GrantedAuthority;
@@ -13,6 +16,7 @@ import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.stereotype.Component;
 
 import javax.crypto.SecretKey;
+import java.time.Instant;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.Date;
@@ -21,40 +25,15 @@ import java.util.stream.Collectors;
 @Component
 @Slf4j
 public class JwtProvider {
-    private static final SecretKey key = Jwts.SIG.HS512.key().build();
-    private static final long EXPIRATION_TIME = 86400000; // 1 day in milliseconds
+    //change to jjwt.io key -> to maintain jwt key during multiple backend
+    private static SecretKey KEY;
+    private static final long ACCESS_EXPIRATION_TIME = 900000; // 15 minutes in milliseconds
+    private static final long REFRESH_EXPIRATION_TIME = 604800000 ; // 1 day in milliseconds
 
-    // Generate a JWT token
-    public String generateToken(String username) {
-        return Jwts.builder().subject(username)
-                .issuedAt(new Date(System.currentTimeMillis()))
-                .expiration(new Date(System.currentTimeMillis() + EXPIRATION_TIME))
-                .signWith(key)
-                .compact();
+    @Value("${jjwt.key}")
+    public void setKey (String key) {
+        KEY = Keys.hmacShaKeyFor(Decoders.BASE64URL.decode(key));
     }
-
-    // Extract username from JWT token
-    public String extractUsername(String token) {
-        return getClaimsFromToken(token).getSubject();
-    }
-
-    // Validate JWT token
-    public boolean validateTokenV1(String token) {
-        final String username = extractUsername(token);
-        return (username != null && !isTokenExpired(token));
-    }
-
-    // Check if the token has expired
-    private boolean isTokenExpired(String token) {
-        final Date expiration = getClaimsFromToken(token).getExpiration();
-        return expiration.before(new Date());
-    }
-
-    // Get claims from the token
-    public Claims getClaimsFromToken(String token) {
-        return Jwts.parser().verifyWith(key).build().parseSignedClaims(token).getPayload();
-    }
-
 
     // Generate a JWT token
     public JwtToken generateToken(PrincipalDetails authentication) {
@@ -63,18 +42,21 @@ public class JwtProvider {
                 .map(GrantedAuthority::getAuthority)
                 .collect(Collectors.joining(","));
 
-        long now = (new Date()).getTime();
+        Instant now = Instant.now();
 
         // Create Access Token
-        Date accessTokenExpiresIn = new Date(now + EXPIRATION_TIME);
+        Instant accessTokenExpiresIn = now.plusMillis(ACCESS_EXPIRATION_TIME);
         String accessToken = Jwts.builder().subject(authentication.getName())
-                .claim("auth", authorities).expiration(accessTokenExpiresIn)
-                .signWith(key, Jwts.SIG.HS512)
+                .claim("auth", authorities)
+                .expiration(Date.from(accessTokenExpiresIn))
+                .signWith(KEY, Jwts.SIG.HS512)
                 .compact();
 
         // Create Refresh Token
-        String refreshToken = Jwts.builder().expiration(new Date(now + EXPIRATION_TIME))
-                .signWith(key, Jwts.SIG.HS512)
+        Instant refreshTokenExpiresIn = now.plusMillis(REFRESH_EXPIRATION_TIME);
+        String refreshToken = Jwts.builder()
+                .expiration(Date.from(refreshTokenExpiresIn))
+                .signWith(KEY, Jwts.SIG.HS512)
                 .compact();
 
         return JwtToken.builder()
@@ -84,6 +66,8 @@ public class JwtProvider {
                 .build();
     }
 
+    //refresh -> server accept refresh -> validate refresh token -> generate new token
+    //refresh token need to have a much longer expiration time then accesstoken. ( accesstoken 15 mins / refresh token 1week )
     // Jwt 토큰을 복호화하여 토큰에 들어있는 정보를 꺼내는 메서드
     public Authentication getAuthentication(String accessToken) {
         // Jwt 토큰 복호화
@@ -112,7 +96,7 @@ public class JwtProvider {
     public boolean validateToken(String token) {
         try {
             Jwts.parser()
-                    .verifyWith(key)
+                    .verifyWith(KEY)
                     .build()
                     .parseSignedClaims(token);
             return true;
@@ -132,12 +116,22 @@ public class JwtProvider {
     private Claims parseClaims(String accessToken) {
         try {
             return Jwts.parser()
-                    .verifyWith(key)
+                    .verifyWith(KEY)
                     .build()
                     .parseSignedClaims(accessToken)
                     .getPayload();
         } catch (ExpiredJwtException e) {
             return e.getClaims();
         }
+    }
+
+    public long getExpirationTime(String cleanedToken) {
+        Claims claims = Jwts.parser()
+                .verifyWith(KEY)
+                .build()
+                .parseSignedClaims(cleanedToken)
+                .getPayload();
+        Date expiration = claims.getExpiration();
+        return expiration.getTime();
     }
 }

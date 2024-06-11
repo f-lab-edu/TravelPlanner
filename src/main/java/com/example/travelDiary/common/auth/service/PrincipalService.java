@@ -24,7 +24,6 @@ public class PrincipalService implements UserDetailsService {
     @Autowired
     public PrincipalService(AuthUserRepository authUserRepository) {
         this.authUserRepository = authUserRepository;
-
     }
 
     //시큐리티 session => Authentication => UserDetails

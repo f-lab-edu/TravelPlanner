@@ -16,6 +16,8 @@ import org.springframework.security.config.annotation.web.configuration.EnableWe
 import org.springframework.security.config.annotation.web.configurers.AbstractHttpConfigurer;
 import org.springframework.security.config.annotation.web.configurers.HeadersConfigurer;
 import org.springframework.security.config.http.SessionCreationPolicy;
+import org.springframework.security.oauth2.client.oidc.userinfo.OidcUserService;
+import org.springframework.security.oauth2.client.registration.InMemoryClientRegistrationRepository;
 import org.springframework.security.oauth2.client.web.AuthorizationRequestRepository;
 import org.springframework.security.oauth2.client.web.HttpSessionOAuth2AuthorizationRequestRepository;
 import org.springframework.security.oauth2.core.endpoint.OAuth2AuthorizationRequest;
@@ -46,7 +48,7 @@ public class SecurityTestProfileSecurityConfig {
     }
 
     @Bean
-    public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
+    public SecurityFilterChain securityFilterChain(HttpSecurity http, InMemoryClientRegistrationRepository clientRegistrationRepository) throws Exception {
         http
                 .httpBasic(AbstractHttpConfigurer::disable)
                 .csrf(AbstractHttpConfigurer::disable)
@@ -68,7 +70,8 @@ public class SecurityTestProfileSecurityConfig {
                                 .baseUri("/oauth2/authorize-client")
                                 .authorizationRequestRepository(authorizationRequestRepository())
                         )
-                        .userInfoEndpoint(userInfo -> userInfo.userService(principalOauth2Service))
+                        .tokenEndpoint(Customizer.withDefaults())
+                        .userInfoEndpoint(userInfo -> userInfo.oidcUserService(oidcUserService()))
                         .successHandler(customOAuth2SuccessHandler)
                 )
                 .sessionManagement(customizer -> customizer.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
@@ -104,4 +107,10 @@ public class SecurityTestProfileSecurityConfig {
         return new HttpSessionOAuth2AuthorizationRequestRepository();
     }
 
+    @Bean
+    public OidcUserService oidcUserService() {
+        OidcUserService oidcUserService = new OidcUserService();
+        oidcUserService.setOauth2UserService(principalOauth2Service);
+        return oidcUserService;
+    }
 }

@@ -15,7 +15,7 @@ import org.springframework.security.oauth2.core.OAuth2AuthenticationException;
 import org.springframework.security.oauth2.core.user.OAuth2User;
 import org.springframework.stereotype.Service;
 
-import java.time.LocalDateTime;
+import java.time.Instant;
 import java.util.Optional;
 
 @Service
@@ -75,7 +75,7 @@ public class PrincipalOauth2Service extends DefaultOAuth2UserService {
                     .role(role)
                     .provider(provider)
                     .providerId(providerId)
-                    .createdAt(LocalDateTime.now())
+                    .createdAt(Instant.now())
                     .build();
 
             return authUserRepository.save(newUser);

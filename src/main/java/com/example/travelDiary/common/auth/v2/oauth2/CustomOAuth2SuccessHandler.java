@@ -27,6 +27,7 @@ public class CustomOAuth2SuccessHandler extends SimpleUrlAuthenticationSuccessHa
     @Override
     public void onAuthenticationSuccess(HttpServletRequest request, HttpServletResponse response, Authentication authentication) throws IOException {
         // 3. 인증 정보를 기반으로 JWT 토큰 생성
+        // openId connect -> authentication oauth2? from authorization code + signal openid connect -> id token + user info -> user endpoint can receive more info.
         PrincipalDetails principalDetails = (PrincipalDetails) authentication.getPrincipal();
         JwtToken token = jwtProvider.generateToken(principalDetails);
         log.info("token : {}", token);

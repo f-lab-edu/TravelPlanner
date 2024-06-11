@@ -31,4 +31,6 @@ public class AuthConfiguration {
         return new JwtAuthenticationFilter(jwtProvider());
     }
 
+
+
 }

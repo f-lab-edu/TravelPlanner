@@ -26,7 +26,7 @@ public class JwtAuthService {
         // 1. username + password 기반으로 Authentication 객체 생성
         UsernamePasswordAuthenticationToken authenticationToken = new UsernamePasswordAuthenticationToken(username, password);
 
-        // 2. 실제 검증 (authenticate() 메서드가 실행될 때 PrincipalDetailsService의 loadUserByUsername 실행)
+        // 2. 실제 검증 (authenticate() 메서드가 실행될 때 PrincipalDetailsService 의 loadUserByUsername 실행)
         Authentication authentication = authenticationManager.authenticate(authenticationToken);
 
         // 3. 인증 정보를 기반으로 JWT 토큰 생성
