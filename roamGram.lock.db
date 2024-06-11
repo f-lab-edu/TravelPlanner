@@ -1,6 +1,0 @@
-#FileLock
-#Wed Jun 12 02:49:05 KST 2024
-hostName=192.168.0.2
-id=190086af44180a0cf925882b501f25034945a518004
-method=file
-server=192.168.0.2\:9090
