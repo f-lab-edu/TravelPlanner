@@ -3,6 +3,7 @@ package com.example.travelDiary.application.service.travel.schedule;
 import com.example.travelDiary.application.events.EventPublisher;
 import com.example.travelDiary.application.events.travel.ScheduleCreatedEvent;
 import com.example.travelDiary.application.events.travel.ScheduleDeletedEvent;
+import com.example.travelDiary.application.events.travel.SchedulePreDeletedEvent;
 import com.example.travelDiary.application.events.travel.ScheduleUpdatedEvent;
 import com.example.travelDiary.application.service.location.PlaceMutationService;
 import com.example.travelDiary.application.service.travel.RouteAccessService;
@@ -52,6 +53,7 @@ public class ScheduleMutationService {
     public Schedule createSchedule(UUID travelPlanId, ScheduleInsertRequest request) {
         Schedule schedule = conversionService.convert(request, Schedule.class);
         assert schedule != null;
+        schedule.setTravelPlanId(travelPlanId);
 
         schedule = scheduleRepository.save(schedule);
         updateTravelPlanOnInsert(travelPlanId, schedule);
@@ -69,11 +71,13 @@ public class ScheduleMutationService {
     }
 
     @Transactional
-    public UUID deleteSchedule(UUID scheduleId) {
+    public UUID deleteSchedule(UUID travelPlanId, UUID scheduleId) {
         Schedule schedule = scheduleRepository.findById(scheduleId).orElseThrow(() -> new EntityNotFoundException("Schedule not found"));
+        eventPublisher.publishEvent(new SchedulePreDeletedEvent(travelPlanId,scheduleId));
         Place place = schedule.getPlace();
+        UUID placeId = place == null ? null : place.getId();
         scheduleRepository.delete(schedule);
-        eventPublisher.publishEvent(new ScheduleDeletedEvent(scheduleId, place.getId()));
+        eventPublisher.publishEvent(new ScheduleDeletedEvent(scheduleId, placeId));
 
         return scheduleId;
     }
@@ -84,8 +88,6 @@ public class ScheduleMutationService {
         Schedule sanitizedSchedule = conversionService.convert(request, Schedule.class);
 
         schedule.setIsActuallyVisited(sanitizedSchedule.getIsActuallyVisited());
-        schedule.setTravelDate(sanitizedSchedule.getTravelDate());
-        schedule.setOrderOfTravel(sanitizedSchedule.getOrderOfTravel());
         schedule.setTravelStartTimeEstimate(sanitizedSchedule.getTravelStartTimeEstimate());
         schedule.setTravelDepartTimeEstimate(sanitizedSchedule.getTravelDepartTimeEstimate());
 

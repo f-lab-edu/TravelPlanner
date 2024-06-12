@@ -11,6 +11,8 @@ import org.springframework.data.domain.PageRequest;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDate;
+import java.time.LocalDateTime;
+import java.time.LocalTime;
 import java.util.List;
 import java.util.UUID;
 
@@ -31,7 +33,9 @@ public class ScheduleQueryService {
 
     public Page<Schedule> getSchedulesOnGivenDay (LocalDate date, Integer pageNumber, Integer pageSize) {
         PageRequest pageable = PageRequest.of(pageNumber,pageSize);
-        return scheduleRepository.findAllByTravelDate(date, pageable);
+        LocalDateTime start = date.atStartOfDay();
+        LocalDateTime end = date.atTime(LocalTime.MAX);
+        return scheduleRepository.findAllByTravelDate(start, end, pageable);
     }
 
     public Page<Schedule> getScheduleContainingName(String name, Integer pageNumber, Integer pageSize) {
@@ -44,4 +48,6 @@ public class ScheduleQueryService {
         return activities.stream().flatMap(event -> activityAccessService.getAllMonetaryEvents(event.getId()).stream()).toList();
     }
 
+//"    public List<Schedule> getImmediatePrecedingAndSucceedingSchedule(UUID travelPlanId, LocalDateTime date) {
+//    }"
 }

@@ -4,6 +4,7 @@ import com.example.travelDiary.domain.model.wallet.Amount;
 import lombok.*;
 
 import java.math.BigDecimal;
+import java.time.Instant;
 import java.util.Currency;
 import java.util.UUID;
 
@@ -19,4 +20,5 @@ public class CurrencyConversion implements MonetaryEvent {
     private Amount convertedAmountFrom;
     private Amount convertedAmountTo;
     private BigDecimal rate;
+    private Instant timestamp;
 }

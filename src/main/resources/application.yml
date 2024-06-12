@@ -6,6 +6,4 @@ spring:
     active: dev
     include: secrets
 
-#logging:
-#  level:
-#    root: debug
+# Common configuration here

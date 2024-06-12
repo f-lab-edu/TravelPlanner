@@ -15,12 +15,9 @@ public class ScheduleInsertRequestToEntity implements Converter<ScheduleInsertRe
         if (source.getIsActuallyVisited() != null) {
             entity.setIsActuallyVisited(source.getIsActuallyVisited());
         }
-        if (source.getTravelDate() != null) {
-            entity.setTravelDate(source.getTravelDate());
-        }
-        if (source.getOrderOfTravel() != null) {
-            entity.setOrderOfTravel(source.getOrderOfTravel());
-        }
+//        if (source.getTravelDate() != null) {
+//            entity.setTravelDate(source.getTravelDate());
+//        }
         if (source.getTravelStartTimeEstimate() != null) {
             entity.setTravelStartTimeEstimate(source.getTravelStartTimeEstimate());
         }

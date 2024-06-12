@@ -10,28 +10,37 @@ import com.example.travelDiary.presentation.dto.request.travel.location.PlaceUpd
 import com.example.travelDiary.presentation.dto.request.travel.RouteUpdateRequest;
 import com.example.travelDiary.presentation.dto.request.travel.schedule.ScheduleInsertRequest;
 import com.example.travelDiary.presentation.dto.request.travel.schedule.ScheduleMetadataUpdateRequest;
+import com.example.travelDiary.repository.persistence.travel.TravelPlanRepository;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Page;
 import org.springframework.web.bind.annotation.*;
 
 import java.time.LocalDate;
+import java.time.LocalDateTime;
+import java.util.List;
 import java.util.UUID;
 
 @RestController
 @RequestMapping("/travelPlan/{travelPlanId}/schedule")
+@Slf4j
 public class ScheduleController {
     private final ScheduleMutationService scheduleMutationService;
+    private final TravelPlanRepository travelPlanRepository;
     private final PlaceMutationService placeMutationService;
     private final ScheduleQueryService scheduleQueryService;
 
-    public ScheduleController(ScheduleMutationService scheduleMutationService, PlaceMutationService placeMutationService, ScheduleQueryService scheduleQueryService) {
+    public ScheduleController(ScheduleMutationService scheduleMutationService, TravelPlanRepository travelPlanRepository, PlaceMutationService placeMutationService, ScheduleQueryService scheduleQueryService) {
         this.scheduleMutationService = scheduleMutationService;
+        this.travelPlanRepository = travelPlanRepository;
         this.placeMutationService = placeMutationService;
         this.scheduleQueryService = scheduleQueryService;
     }
 
-    @PostMapping("/create_schedule")
+    @PutMapping("/create_schedule")
     public Schedule createSchedule(@PathVariable("travelPlanId") UUID travelPlanId, @RequestBody ScheduleInsertRequest request) {
-        return scheduleMutationService.createSchedule(travelPlanId, request);
+        Schedule schedule = scheduleMutationService.createSchedule(travelPlanId, request);
+        travelPlanRepository.findById(travelPlanId).ifPresent(travelPlan -> {travelPlan.getScheduleList().add(schedule);});
+        return schedule;
     }
 
     @PatchMapping("/update_schedule_metadata")
@@ -41,7 +50,7 @@ public class ScheduleController {
 
     @DeleteMapping("/delete_schedule")
     public UUID deleteSchedule(@PathVariable(value = "travelPlanId") UUID travelPlanId, @RequestParam(value="scheduleId") UUID scheduleId) {
-        return scheduleMutationService.deleteSchedule(scheduleId);
+        return scheduleMutationService.deleteSchedule(travelPlanId, scheduleId);
     }
 
     @GetMapping("/search_schedule_by_place_name")
@@ -57,6 +66,7 @@ public class ScheduleController {
                                            @RequestParam LocalDate date,
                                            @RequestParam Integer pageNumber,
                                            @RequestParam Integer pageSize) {
+        log.info("search schedule by day reached");
         return scheduleQueryService.getSchedulesOnGivenDay(date, pageNumber, pageSize);
     }
 
@@ -64,6 +74,13 @@ public class ScheduleController {
     public Schedule getSchedule(@PathVariable(value = "travelPlanId") UUID travelPlanId, @RequestParam(value = "scheduleId") UUID scheduleId) {
         return scheduleQueryService.getSchedule(scheduleId);
     }
+
+//    @GetMapping("/search_schedule_by_day")
+//    public List<Schedule> getImmediatePrecedingAndSucceedingSchedule(@PathVariable(value = "travelPlanId") UUID travelPlanId,
+//                                           @RequestParam LocalDateTime date) {
+//        log.info("search schedule by day reached");
+//        return scheduleQueryService.getImmediatePrecedingAndSucceedingSchedule(travelPlanId, date);
+//    }
 
     //update PLACE
     @PatchMapping("/update_all_linked_place")

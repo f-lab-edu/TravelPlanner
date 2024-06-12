@@ -25,7 +25,6 @@ public class ActivityAccessService {
         this.monetaryDomainQueryService = monetaryDomainQueryService;
     }
 
-
     public Activity getEventById(UUID id) {
         return activityRepository.findById(id).orElseThrow();
     }

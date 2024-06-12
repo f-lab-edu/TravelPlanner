@@ -19,7 +19,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
 
-import static com.example.travelDiary.domain.model.wallet.mapper.MonetaryEventMapper.toAggregates;
+import static com.example.travelDiary.domain.model.wallet.mapper.toaggregate.MonetaryEventAssembler.toAggregates;
 
 @Service
 public class MonetaryDomainQueryService {
