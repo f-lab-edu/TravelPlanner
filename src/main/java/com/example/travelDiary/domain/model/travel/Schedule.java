@@ -12,6 +12,7 @@ import java.time.LocalTime;
 import java.util.List;
 import java.util.UUID;
 
+
 @Entity
 @Data
 public class Schedule {
@@ -49,5 +50,4 @@ public class Schedule {
     @OneToMany
     @Cascade(CascadeType.ALL)
     public List<Activity> activities;
-//    public Set<Tags> travelCategory;
 }
