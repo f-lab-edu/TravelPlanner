@@ -60,4 +60,12 @@ public class TagsAccessService {
         List<TagAssociation> associations = tagAssociationRepository.findByTagIdAndEntityId(tagId, entityId);
         tagAssociationRepository.deleteAll(associations);
     }
+
+    @Transactional
+    public List<UUID> findEntityIdsByTags(String entityType, List<Tags> tags) {
+        int tagSize = tags.size();
+        List<String> tagNames = tags.stream().map(Tags::getName).toList();
+        return tagAssociationRepository.findEntityIdsByTags(entityType, tagNames, tagSize);
+    }
+
 }

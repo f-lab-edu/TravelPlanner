@@ -3,6 +3,7 @@ package com.example.travelDiary.domain.model.location;
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
+
 import jakarta.persistence.Id;
 import lombok.Data;
 
@@ -23,7 +24,7 @@ public class Place {
     public String country;
 
     public Integer visitedCount;
-
+  
     public BigDecimal Latitude;
 
     public BigDecimal Longitude;

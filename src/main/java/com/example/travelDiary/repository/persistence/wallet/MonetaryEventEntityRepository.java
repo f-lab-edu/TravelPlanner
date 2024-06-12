@@ -21,7 +21,7 @@ public interface MonetaryEventEntityRepository extends JpaRepository<MonetaryEve
     @Query("SELECT e FROM MonetaryEventEntity e WHERE e.eventType = 'EXPENDITURE'")
     Page<Expenditure> findAllExpenditure(Pageable page);
 
-    @Query("SELECT e FROM MonetaryEventEntity e WHERE e.eventType = 'CURRENCYCONVERSION' GROUP BY e.transactionId")
+    @Query("SELECT e FROM MonetaryEventEntity e WHERE e.eventType = 'CURRENCYCONVERSION' ORDER BY e.transactionId")
     Page<CurrencyConversion> findAllCurrencyConversion(Pageable page);
 
     @Query("SELECT e FROM MonetaryEventEntity e WHERE e.eventType = 'INCOME' AND e.timestamp >= :from AND e.timestamp <= :to")
@@ -30,10 +30,10 @@ public interface MonetaryEventEntityRepository extends JpaRepository<MonetaryEve
     @Query("SELECT e FROM MonetaryEventEntity e WHERE e.eventType = 'EXPENDITURE' AND e.timestamp >= :from AND e.timestamp <= :to")
     Page<Expenditure> findAllExpenditureBetweenTimeStamp(Pageable page, Instant from, Instant to);
 
-    @Query("SELECT e FROM MonetaryEventEntity e WHERE e.eventType = 'CURRENCYCONVERSION'AND e.timestamp >= :from AND e.timestamp <= :to GROUP BY e.transactionId")
+    @Query("SELECT e FROM MonetaryEventEntity e WHERE e.eventType = 'CURRENCYCONVERSION'AND e.timestamp >= :from AND e.timestamp <= :to ORDER BY e.transactionId")
     Page<CurrencyConversion> findAllCurrencyConversionBetweenTimeStamp(Pageable page, Instant from, Instant to);
 
-    @Query("SELECT e FROM MonetaryEventEntity e WHERE e.timestamp >= :from AND e.timestamp <= :to GROUP BY e.transactionId")
+    @Query("SELECT e FROM MonetaryEventEntity e WHERE e.timestamp >= :from AND e.timestamp <= :to ORDER BY e.transactionId")
     Page<MonetaryEvent> findAllMonetaryEventBetweenTimeStamp(Pageable page, Instant from, Instant to);
 
     MonetaryEventEntity findByTransactionId(String transactionId);

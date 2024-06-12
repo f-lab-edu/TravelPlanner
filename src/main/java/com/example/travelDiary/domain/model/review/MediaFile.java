@@ -5,7 +5,6 @@ import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import lombok.Data;
-import org.hibernate.annotations.SQLRestriction;
 
 import java.util.UUID;
 
@@ -26,8 +25,6 @@ public class MediaFile {
     public String originalFileName;
 
     public String s3Key;
-
-    public Long contentLocation;
 
     public MediaFileStatus mediaFileStatus;
 

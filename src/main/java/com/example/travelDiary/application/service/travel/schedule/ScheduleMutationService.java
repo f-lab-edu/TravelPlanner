@@ -1,6 +1,10 @@
 package com.example.travelDiary.application.service.travel.schedule;
 
-import com.example.travelDiary.application.service.travel.PlaceAccessService;
+import com.example.travelDiary.application.events.EventPublisher;
+import com.example.travelDiary.application.events.travel.ScheduleCreatedEvent;
+import com.example.travelDiary.application.events.travel.ScheduleDeletedEvent;
+import com.example.travelDiary.application.events.travel.ScheduleUpdatedEvent;
+import com.example.travelDiary.application.service.location.PlaceMutationService;
 import com.example.travelDiary.application.service.travel.RouteAccessService;
 import com.example.travelDiary.domain.model.location.Place;
 import com.example.travelDiary.domain.model.travel.Route;
@@ -12,7 +16,6 @@ import com.example.travelDiary.presentation.dto.request.travel.location.PlaceUpd
 import com.example.travelDiary.presentation.dto.request.travel.RouteUpdateRequest;
 import com.example.travelDiary.presentation.dto.request.travel.schedule.ScheduleInsertRequest;
 import com.example.travelDiary.presentation.dto.request.travel.schedule.ScheduleMetadataUpdateRequest;
-import jakarta.persistence.EntityManager;
 import jakarta.persistence.EntityNotFoundException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.convert.ConversionService;
@@ -26,23 +29,22 @@ import java.util.UUID;
 public class ScheduleMutationService {
     private final ScheduleRepository scheduleRepository;
     private final TravelPlanRepository travelPlanRepository;
-    private final EntityManager em;
-    private final PlaceAccessService placeAccessService;
+    private final PlaceMutationService placeMutationService;
     private final ConversionService conversionService;
+    private final EventPublisher eventPublisher;
     private final RouteAccessService routeAccessService;
 
     @Autowired
     public ScheduleMutationService(ScheduleRepository scheduleRepository,
                                    TravelPlanRepository travelPlanRepository,
-                                   EntityManager em,
-                                   PlaceAccessService placeAccessService,
-                                   ConversionService conversionService,
+                                   PlaceMutationService placeMutationService,
+                                   ConversionService conversionService, EventPublisher eventPublisher,
                                    RouteAccessService routeAccessService) {
         this.scheduleRepository = scheduleRepository;
         this.travelPlanRepository = travelPlanRepository;
-        this.em = em;
-        this.placeAccessService = placeAccessService;
+        this.placeMutationService = placeMutationService;
         this.conversionService = conversionService;
+        this.eventPublisher = eventPublisher;
         this.routeAccessService = routeAccessService;
     }
 
@@ -51,17 +53,17 @@ public class ScheduleMutationService {
         Schedule schedule = conversionService.convert(request, Schedule.class);
         assert schedule != null;
 
-        Place place = placeAccessService.createPlace(schedule.getPlace());
-        schedule.setPlace(place);
         schedule = scheduleRepository.save(schedule);
         updateTravelPlanOnInsert(travelPlanId, schedule);
 
         if(request.getPreviousScheduleId() != null) {
-            Schedule previousSchedule = scheduleRepository.getReferenceById(request.getPreviousScheduleId());
+            Schedule previousSchedule = scheduleRepository.findById(request.getPreviousScheduleId()).orElseThrow();
             Route route = routeAccessService.createEmptyRoute();
             previousSchedule.setOutwardRoute(route);
             schedule.setInwardRoute(route);
         }
+
+        eventPublisher.publishEvent(new ScheduleCreatedEvent(schedule));
 
         return schedule;
     }
@@ -70,12 +72,8 @@ public class ScheduleMutationService {
     public UUID deleteSchedule(UUID scheduleId) {
         Schedule schedule = scheduleRepository.findById(scheduleId).orElseThrow(() -> new EntityNotFoundException("Schedule not found"));
         Place place = schedule.getPlace();
-
         scheduleRepository.delete(schedule);
-
-        if (scheduleRepository.findByPlaceId(place.getId()).isEmpty()) {
-            placeAccessService.deletePlace(place);
-        }
+        eventPublisher.publishEvent(new ScheduleDeletedEvent(scheduleId, place.getId()));
 
         return scheduleId;
     }
@@ -85,45 +83,38 @@ public class ScheduleMutationService {
         Schedule schedule = scheduleRepository.findById(request.getScheduleId()).orElseThrow();
         Schedule sanitizedSchedule = conversionService.convert(request, Schedule.class);
 
-        em.detach(sanitizedSchedule);
-
         schedule.setIsActuallyVisited(sanitizedSchedule.getIsActuallyVisited());
         schedule.setTravelDate(sanitizedSchedule.getTravelDate());
         schedule.setOrderOfTravel(sanitizedSchedule.getOrderOfTravel());
         schedule.setTravelStartTimeEstimate(sanitizedSchedule.getTravelStartTimeEstimate());
         schedule.setTravelDepartTimeEstimate(sanitizedSchedule.getTravelDepartTimeEstimate());
 
-        return scheduleRepository.save(schedule);
+        scheduleRepository.save(schedule);
+
+        eventPublisher.publishEvent(new ScheduleUpdatedEvent(schedule));
+
+        return schedule;
     }
 
     //PLACE UPDATES
     @Transactional
     public Schedule reassignPlace(UUID scheduleId, PlaceUpdateRequest request) {
-        Place place = placeAccessService.reassignPlace(request);
+        //move to controller
+        Place place = placeMutationService.createNewPlaceIfNotExists(request);
+
+
         assert place != null;
         Schedule schedule = scheduleRepository.findById(scheduleId).orElseThrow(() -> new EntityNotFoundException("Schedule not found"));
+        UUID oldPlaceId = schedule.getPlace().getId();
         schedule.setPlace(place);
         routeAccessService.resetRoute(schedule.getInwardRoute());
         routeAccessService.resetRoute(schedule.getOutwardRoute());
-        return scheduleRepository.save(schedule);
-    }
 
-    @Transactional
-    public List<Schedule> updatePlace(PlaceUpdateRequest updateRequest) {
-        Place updatedPlace = placeAccessService.updatePlace(updateRequest);
-        // Invalidate or recalculate routes if necessary
-        List<Schedule> affectedSchedules = scheduleRepository.findByPlaceId(updatedPlace.getId());
-        for (Schedule schedule : affectedSchedules) {
+        scheduleRepository.save(schedule);
 
-            Route originalInwardRoute = schedule.getInwardRoute();
-            Route originalOutwardRoute = schedule.getOutwardRoute();
-            routeAccessService.resetRoute(originalInwardRoute);
-            routeAccessService.resetRoute(originalOutwardRoute);
-
-            scheduleRepository.save(schedule);
-        }
-
-        return affectedSchedules;
+        eventPublisher.publishEvent(new ScheduleUpdatedEvent(schedule));
+        eventPublisher.publishEvent(new ScheduleDeletedEvent(scheduleId, oldPlaceId));
+        return schedule;
     }
 
     //ROUTE related

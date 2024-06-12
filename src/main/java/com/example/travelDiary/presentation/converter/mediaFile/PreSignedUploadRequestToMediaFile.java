@@ -20,9 +20,6 @@ public class PreSignedUploadRequestToMediaFile implements Converter<PreSignedUpl
         if (source.getOriginalFileName() != null) {
             mediaFile.setOriginalFileName(source.getOriginalFileName());
         }
-        if (source.getContentLocation() != null) {
-            mediaFile.setContentLocation(source.getContentLocation());
-        }
         mediaFile.setMediaFileStatus(MediaFileStatus.UPLOADING);
 
         return mediaFile;
