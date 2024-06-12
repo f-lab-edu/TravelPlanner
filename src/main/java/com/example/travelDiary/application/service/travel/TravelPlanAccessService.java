@@ -1,11 +1,16 @@
 package com.example.travelDiary.application.service.travel;
 
+import com.example.travelDiary.application.service.travel.schedule.ScheduleEventService;
+import com.example.travelDiary.application.service.travel.schedule.ScheduleMutationService;
+import com.example.travelDiary.domain.model.travel.Event;
 import com.example.travelDiary.domain.model.travel.TravelPlan;
+import com.example.travelDiary.domain.model.wallet.aggregate.MonetaryEvent;
 import com.example.travelDiary.repository.persistence.travel.TravelPlanRepository;
 import com.example.travelDiary.presentation.dto.request.travel.TravelPlanUpsertRequestDTO;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.convert.ConversionService;
 import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.stereotype.Service;
 
@@ -16,13 +21,15 @@ import java.util.UUID;
 public class TravelPlanAccessService {
     private final TravelPlanRepository travelPlanRepository;
     private final ConversionService conversionService;
-    private final ScheduleAccessService scheduleAccessService;
+    private final ScheduleMutationService scheduleMutationService;
+    private final ScheduleEventService scheduleEventService;
 
     @Autowired
-    public TravelPlanAccessService(TravelPlanRepository travelPlanRepository, ConversionService conversionService, ScheduleAccessService scheduleAccessService) {
+    public TravelPlanAccessService(TravelPlanRepository travelPlanRepository, ConversionService conversionService, ScheduleMutationService scheduleMutationService, ScheduleEventService scheduleEventService) {
         this.travelPlanRepository = travelPlanRepository;
         this.conversionService = conversionService;
-        this.scheduleAccessService = scheduleAccessService;
+        this.scheduleMutationService = scheduleMutationService;
+        this.scheduleEventService = scheduleEventService;
     }
 
     public Page<TravelPlan> getTravelPageContainingName(String name, int pageNumber, int pageSize) {
@@ -56,6 +63,24 @@ public class TravelPlanAccessService {
         return travelPlanRepository.save(travelPlan);
     }
 
+    public Page<MonetaryEvent> getAssociatedMonetaryEvent(UUID travelPlanId, PageRequest pageRequest) {
+        List<MonetaryEvent> monetaryEvents = travelPlanRepository
+                .findById(travelPlanId)
+                .orElseThrow()
+                .getScheduleList()
+                .stream()
+                .flatMap(schedule -> scheduleEventService
+                        .getAssociatedMonetaryEvent(
+                                schedule
+                                        .getId()
+                        )
+                        .stream()
+                )
+                .toList();
+
+        return new PageImpl<>(monetaryEvents, pageRequest, monetaryEvents.size());
+
+    }
 
     private void updateNonNullFields(TravelPlanUpsertRequestDTO request, TravelPlan travelPlan) {
 

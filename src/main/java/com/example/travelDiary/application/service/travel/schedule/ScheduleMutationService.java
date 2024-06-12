@@ -1,5 +1,7 @@
-package com.example.travelDiary.application.service.travel;
+package com.example.travelDiary.application.service.travel.schedule;
 
+import com.example.travelDiary.application.service.travel.place.PlaceMutationService;
+import com.example.travelDiary.application.service.travel.RouteAccessService;
 import com.example.travelDiary.domain.model.location.Place;
 import com.example.travelDiary.domain.model.travel.Route;
 import com.example.travelDiary.domain.model.travel.Schedule;
@@ -14,50 +16,34 @@ import jakarta.persistence.EntityManager;
 import jakarta.persistence.EntityNotFoundException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.convert.ConversionService;
-import org.springframework.data.domain.Page;
-import org.springframework.data.domain.PageRequest;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.time.LocalDate;
 import java.util.List;
 import java.util.UUID;
 
 @Service
-public class ScheduleAccessService {
+public class ScheduleMutationService {
     private final ScheduleRepository scheduleRepository;
     private final TravelPlanRepository travelPlanRepository;
     private final EntityManager em;
-    private final PlaceAccessService placeAccessService;
+    private final PlaceMutationService placeAccessService;
     private final ConversionService conversionService;
     private final RouteAccessService routeAccessService;
 
     @Autowired
-    public ScheduleAccessService(ScheduleRepository scheduleRepository,
-                                 TravelPlanRepository travelPlanRepository,
-                                 EntityManager em,
-                                 PlaceAccessService placeAccessService,
-                                 ConversionService conversionService,
-                                 RouteAccessService routeAccessService) {
+    public ScheduleMutationService(ScheduleRepository scheduleRepository,
+                                   TravelPlanRepository travelPlanRepository,
+                                   EntityManager em,
+                                   PlaceMutationService placeAccessService,
+                                   ConversionService conversionService,
+                                   RouteAccessService routeAccessService) {
         this.scheduleRepository = scheduleRepository;
         this.travelPlanRepository = travelPlanRepository;
         this.em = em;
         this.placeAccessService = placeAccessService;
         this.conversionService = conversionService;
         this.routeAccessService = routeAccessService;
-    }
-    public Schedule getSchedule(UUID scheduleId) {
-        return scheduleRepository.getReferenceById(scheduleId);
-    }
-
-    public Page<Schedule> getSchedulesOnGivenDay (LocalDate date, Integer pageNumber, Integer pageSize) {
-        PageRequest pageable = PageRequest.of(pageNumber,pageSize);
-        return scheduleRepository.findAllByTravelDate(date, pageable);
-    }
-
-    public Page<Schedule> getScheduleContainingName(String name, Integer pageNumber, Integer pageSize) {
-        PageRequest pageable = PageRequest.of(pageNumber,pageSize);
-        return scheduleRepository.findAllByPlaceNameContaining(name, pageable);
     }
 
     @Transactional
@@ -113,7 +99,7 @@ public class ScheduleAccessService {
     //PLACE UPDATES
     @Transactional
     public Schedule reassignPlace(UUID scheduleId, PlaceUpdateRequest request) {
-        Place place = placeAccessService.reassignPlace(request);
+        Place place = placeAccessService.createNewPlaceIfNotExists(request);
         assert place != null;
         Schedule schedule = scheduleRepository.findById(scheduleId).orElseThrow(() -> new EntityNotFoundException("Schedule not found"));
         schedule.setPlace(place);
@@ -124,7 +110,6 @@ public class ScheduleAccessService {
 
     @Transactional
     public List<Schedule> updatePlace(PlaceUpdateRequest updateRequest) {
-
         Place updatedPlace = placeAccessService.updatePlace(updateRequest);
         // Invalidate or recalculate routes if necessary
         List<Schedule> affectedSchedules = scheduleRepository.findByPlaceId(updatedPlace.getId());
