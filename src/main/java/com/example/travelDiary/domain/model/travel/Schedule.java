@@ -9,6 +9,7 @@ import org.hibernate.annotations.CascadeType;
 
 import java.time.LocalDate;
 import java.time.LocalTime;
+import java.util.List;
 import java.util.UUID;
 
 
@@ -45,5 +46,9 @@ public class Schedule {
     @OneToOne
     @Cascade(CascadeType.ALL)
     public Route outwardRoute;
+
+    @OneToMany
+    @Cascade(CascadeType.ALL)
+    public List<Event> events;
 
 }

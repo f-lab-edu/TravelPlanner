@@ -3,7 +3,7 @@ package com.example.travelDiary.application.service.review;
 import com.example.travelDiary.application.S3.S3Service;
 import com.example.travelDiary.domain.model.review.MediaFile;
 import com.example.travelDiary.domain.model.review.MediaFileStatus;
-import com.example.travelDiary.domain.persistence.review.MediaFileRepository;
+import com.example.travelDiary.repository.persistence.review.MediaFileRepository;
 import com.example.travelDiary.presentation.dto.request.s3.FinishUploadRequest;
 import com.example.travelDiary.presentation.dto.request.s3.PreSignedUploadInitiateRequest;
 import com.example.travelDiary.presentation.dto.request.s3.PresignedUrlAbortRequest;
