@@ -1,7 +1,8 @@
 services:
   spring-boot-app:
     build: .
-    container_name: roamGram
+    container_name: roamgram
+    image: trienebutdiene/roamgram:latest
     ports:
       - "8080:8080"
     volumes:

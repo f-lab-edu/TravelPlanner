@@ -28,7 +28,6 @@ import org.springframework.security.web.authentication.UsernamePasswordAuthentic
 
 @Configuration
 @EnableWebSecurity
-@Profile("test")
 @Slf4j
 @Import(GlobalCorsConfig.class)
 public class SecurityTestProfileSecurityConfig {

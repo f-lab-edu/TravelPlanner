@@ -1,4 +1,3 @@
-# Use a multi-stage build to optimize the final image size
 # Stage 1: Build the application
 FROM eclipse-temurin:21-jdk as builder
 
@@ -14,9 +13,11 @@ RUN chmod +x gradlew
 # Build the application using Gradle, skipping tests
 RUN ./gradlew build -x test
 
-# Create a custom JRE using jlink
-RUN jlink --module-path $JAVA_HOME/jmods --add-modules java.base,java.logging,java.sql \
-    --output /custom-jre --compress=2 --strip-debug --no-header-files --no-man-pages
+# Create a custom JRE using jlink with all necessary modules
+RUN jlink --module-path $JAVA_HOME/jmods \
+    --add-modules ALL-MODULE-PATH \
+    --compress=2 --strip-debug --no-header-files --no-man-pages \
+    --output /custom-jre
 
 # Stage 2: Create the runtime image
 FROM eclipse-temurin:21-jre

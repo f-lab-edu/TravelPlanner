@@ -3,7 +3,7 @@ spring:
     name: travelDiary
 
   profiles:
-    active: test
+    active: dev
     include: secrets
 
 # Common configuration here
