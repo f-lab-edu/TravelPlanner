@@ -32,6 +32,8 @@ public class MediaFileAccessService {
         this.mediaFileRepository = mediaFileRepository;
     }
 
+    //make idempotent for same file...
+    //check for partial update/ failed update.
     private String saveMediaFile(PreSignedUploadInitiateRequest request) {
         MediaFile mediaFile = conversionService.convert(request, MediaFile.class);
         assert mediaFile != null;

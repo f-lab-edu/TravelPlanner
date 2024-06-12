@@ -24,4 +24,7 @@ public class Review {
     public String userDescription;
 
     public Double rating;
+
+    @ElementCollection
+    public List<Long> contentLocation;
 }

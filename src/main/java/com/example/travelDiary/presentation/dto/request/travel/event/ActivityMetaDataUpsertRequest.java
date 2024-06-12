@@ -6,7 +6,7 @@ import java.time.LocalDateTime;
 import java.util.UUID;
 
 @Data
-public class EventMetaDataUpsertRequest {
+public class ActivityMetaDataUpsertRequest {
     private UUID id;
 
     public UUID scheduleId;

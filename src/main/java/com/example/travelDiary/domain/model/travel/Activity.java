@@ -4,8 +4,6 @@ import com.example.travelDiary.domain.model.tags.Tags;
 import com.example.travelDiary.domain.model.wallet.entity.MonetaryEventEntity;
 import jakarta.persistence.*;
 import lombok.Data;
-import org.hibernate.annotations.Cascade;
-import org.hibernate.annotations.CascadeType;
 
 import java.time.LocalDateTime;
 import java.util.List;
@@ -13,7 +11,7 @@ import java.util.UUID;
 
 @Entity
 @Data
-public class Event {
+public class Activity {
 
     @Id
     @GeneratedValue(strategy = GenerationType.UUID)
@@ -25,8 +23,9 @@ public class Event {
 
     public LocalDateTime eventEndTime;
 
+    public String eventDescription;
+
     @OneToMany
-    @Cascade(CascadeType.ALL)
     public List<MonetaryEventEntity> monetaryEvents;
 
     @OneToMany

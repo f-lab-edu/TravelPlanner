@@ -1,6 +1,5 @@
 package com.example.travelDiary.domain.model.travel;
 
-import com.example.travelDiary.domain.model.location.Place;
 import jakarta.persistence.*;
 import lombok.Data;
 

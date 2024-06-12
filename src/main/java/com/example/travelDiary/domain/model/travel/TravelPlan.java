@@ -23,6 +23,8 @@ public class TravelPlan {
 
     public LocalDate travelEndDate;
 
+    public boolean isPublic;
+
     @OneToMany
     @Cascade(CascadeType.ALL)
     public List<Schedule> ScheduleList;

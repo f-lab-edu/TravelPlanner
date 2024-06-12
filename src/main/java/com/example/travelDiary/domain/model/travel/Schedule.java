@@ -49,6 +49,5 @@ public class Schedule {
 
     @OneToMany
     @Cascade(CascadeType.ALL)
-    public List<Event> events;
-
+    public List<Activity> activities;
 }
