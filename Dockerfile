@@ -1,3 +1,4 @@
+#!/bin
 # Stage 1: Build the application
 FROM eclipse-temurin:21-jdk as builder
 
@@ -11,7 +12,7 @@ COPY . .
 RUN chmod +x gradlew
 
 # Build the application using Gradle, skipping tests
-RUN ./gradlew build -x test
+RUN ./gradlew build -x test --scan
 
 # Create a custom JRE using jlink with all necessary modules
 RUN jlink --module-path $JAVA_HOME/jmods \

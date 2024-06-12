@@ -1,5 +1,6 @@
 package com.example.travelDiary.common.auth;
 
+import com.example.travelDiary.common.auth.service.TokenBlacklistService;
 import com.example.travelDiary.common.auth.v2.jwt.JwtAuthenticationFilter;
 import com.example.travelDiary.common.auth.v2.jwt.JwtProvider;
 import com.example.travelDiary.common.auth.v2.oauth2.CustomOAuth2SuccessHandler;
@@ -25,12 +26,4 @@ public class AuthConfiguration {
     public PasswordEncoder passwordEncoder() {
         return new BCryptPasswordEncoder();
     }
-
-    @Bean
-    public JwtAuthenticationFilter jwtAuthenticationFilter() {
-        return new JwtAuthenticationFilter(jwtProvider());
-    }
-
-
-
 }

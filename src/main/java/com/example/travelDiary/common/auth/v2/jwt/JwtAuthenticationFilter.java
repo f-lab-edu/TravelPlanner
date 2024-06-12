@@ -1,10 +1,12 @@
 package com.example.travelDiary.common.auth.v2.jwt;
 
+import com.example.travelDiary.common.auth.service.TokenBlacklistService;
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.extern.slf4j.Slf4j;
+import org.h2.command.Token;
 import org.jetbrains.annotations.NotNull;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.Authentication;
@@ -19,10 +21,12 @@ import java.io.IOException;
 public class JwtAuthenticationFilter extends OncePerRequestFilter {
 
     private final JwtProvider jwtProvider;
+    private final TokenBlacklistService tokenBlacklistService;
 
     @Autowired
-    public JwtAuthenticationFilter(JwtProvider jwtProvider) {
+    public JwtAuthenticationFilter(JwtProvider jwtProvider, TokenBlacklistService tokenBlacklistService) {
         this.jwtProvider = jwtProvider;
+        this.tokenBlacklistService = tokenBlacklistService;
     }
 
     @Override
@@ -31,6 +35,9 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
                                     @NotNull FilterChain filterChain) throws ServletException, IOException {
         // 1. Request Header에서 JWT 토큰 추출
         String token = getJwtFromRequest(request);
+        if(token != null && tokenBlacklistService.isBlacklisted(token)) {
+            return;
+        }
 
         // 2. validateToken으로 토큰 유효성 검사
         if (token != null && jwtProvider.validateToken(token)) {
