@@ -15,7 +15,7 @@ import java.util.List;
 @Configuration
 @Slf4j
 public class GlobalCorsConfig {
-    @Value("${aws.ec2.dns}")
+    @Value("${aws.ec2.uri}")
     private String EC2DNS;
     @Bean
     public CorsConfigurationSource corsConfigurationSource() {

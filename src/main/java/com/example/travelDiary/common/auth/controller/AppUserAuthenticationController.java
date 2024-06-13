@@ -6,6 +6,7 @@ import com.example.travelDiary.common.auth.dto.RegistrationRequest;
 import com.example.travelDiary.common.auth.service.AuthUserServiceImpl;
 import com.example.travelDiary.common.auth.service.JwtAuthService;
 import com.example.travelDiary.common.auth.v2.jwt.JwtProvider;
+import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -28,12 +29,14 @@ public class AppUserAuthenticationController {
         this.jwtProvider = jwtProvider1;
     }
 
+    @Tag(name = "public")
     @PostMapping("/sign-in")
     public ResponseEntity<JwtToken> login(@RequestBody AuthRequest authRequest) {
         JwtToken jwtToken = jwtAuthService.signIn(authRequest.getUsername(), authRequest.getPassword());
         return ResponseEntity.ok(jwtToken);
     }
 
+    @Tag(name = "public")
     @PostMapping("/sign-up")
     public ResponseEntity<String> signup(@RequestBody RegistrationRequest registrationRequest) {
         log.info("register user : {}", registrationRequest.getUsername());
@@ -41,6 +44,7 @@ public class AppUserAuthenticationController {
         return ResponseEntity.ok("success");
     }
 
+    @Tag(name = "secure")
     @PostMapping("/logout")
     public ResponseEntity<String> logout(@RequestHeader("Authorization") String token) {
         String cleanedToken = token.replace("Bearer ", "");
@@ -48,6 +52,7 @@ public class AppUserAuthenticationController {
         return ResponseEntity.ok("Logged out successfully");
     }
 
+    @Tag(name = "secure")
     @PostMapping("/refresh")
     public ResponseEntity<String> refresh(@RequestBody String refreshToken) {
         // Verify the refresh token and generate a new access token

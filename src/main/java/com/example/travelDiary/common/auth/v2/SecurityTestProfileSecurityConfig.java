@@ -4,13 +4,15 @@ import com.example.travelDiary.common.auth.GlobalCorsConfig;
 import com.example.travelDiary.common.auth.service.PrincipalOauth2Service;
 import com.example.travelDiary.common.auth.v2.jwt.JwtAuthenticationFilter;
 import com.example.travelDiary.common.auth.v2.oauth2.CustomOAuth2SuccessHandler;
+import io.swagger.v3.oas.annotations.OpenAPIDefinition;
+import io.swagger.v3.oas.annotations.enums.SecuritySchemeType;
+import io.swagger.v3.oas.annotations.security.SecurityRequirement;
+import io.swagger.v3.oas.annotations.security.SecurityScheme;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Import;
-import org.springframework.context.annotation.Profile;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.config.Customizer;
 import org.springframework.security.config.annotation.authentication.configuration.AuthenticationConfiguration;
@@ -32,10 +34,6 @@ import org.springframework.security.web.authentication.UsernamePasswordAuthentic
 @Slf4j
 @Import(GlobalCorsConfig.class)
 public class SecurityTestProfileSecurityConfig {
-    @Value("${spring.application.uri}")
-    private String selfDns;
-    @Value("${aws.ec2.uri}")
-    private String EC2DNS;
     private final PrincipalOauth2Service principalOauth2Service;
     private final JwtAuthenticationFilter jwtAuthenticationFilter;
     private final CustomOAuth2SuccessHandler customOAuth2SuccessHandler;
@@ -57,7 +55,6 @@ public class SecurityTestProfileSecurityConfig {
                         .requestMatchers("/token/**").permitAll()
                         .requestMatchers("/authentication/**").permitAll()
                         .requestMatchers("/", "/login**", "/oauth2/**").permitAll()
-                        .requestMatchers(selfDns, EC2DNS).permitAll()
                         .requestMatchers(
                                 "/swagger-ui/**",
                                 "/v3/api-docs/**",
