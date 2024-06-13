@@ -42,9 +42,10 @@ public class ScheduleEventListener {
     @TransactionalEventListener(fallbackExecution=true)
     public void handleScheduleCreatedEvent(ScheduleCreatedEvent event) {
         Schedule schedule = event.getSchedule();
-
-        Place place = placeMutationService.createPlace(schedule.getPlace());
-        schedule.setPlace(place);
+        if(schedule.getPlace() != null) {
+            Place place = placeMutationService.createPlace(schedule.getPlace());
+            schedule.setPlace(place);
+        }
         scheduleRepository.save(schedule);
 
         // Additional logic if needed for Schedule creation
