@@ -1,6 +1,7 @@
 spring:
   application:
     name: travelDiary
+    uri: http://localhost:8080
 
   profiles:
     active: dev
