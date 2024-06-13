@@ -1,0 +1,11 @@
+  group "default" {
+    targets = ["spring-boot-app"]
+  }
+    
+    target "spring-boot-app" {
+    context = "."
+    dockerfile = "Dockerfile"
+    platforms = ["linux/amd64", "linux/arm64"]
+    tags = ["${DOCKER_USERNAME}/roamgram:latest"]
+    push = true
+  }

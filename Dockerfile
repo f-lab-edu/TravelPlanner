@@ -1,4 +1,3 @@
-#!/bin
 # Stage 1: Build the application
 FROM eclipse-temurin:21-jdk as builder
 
@@ -8,8 +7,11 @@ WORKDIR /app
 # Copy the Spring Boot application source code
 COPY . .
 
-# Set execute permission for gradlew script
-RUN chmod +x gradlew
+RUN apt-get update && apt-get install -y dos2unix
+
+# Ensure correct permissions and line endings for gradlew script
+RUN dos2unix gradlew && chmod +x gradlew
+
 
 # Build the application using Gradle, skipping tests
 RUN ./gradlew build -x test --scan

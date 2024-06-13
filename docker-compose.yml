@@ -1,8 +1,10 @@
 services:
   spring-boot-app:
-    build: .
     container_name: roamgram
-    image: trienebutdiene/roamgram:latest
+    image: ${DOCKER_USERNAME}/roamgram:latest
+    build:
+      context: .
+      dockerfile: Dockerfile
     ports:
       - "8080:8080"
     volumes:
