@@ -38,6 +38,7 @@ dependencies {
 	implementation("org.springdoc:springdoc-openapi-starter-webmvc-ui:2.5.0")
 	implementation("software.amazon.awssdk:s3:2.25.52")
 	implementation("org.modelmapper:modelmapper:3.2.0")
+	implementation("org.postgresql:postgresql:42.7.3")
 	compileOnly("org.projectlombok:lombok")
 	implementation("com.h2database:h2:2.2.224")
 	runtimeOnly("org.postgresql:postgresql")
