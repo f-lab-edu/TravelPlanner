@@ -1,5 +1,6 @@
 HELP.md
 src/main/resources/application-secretsLocal.yml
+src/main/resources/application-prod.yml
 .gradle
 build/
 !gradle/wrapper/gradle-wrapper.jar
@@ -8,6 +9,7 @@ build/
 .env
 build.log
 docker-buildx.sh
+
 
 ### STS ###
 .apt_generated
