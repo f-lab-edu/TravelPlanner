@@ -9,20 +9,11 @@ spring:
 
   datasource:
     driver-class-name: org.postgresql.Driver
-    username: postgres
-    password: password
-    url: jdbc:postgresql://localhost:5432/roamgram
-
-  # Remove H2-specific settings
-  # If you don't need the H2 console anymore, you can omit this section
-
-  # spring:
-  #   h2:
-  #     console:
-  #       enabled: true
-  #       path: /h2-console
+    username: ${POSTGRES_USERNAME}
+    password: ${POSTGRES_PASSWORD}
+    url: ${POSTGRES_URL}
 
   data:
     redis:
-      host: redis
-      port: 6379
+      host: ${REDIS_HOST}
+      port: ${REDIS_PORT}

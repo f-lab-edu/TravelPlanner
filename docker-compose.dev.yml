@@ -1,6 +1,8 @@
 services:
-  redis-dev:
+  redis:
     image: "redis:alpine"
-    container_name: redis-dev
+    container_name: redis
     ports:
-      - "6379:6379"  # make sure that another redis instance is not running
+      - "6379:6379"
+    expose:
+      - "6379"

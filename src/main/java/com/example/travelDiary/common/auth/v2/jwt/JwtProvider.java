@@ -33,6 +33,7 @@ public class JwtProvider {
 
     @Value("${jjwt.key}")
     public void setKey (String key) {
+        log.info(key);
         KEY = Keys.hmacShaKeyFor(Decoders.BASE64URL.decode(key));
     }
 

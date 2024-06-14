@@ -7,14 +7,14 @@ WORKDIR /app
 # Copy the Spring Boot application source code
 COPY . .
 
+# To ensure build compatibility with Windows based commit -> CRLF convert to LF
 RUN apt-get update && apt-get install -y dos2unix
 
 # Ensure correct permissions and line endings for gradlew script
 RUN dos2unix gradlew && chmod +x gradlew
 
-
 # Build the application using Gradle, skipping tests
-RUN ./gradlew build -x test --scan
+RUN ./gradlew build --scan
 
 # Create a custom JRE using jlink with all necessary modules
 RUN jlink --module-path $JAVA_HOME/jmods \
@@ -36,9 +36,6 @@ COPY --from=builder /custom-jre /opt/custom-jre
 
 # Set the PATH environment variable to use the custom JRE
 ENV PATH="/opt/custom-jre/bin:$PATH"
-
-# Copy H2 database files if needed
-COPY --from=builder /app/roamGram.mv.db /app/roamGram.mv.db
 
 # Expose the port on which the application will run
 EXPOSE 8080

@@ -24,6 +24,7 @@ repositories {
 }
 
 dependencies {
+	implementation("io.github.cdimascio:dotenv-java:3.0.0")
 	implementation("org.springframework.boot:spring-boot-starter-security")
 	implementation("org.springframework.boot:spring-boot-starter-oauth2-client")
 	implementation("io.jsonwebtoken:jjwt-api:0.12.5")
