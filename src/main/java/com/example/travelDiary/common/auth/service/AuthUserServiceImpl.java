@@ -4,7 +4,7 @@ package com.example.travelDiary.common.auth.service;
 import com.example.travelDiary.common.auth.domain.AuthUser;
 import com.example.travelDiary.common.auth.dto.RegistrationRequest;
 import com.example.travelDiary.common.auth.repository.AuthUserRepository;
-import com.example.travelDiary.common.auth.domain.Role;
+import com.example.travelDiary.common.auth.domain.ApplicationPermits;
 import com.example.travelDiary.common.auth.v2.jwt.JwtProvider;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.crypto.password.PasswordEncoder;
@@ -20,7 +20,7 @@ public class AuthUserServiceImpl implements AuthUserService {
     private final TokenBlacklistService tokenBlacklistService;
     private final JwtProvider jwtProvider;
     private final String PROVIDER = "APP";
-    private final Role USER = Role.USER;
+    private final ApplicationPermits USER = ApplicationPermits.USER;
 
     @Autowired
     public AuthUserServiceImpl(AuthUserRepository userRepository, PasswordEncoder passwordEncoder, TokenBlacklistService tokenBlacklistService, JwtProvider jwtProvider) {
@@ -41,7 +41,7 @@ public class AuthUserServiceImpl implements AuthUserService {
                 .saltedPassword(passwordEncoder.encode(registrationRequest.getPassword()))
                 .email(registrationRequest.getEmail())
                 .name(registrationRequest.getUsername())
-                .role(USER)
+                .applicationPermits(USER)
                 .createdAt(Instant.now())
                 .provider(PROVIDER)
                 .build();

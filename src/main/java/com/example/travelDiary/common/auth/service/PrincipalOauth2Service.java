@@ -2,7 +2,7 @@ package com.example.travelDiary.common.auth.service;
 
 import com.example.travelDiary.common.auth.domain.AuthUser;
 import com.example.travelDiary.common.auth.domain.PrincipalDetails;
-import com.example.travelDiary.common.auth.domain.Role;
+import com.example.travelDiary.common.auth.domain.ApplicationPermits;
 import com.example.travelDiary.common.auth.repository.AuthUserRepository;
 import com.example.travelDiary.common.auth.v2.oauth2.GoogleUserInfo;
 import com.example.travelDiary.common.auth.v2.oauth2.OAuth2UserInfo;
@@ -62,7 +62,7 @@ public class PrincipalOauth2Service extends DefaultOAuth2UserService {
         String password =  passwordEncoder.encode("테스트"); //중요하지 않음 그냥 패스워드 암호화 하
         String email = oAuth2UserInfo.getEmail();
         String name = oAuth2UserInfo.getName();
-        Role role = Role.USER;
+        ApplicationPermits applicationPermits = ApplicationPermits.USER;
 
         Optional<AuthUser> userEntityOptional = authUserRepository.findByUsername(username);
 
@@ -72,7 +72,7 @@ public class PrincipalOauth2Service extends DefaultOAuth2UserService {
                     .name(name)
                     .saltedPassword(password)
                     .email(email)
-                    .role(role)
+                    .applicationPermits(applicationPermits)
                     .provider(provider)
                     .providerId(providerId)
                     .createdAt(Instant.now())

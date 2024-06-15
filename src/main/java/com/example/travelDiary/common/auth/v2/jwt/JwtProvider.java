@@ -2,7 +2,7 @@ package com.example.travelDiary.common.auth.v2.jwt;
 
 import com.example.travelDiary.common.auth.domain.AuthUser;
 import com.example.travelDiary.common.auth.domain.PrincipalDetails;
-import com.example.travelDiary.common.auth.domain.Role;
+import com.example.travelDiary.common.auth.domain.ApplicationPermits;
 import com.example.travelDiary.common.auth.dto.JwtToken;
 import io.jsonwebtoken.*;
 import io.jsonwebtoken.io.Decoders;
@@ -112,7 +112,7 @@ public class JwtProvider {
         // Create PrincipalDetails object and return Authentication
         AuthUser user = new AuthUser();
         user.setUsername(claims.getSubject());
-        user.setRole(Role.valueOf(claims.get("auth").toString()));
+        user.setApplicationPermits(ApplicationPermits.valueOf(claims.get("auth").toString()));
         PrincipalDetails principal = new PrincipalDetails(user);
         return new UsernamePasswordAuthenticationToken(principal, "", authorities);
     }

@@ -4,10 +4,6 @@ import com.example.travelDiary.common.auth.GlobalCorsConfig;
 import com.example.travelDiary.common.auth.service.PrincipalOauth2Service;
 import com.example.travelDiary.common.auth.v2.jwt.JwtAuthenticationFilter;
 import com.example.travelDiary.common.auth.v2.oauth2.CustomOAuth2SuccessHandler;
-import io.swagger.v3.oas.annotations.OpenAPIDefinition;
-import io.swagger.v3.oas.annotations.enums.SecuritySchemeType;
-import io.swagger.v3.oas.annotations.security.SecurityRequirement;
-import io.swagger.v3.oas.annotations.security.SecurityScheme;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
@@ -79,7 +75,6 @@ public class SecurityTestProfileSecurityConfig {
 
         return http.build();
     }
-
 
 
     @Bean
