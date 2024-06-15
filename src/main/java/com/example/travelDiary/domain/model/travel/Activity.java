@@ -19,6 +19,10 @@ public class Activity {
 
     public UUID scheduleId;
 
+    public String name;
+
+    public String description;
+
     public LocalDateTime eventStartTime;
 
     public LocalDateTime eventEndTime;

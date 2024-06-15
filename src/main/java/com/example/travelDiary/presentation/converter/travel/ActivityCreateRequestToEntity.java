@@ -18,6 +18,12 @@ public class ActivityCreateRequestToEntity implements Converter<ActivityMetaData
         if(source.getEventEndTime() != null) {
             activity.setEventEndTime(source.getEventEndTime());
         }
+        if(source.getName() != null) {
+            activity.setName(source.getName());
+        }
+        if(source.getDescription() != null) {
+            activity.setDescription(source.getDescription());
+        }
 
         return activity;
     }

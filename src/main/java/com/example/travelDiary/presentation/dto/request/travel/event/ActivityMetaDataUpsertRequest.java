@@ -11,6 +11,10 @@ public class ActivityMetaDataUpsertRequest {
 
     public UUID scheduleId;
 
+    public String name;
+
+    public String description;
+
     public LocalDateTime eventStartTime;
 
     public LocalDateTime eventEndTime;
