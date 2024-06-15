@@ -11,6 +11,8 @@ import java.util.UUID;
 @Data
 public class ScheduleInsertRequest {
     public Place place;
+    public String name;
+    public String description;
     public Boolean isActuallyVisited;
 //    public LocalDate travelDate;
     public LocalDateTime travelStartTimeEstimate;

@@ -7,23 +7,26 @@ import org.springframework.core.convert.converter.Converter;
 public class ScheduleInsertRequestToEntity implements Converter<ScheduleInsertRequest, Schedule> {
     @Override
     public Schedule convert(ScheduleInsertRequest source) {
-        Schedule entity = new Schedule();
+        Schedule schedule = new Schedule();
 
         if (source.getPlace() != null) {
-            entity.setPlace(source.getPlace());
+            schedule.setPlace(source.getPlace());
         }
         if (source.getIsActuallyVisited() != null) {
-            entity.setIsActuallyVisited(source.getIsActuallyVisited());
+            schedule.setIsActuallyVisited(source.getIsActuallyVisited());
         }
-//        if (source.getTravelDate() != null) {
-//            entity.setTravelDate(source.getTravelDate());
-//        }
+        if(source.getName() != null) {
+            schedule.setName(source.getName());
+        }
+        if(source.getDescription() != null) {
+            schedule.setDescription(source.getDescription());
+        }
         if (source.getTravelStartTimeEstimate() != null) {
-            entity.setTravelStartTimeEstimate(source.getTravelStartTimeEstimate());
+            schedule.setTravelStartTimeEstimate(source.getTravelStartTimeEstimate());
         }
         if (source.getTravelDepartTimeEstimate() != null) {
-            entity.setTravelDepartTimeEstimate(source.getTravelDepartTimeEstimate());
+            schedule.setTravelDepartTimeEstimate(source.getTravelDepartTimeEstimate());
         }
-        return entity;
+        return schedule;
     }
 }

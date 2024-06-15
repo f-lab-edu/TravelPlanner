@@ -21,9 +21,12 @@ public class ScheduleMetadataUpdateRequestToEntity implements Converter<Schedule
             schedule.setIsActuallyVisited(source.getIsActuallyVisited());
         }
 
-//        if (source.getTravelDate() != null) {
-//            schedule.setTravelDate(source.getTravelDate());
-//        }
+        if(source.getName() != null) {
+            schedule.setName(source.getName());
+        }
+        if(source.getDescription() != null) {
+            schedule.setDescription(source.getDescription());
+        }
 
         if (source.getTravelStartTimeEstimate() != null) {
             schedule.setTravelStartTimeEstimate(source.getTravelStartTimeEstimate());

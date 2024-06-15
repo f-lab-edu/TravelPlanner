@@ -10,6 +10,7 @@ import java.util.UUID;
 public class ScheduleMetadataUpdateRequest {
     public UUID scheduleId;
     public String name;
+    public String description;
     public Boolean isActuallyVisited;
 //    public LocalDate travelDate;
     public LocalDateTime travelStartTimeEstimate;

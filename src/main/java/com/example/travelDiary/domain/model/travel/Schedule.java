@@ -24,6 +24,8 @@ public class Schedule {
 
     public String name;
 
+    public String description;
+
     @ManyToOne(fetch = FetchType.EAGER)
     public Place place;
 

@@ -15,6 +15,6 @@ public class User {
 
     private String userName;
 
-    private Long saltedPassword;
+    private String userDescription ;
 
 }
