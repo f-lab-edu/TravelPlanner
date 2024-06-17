@@ -8,9 +8,7 @@ import lombok.Data;
 import org.hibernate.annotations.Cascade;
 import org.hibernate.annotations.CascadeType;
 
-import java.time.LocalDate;
 import java.time.LocalDateTime;
-import java.time.LocalTime;
 import java.util.List;
 import java.util.UUID;
 
@@ -21,7 +19,7 @@ public class Schedule implements IdentifiableResource {
     @GeneratedValue(strategy = GenerationType.UUID)
     private UUID id;
 
-    private UUID TravelPlanId;
+    public UUID travelPlanId;
 
     public String name;
 

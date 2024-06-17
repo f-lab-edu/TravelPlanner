@@ -38,19 +38,19 @@ public class FilterResultsAspect {
         // Get the authenticated user
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
         AuthUser user = (AuthUser) authentication.getPrincipal();
-
-        UserResourcePermissionTypes permissionType = filterResultsForUser.permissionType();
+        String permission = filterResultsForUser.permission();
+        Class<? extends IdentifiableResource> resourceType = filterResultsForUser.resourceType();
 
         // Filter the results based on the user's permissions
         if (result instanceof List) {
             List<IdentifiableResource> resources = (List<IdentifiableResource>) result;
             return resources.stream()
-                    .filter(resource -> accessControlService.hasPermission(user, resource.getId(), permissionType))
+                    .filter(resource -> accessControlService.hasPermission(resourceType, resource.getId(), permission))
                     .collect(Collectors.toList());
         } else if (result instanceof Page) {
             Page<IdentifiableResource> resources = (Page<IdentifiableResource>) result;
             List<IdentifiableResource> filteredResources = resources.stream()
-                    .filter(resource -> accessControlService.hasPermission(user, resource.getId(), permissionType))
+                    .filter(resource -> accessControlService.hasPermission(resourceType, resource.getId(), permission))
                     .collect(Collectors.toList());
             return new PageImpl<>(filteredResources, resources.getPageable(), filteredResources.size());
         }

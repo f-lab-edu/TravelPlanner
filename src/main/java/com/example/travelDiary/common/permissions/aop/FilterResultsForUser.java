@@ -12,5 +12,6 @@ import java.lang.annotation.Target;
 @Target(ElementType.METHOD)
 public @interface FilterResultsForUser {
     Class<? extends IdentifiableResource> resourceType();
+    String permission();
 }
 

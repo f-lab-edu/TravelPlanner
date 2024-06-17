@@ -1,13 +1,17 @@
 package com.example.travelDiary.common.permissions.service;
 
 import com.example.travelDiary.common.auth.domain.AuthUser;
+import com.example.travelDiary.common.auth.domain.PrincipalDetails;
 import com.example.travelDiary.common.permissions.domain.Resource;
 import com.example.travelDiary.common.permissions.domain.ResourcePermission;
 import com.example.travelDiary.common.permissions.domain.UserResourcePermissionTypes;
+import com.example.travelDiary.common.permissions.domain.exception.ResourceNotFoundException;
 import com.example.travelDiary.common.permissions.repository.ResourcePermissionRepository;
 import com.example.travelDiary.common.permissions.repository.ResourceRepository;
 import com.example.travelDiary.domain.IdentifiableResource;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 
 import java.util.Optional;
@@ -25,48 +29,45 @@ public class AccessControlService {
         this.resourcePermissionRepository = resourcePermissionRepository;
     }
 
-    public boolean hasPermission(Class<? extends IdentifiableResource> resourceType, UUID resourceId, String permission) {
-        // Implement logic to check permissions for the given resource type and ID
-        Optional<Resource> resourceOpt = resourceRepository.findByResourceUUIDAndType(resourceId, resourceType.getSimpleName());
-        if (resourceOpt.isEmpty()) {
-            return false;
-        }
+    public boolean hasPermission(Class<? extends IdentifiableResource> resourceType, UUID resourceId, AuthUser currentUser, String permission) {
+        Resource resource = resourceRepository.findByResourceUUIDAndType(resourceId, resourceType.getSimpleName())
+                .orElseThrow(() -> new ResourceNotFoundException("Resource not found"));
 
-        Resource resource = resourceOpt.get();
-        if ("public".equals(resource.getVisibility())) {
+        // If resource is public, allow view permission
+        if ("public".equals(resource.getVisibility()) && UserResourcePermissionTypes.VIEW.name().equals(permission)) {
             return true;
         }
 
-        // Add additional permission checks here based on user roles, ownership, etc.
-        return true; // Placeholder for actual permission logic
+        Optional<ResourcePermission> resourcePermissionOpt = resourcePermissionRepository.findByUserAndResource(currentUser, resource);
+
+        return resourcePermissionOpt.isPresent() && resourcePermissionOpt.get().getPermissions().name().equals(permission);
     }
 
-    public boolean hasPermission(AuthUser user, UUID resourceId, UserResourcePermissionTypes permissionType) {
-        Optional<ResourcePermission> permission = resourcePermissionRepository.findByUserIdAndResourceId(user.getId(), resourceId);
-        if (permission.isPresent()) {
-            return permission.get().getPermissions().compareTo(permissionType) >= 0;
-        } else {
-            // Check visibility as fallback
-            Optional<Resource> resource = resourceRepository.findById(resourceId);
-            if (resource.isPresent()) {
-                Resource res = resource.get();
-                if ("public".equals(res.getVisibility())) {
-                    return permissionType == UserResourcePermissionTypes.VIEW || permissionType == UserResourcePermissionTypes.CLONE;
-                }
-            }
+    public boolean hasPermission(Class<? extends IdentifiableResource> resourceType, UUID resourceId, String permission) {
+        Resource resource = resourceRepository.findByResourceUUIDAndType(resourceId, resourceType.getSimpleName())
+                .orElseThrow(() -> new ResourceNotFoundException("Resource not found"));
+
+        // If resource is public, allow view permission
+        if ("public".equals(resource.getVisibility()) && UserResourcePermissionTypes.VIEW.name().equals(permission)) {
+            return true;
         }
-        return false;
+
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+        AuthUser currentUser = ((PrincipalDetails) authentication.getPrincipal()).getUser();
+        Optional<ResourcePermission> resourcePermissionOpt = resourcePermissionRepository.findByUserAndResource(currentUser, resource);
+
+        return resourcePermissionOpt.isPresent() && resourcePermissionOpt.get().getPermissions().name().equals(permission);
     }
 
-    public void addPermission(AuthUser user, UUID resourceId, UserResourcePermissionTypes permissionType) {
-        Resource resource = resourceRepository.findById(resourceId)
-                .orElseThrow(() -> new IllegalArgumentException("Resource not found"));
-        ResourcePermission resourcePermission = new ResourcePermission();
-        resourcePermission.setResource(resource);
-        resourcePermission.setUser(user);
-        resourcePermission.setPermissions(permissionType);
-        resourcePermissionRepository.save(resourcePermission);
+    public void assignOwnerPermission(Resource resource, AuthUser user) {
+        ResourcePermission permission = ResourcePermission.builder()
+                .user(user)
+                .resource(resource)
+                .permissions(UserResourcePermissionTypes.OWNER)
+                .build();
+        resourcePermissionRepository.save(permission);
     }
+
 
     public void revokePermission(UUID userId, UUID resourceId) {
         resourcePermissionRepository.deleteByUserIdAndResourceId(userId, resourceId);

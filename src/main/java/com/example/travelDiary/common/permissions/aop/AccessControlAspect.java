@@ -35,7 +35,7 @@ public class AccessControlAspect {
         String permission = checkAccess.permission();
         Class<? extends IdentifiableResource> resourceType = checkAccess.resourceType();
 
-        if (!accessControlService.hasPermission(resourceType, resourceId, permission)) {
+        if (!accessControlService.hasPermission(resourceType, resourceId,permission)) {
             throw new AccessDeniedException("Access Denied");
         }
 
