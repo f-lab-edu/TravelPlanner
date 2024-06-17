@@ -1,4 +1,4 @@
-package com.example.travelDiary.common.auth.permissions;
+package com.example.travelDiary.common.permissions;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;

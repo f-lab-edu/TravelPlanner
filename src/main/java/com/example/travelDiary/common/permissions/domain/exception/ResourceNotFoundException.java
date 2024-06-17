@@ -1,4 +1,4 @@
-package com.example.travelDiary.common.auth.permissions.domain.exception;
+package com.example.travelDiary.common.permissions.domain.exception;
 
 public class ResourceNotFoundException extends RuntimeException {
     public ResourceNotFoundException(String message) {

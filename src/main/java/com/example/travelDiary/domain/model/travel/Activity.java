@@ -1,5 +1,6 @@
 package com.example.travelDiary.domain.model.travel;
 
+import com.example.travelDiary.domain.IdentifiableResource;
 import com.example.travelDiary.domain.model.tags.Tags;
 import com.example.travelDiary.domain.model.wallet.entity.MonetaryEventEntity;
 import jakarta.persistence.*;
@@ -11,7 +12,7 @@ import java.util.UUID;
 
 @Entity
 @Data
-public class Activity {
+public class Activity implements IdentifiableResource {
 
     @Id
     @GeneratedValue(strategy = GenerationType.UUID)

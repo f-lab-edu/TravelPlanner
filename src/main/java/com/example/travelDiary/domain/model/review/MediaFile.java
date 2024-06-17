@@ -1,5 +1,6 @@
 package com.example.travelDiary.domain.model.review;
 
+import com.example.travelDiary.domain.IdentifiableResource;
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
@@ -10,7 +11,7 @@ import java.util.UUID;
 
 @Entity
 @Data
-public class MediaFile {
+public class MediaFile implements IdentifiableResource {
 
     @Id
     @GeneratedValue(strategy = GenerationType.UUID)

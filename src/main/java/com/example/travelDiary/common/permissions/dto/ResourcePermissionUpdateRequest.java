@@ -1,6 +1,6 @@
-package com.example.travelDiary.common.auth.permissions.dto;
+package com.example.travelDiary.common.permissions.dto;
 
-import com.example.travelDiary.common.auth.permissions.domain.UserResourcePermissionTypes;
+import com.example.travelDiary.common.permissions.domain.UserResourcePermissionTypes;
 import lombok.Data;
 
 import java.util.UUID;

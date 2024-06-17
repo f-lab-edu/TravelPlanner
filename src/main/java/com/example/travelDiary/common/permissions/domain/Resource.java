@@ -1,4 +1,4 @@
-package com.example.travelDiary.common.auth.permissions.domain;
+package com.example.travelDiary.common.permissions.domain;
 
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;

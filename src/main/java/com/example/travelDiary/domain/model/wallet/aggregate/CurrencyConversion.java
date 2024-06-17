@@ -1,6 +1,8 @@
 package com.example.travelDiary.domain.model.wallet.aggregate;
 
+import com.example.travelDiary.domain.IdentifiableResource;
 import com.example.travelDiary.domain.model.wallet.Amount;
+import io.jsonwebtoken.Identifiable;
 import lombok.*;
 
 import java.math.BigDecimal;
@@ -13,7 +15,7 @@ import java.util.UUID;
 @Builder
 @AllArgsConstructor
 @NoArgsConstructor
-public class CurrencyConversion implements MonetaryEvent {
+public class CurrencyConversion implements MonetaryEvent, IdentifiableResource {
     private UUID id;
     private Currency currencyFrom;
     private Currency currencyTo;

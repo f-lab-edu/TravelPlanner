@@ -1,6 +1,7 @@
-package com.example.travelDiary.common.auth.permissions.aop;
+package com.example.travelDiary.common.permissions.aop;
 
-import com.example.travelDiary.common.auth.permissions.domain.UserResourcePermissionTypes;
+import com.example.travelDiary.common.permissions.domain.UserResourcePermissionTypes;
+import com.example.travelDiary.domain.IdentifiableResource;
 
 import java.lang.annotation.ElementType;
 import java.lang.annotation.Retention;
@@ -10,8 +11,8 @@ import java.lang.annotation.Target;
 @Retention(RetentionPolicy.RUNTIME)
 @Target(ElementType.METHOD)
 public @interface CheckAccess {
-    String resourceType();
+    Class<? extends IdentifiableResource> resourceType();
     String resourceId();
-    UserResourcePermissionTypes permissionType();
+    String permission();
 }
 

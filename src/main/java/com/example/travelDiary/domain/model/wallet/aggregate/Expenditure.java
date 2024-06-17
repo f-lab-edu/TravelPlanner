@@ -1,5 +1,6 @@
 package com.example.travelDiary.domain.model.wallet.aggregate;
 
+import com.example.travelDiary.domain.IdentifiableResource;
 import com.example.travelDiary.domain.model.wallet.Amount;
 import lombok.*;
 
@@ -11,7 +12,7 @@ import java.util.UUID;
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder
-public class Expenditure implements MonetaryEvent {
+public class Expenditure implements MonetaryEvent, IdentifiableResource {
     private UUID id;
     private Amount amount;
     private Currency currency;

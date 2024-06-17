@@ -1,11 +1,12 @@
-package com.example.travelDiary.common.auth.permissions.service;
+package com.example.travelDiary.common.permissions.service;
 
 import com.example.travelDiary.common.auth.domain.AuthUser;
-import com.example.travelDiary.common.auth.permissions.domain.Resource;
-import com.example.travelDiary.common.auth.permissions.domain.ResourcePermission;
-import com.example.travelDiary.common.auth.permissions.domain.UserResourcePermissionTypes;
-import com.example.travelDiary.common.auth.permissions.repository.ResourcePermissionRepository;
-import com.example.travelDiary.common.auth.permissions.repository.ResourceRepository;
+import com.example.travelDiary.common.permissions.domain.Resource;
+import com.example.travelDiary.common.permissions.domain.ResourcePermission;
+import com.example.travelDiary.common.permissions.domain.UserResourcePermissionTypes;
+import com.example.travelDiary.common.permissions.repository.ResourcePermissionRepository;
+import com.example.travelDiary.common.permissions.repository.ResourceRepository;
+import com.example.travelDiary.domain.IdentifiableResource;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -22,6 +23,22 @@ public class AccessControlService {
     public AccessControlService(ResourceRepository resourceRepository, ResourcePermissionRepository resourcePermissionRepository) {
         this.resourceRepository = resourceRepository;
         this.resourcePermissionRepository = resourcePermissionRepository;
+    }
+
+    public boolean hasPermission(Class<? extends IdentifiableResource> resourceType, UUID resourceId, String permission) {
+        // Implement logic to check permissions for the given resource type and ID
+        Optional<Resource> resourceOpt = resourceRepository.findByResourceUUIDAndType(resourceId, resourceType.getSimpleName());
+        if (resourceOpt.isEmpty()) {
+            return false;
+        }
+
+        Resource resource = resourceOpt.get();
+        if ("public".equals(resource.getVisibility())) {
+            return true;
+        }
+
+        // Add additional permission checks here based on user roles, ownership, etc.
+        return true; // Placeholder for actual permission logic
     }
 
     public boolean hasPermission(AuthUser user, UUID resourceId, UserResourcePermissionTypes permissionType) {

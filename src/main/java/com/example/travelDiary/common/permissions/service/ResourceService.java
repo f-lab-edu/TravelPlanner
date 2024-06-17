@@ -1,12 +1,12 @@
-package com.example.travelDiary.common.auth.permissions.service;
+package com.example.travelDiary.common.permissions.service;
 
-import com.example.travelDiary.common.auth.permissions.aop.CheckAccess;
-import com.example.travelDiary.common.auth.permissions.domain.Resource;
-import com.example.travelDiary.common.auth.permissions.domain.UserResourcePermissionTypes;
-import com.example.travelDiary.common.auth.permissions.domain.exception.ResourceNotFoundException;
-import com.example.travelDiary.common.auth.permissions.dto.ResourcePermissionUpdateRequest;
-import com.example.travelDiary.common.auth.permissions.repository.ResourcePermissionRepository;
-import com.example.travelDiary.common.auth.permissions.repository.ResourceRepository;
+import com.example.travelDiary.common.permissions.aop.CheckAccess;
+import com.example.travelDiary.common.permissions.domain.Resource;
+import com.example.travelDiary.common.permissions.domain.UserResourcePermissionTypes;
+import com.example.travelDiary.common.permissions.domain.exception.ResourceNotFoundException;
+import com.example.travelDiary.common.permissions.dto.ResourcePermissionUpdateRequest;
+import com.example.travelDiary.common.permissions.repository.ResourcePermissionRepository;
+import com.example.travelDiary.common.permissions.repository.ResourceRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.access.prepost.PostAuthorize;
 import org.springframework.security.access.prepost.PreAuthorize;

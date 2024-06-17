@@ -1,5 +1,6 @@
 package com.example.travelDiary.domain.model.location;
 
+import com.example.travelDiary.domain.IdentifiableResource;
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
@@ -12,7 +13,7 @@ import java.util.UUID;
 
 @Entity
 @Data
-public class Place {
+public class Place implements IdentifiableResource {
     @Id
     @GeneratedValue(strategy = GenerationType.UUID)
     private UUID id;

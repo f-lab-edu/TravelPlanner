@@ -1,5 +1,6 @@
 package com.example.travelDiary.domain.model.travel;
 
+import com.example.travelDiary.domain.IdentifiableResource;
 import com.example.travelDiary.domain.model.location.Place;
 import com.example.travelDiary.domain.model.review.Review;
 import jakarta.persistence.*;
@@ -15,7 +16,7 @@ import java.util.UUID;
 
 @Entity
 @Data
-public class Schedule {
+public class Schedule implements IdentifiableResource {
     @Id
     @GeneratedValue(strategy = GenerationType.UUID)
     private UUID id;

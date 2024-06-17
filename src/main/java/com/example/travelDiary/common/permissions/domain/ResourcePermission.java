@@ -1,4 +1,4 @@
-package com.example.travelDiary.common.auth.permissions.domain;
+package com.example.travelDiary.common.permissions.domain;
 
 import com.example.travelDiary.common.auth.domain.AuthUser;
 import jakarta.persistence.*;
@@ -7,7 +7,6 @@ import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
-import java.util.List;
 import java.util.UUID;
 
 @Entity
@@ -20,18 +19,20 @@ public class ResourcePermission {
     @GeneratedValue(strategy = GenerationType.UUID)
     private UUID id;
 
-    @OneToOne(fetch = FetchType.EAGER)
-    @JoinColumn(name = "user_id")
+    @ManyToOne(fetch = FetchType.EAGER)
+    @JoinColumn(name = "user_id", nullable = false)
     private AuthUser user;
 
-    @ManyToOne
+    @ManyToOne(fetch = FetchType.EAGER)
+    @JoinColumn(name = "resource_id", nullable = false)
     private Resource resource;
 
     @Enumerated(EnumType.STRING)
+    @Column(nullable = false)
     private UserResourcePermissionTypes permissions;
-
-    // other fields and methods
 }
+
+
 
 
 

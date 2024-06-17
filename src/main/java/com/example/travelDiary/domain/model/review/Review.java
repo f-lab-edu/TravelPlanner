@@ -1,5 +1,6 @@
 package com.example.travelDiary.domain.model.review;
 
+import com.example.travelDiary.domain.IdentifiableResource;
 import jakarta.persistence.*;
 import lombok.Data;
 import org.hibernate.annotations.Cascade;
@@ -10,7 +11,7 @@ import java.util.UUID;
 
 @Entity
 @Data
-public class Review {
+public class Review implements IdentifiableResource {
     @Id
     @GeneratedValue(strategy = GenerationType.UUID)
     private UUID id;
