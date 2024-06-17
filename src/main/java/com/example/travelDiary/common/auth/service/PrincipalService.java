@@ -32,9 +32,9 @@ public class PrincipalService implements UserDetailsService {
     //함수 종료시 @AuthenticationPrincipal 어노테이션이 만들어진다.
     @Override
     @Transactional(readOnly = true)
-    public PrincipalDetails loadUserByUsername(String username) throws UsernameNotFoundException {
-        Optional<AuthUser> userFound = authUserRepository.findByUsername(username);
-        return userFound.map(PrincipalDetails::new).orElseThrow(()->new UsernameNotFoundException("unable to find User with such a name"));
+    public PrincipalDetails loadUserByUsername(String userName) throws UsernameNotFoundException {
+        Optional<AuthUser> userFound = authUserRepository.findByUsername(userName);
+        return userFound.map(PrincipalDetails::new).orElseThrow(() -> new UsernameNotFoundException("Unable to find user with such provider ID"));
     }
 
 }

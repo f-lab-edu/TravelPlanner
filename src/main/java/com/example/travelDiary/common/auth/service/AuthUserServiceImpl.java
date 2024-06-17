@@ -2,11 +2,14 @@ package com.example.travelDiary.common.auth.service;
 
 
 import com.example.travelDiary.common.auth.domain.AuthUser;
+import com.example.travelDiary.common.auth.domain.PrincipalDetails;
 import com.example.travelDiary.common.auth.dto.RegistrationRequest;
 import com.example.travelDiary.common.auth.repository.AuthUserRepository;
 import com.example.travelDiary.common.auth.domain.ApplicationPermits;
 import com.example.travelDiary.common.auth.v2.jwt.JwtProvider;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
@@ -31,6 +34,7 @@ public class AuthUserServiceImpl implements AuthUserService {
         this.jwtProvider = jwtProvider;
     }
 
+    @Override
     public AuthUser register(RegistrationRequest registrationRequest) {
         if (authUserRepository.findByUsername(registrationRequest.getUsername()).isPresent()) {
             throw new RuntimeException("User with same Username already exists");
@@ -51,9 +55,23 @@ public class AuthUserServiceImpl implements AuthUserService {
         return authUserRepository.save(user);
     }
 
+    @Override
     public void logout(String token) {
         long expirationTime = jwtProvider.getExpirationTime(token);
         tokenBlacklistService.blacklistToken(token, expirationTime);
+    }
+
+    @Override
+    public AuthUser getCurrentAuthenticatedUser() {
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+        if (authentication == null || !authentication.isAuthenticated()) {
+            return null;
+        }
+        AuthUser currentUser = ((PrincipalDetails) authentication.getPrincipal()).getUser();
+        AuthUser managedUser = authUserRepository.findById(currentUser.getId())
+                .orElseThrow(() -> new IllegalStateException("Authenticated user not found"));
+
+        return managedUser;
     }
 
 }

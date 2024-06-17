@@ -1,6 +1,7 @@
 package com.example.travelDiary.domain.model.wallet.aggregate;
 
 
+import com.example.travelDiary.domain.IdentifiableResource;
 import com.fasterxml.jackson.annotation.JsonSubTypes;
 import com.fasterxml.jackson.annotation.JsonTypeInfo;
 
@@ -14,6 +15,6 @@ import com.fasterxml.jackson.annotation.JsonTypeInfo;
         @JsonSubTypes.Type(value = Expenditure.class, name = "expenditure"),
         @JsonSubTypes.Type(value = CurrencyConversion.class, name = "currency_conversion")
 })
-public interface MonetaryEvent {
+public interface MonetaryEvent extends IdentifiableResource {
 
 }

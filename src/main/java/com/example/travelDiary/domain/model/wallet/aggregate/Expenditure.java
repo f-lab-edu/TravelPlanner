@@ -12,7 +12,7 @@ import java.util.UUID;
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder
-public class Expenditure implements MonetaryEvent, IdentifiableResource {
+public class Expenditure implements MonetaryEvent {
     private UUID id;
     private Amount amount;
     private Currency currency;

@@ -4,6 +4,7 @@ import com.example.travelDiary.common.auth.domain.AuthUser;
 import com.example.travelDiary.common.auth.domain.PrincipalDetails;
 import com.example.travelDiary.common.auth.domain.ApplicationPermits;
 import com.example.travelDiary.common.auth.dto.JwtToken;
+import com.example.travelDiary.common.auth.service.PrincipalService;
 import io.jsonwebtoken.*;
 import io.jsonwebtoken.io.Decoders;
 import io.jsonwebtoken.security.Keys;
@@ -30,6 +31,11 @@ public class JwtProvider {
     private static SecretKey KEY;
     private static final long ACCESS_EXPIRATION_TIME = 900000; // 15 minutes in milliseconds
     private static final long REFRESH_EXPIRATION_TIME = 604800000 ; // 1 day in milliseconds
+    private final PrincipalService principalService;
+
+    public JwtProvider(PrincipalService principalService) {
+        this.principalService = principalService;
+    }
 
     @Value("${jjwt.key}")
     public void setKey (String key) {
@@ -72,11 +78,9 @@ public class JwtProvider {
 
     private String generateRefreshToken(PrincipalDetails principal) {
         Instant now = Instant.now();
-        String authorities = getAuthorities(principal);
         Instant refreshTokenExpiresIn = now.plusMillis(REFRESH_EXPIRATION_TIME);
         String refreshToken = Jwts.builder()
                 .subject(principal.getName())
-                .claim("auth", authorities)
                 .expiration(Date.from(refreshTokenExpiresIn))
                 .signWith(KEY, Jwts.SIG.HS512)
                 .compact();
@@ -102,18 +106,22 @@ public class JwtProvider {
             throw new RuntimeException("this token has no information about authority.");
         }
 
+        // Extract user identifier from the claims (e.g., providerId or username)
+        String userName = claims.getSubject();
+
+
+        // UserDetails 객체를 만들어서 Authentication return
+        // UserDetails: interface, User: UserDetails를 구현한 class
+        // Create PrincipalDetails object and return Authentication
+        // Load user details using PrincipalService
+        PrincipalDetails principal = principalService.loadUserByUsername(userName);
+
+
         // 클레임에서 권한 정보 가져오기
         Collection<? extends GrantedAuthority> authorities = Arrays.stream(claims.get("auth").toString().split(","))
                 .map(SimpleGrantedAuthority::new)
                 .collect(Collectors.toList());
 
-        // UserDetails 객체를 만들어서 Authentication return
-        // UserDetails: interface, User: UserDetails를 구현한 class
-        // Create PrincipalDetails object and return Authentication
-        AuthUser user = new AuthUser();
-        user.setUsername(claims.getSubject());
-        user.setApplicationPermits(ApplicationPermits.valueOf(claims.get("auth").toString()));
-        PrincipalDetails principal = new PrincipalDetails(user);
         return new UsernamePasswordAuthenticationToken(principal, "", authorities);
     }
 

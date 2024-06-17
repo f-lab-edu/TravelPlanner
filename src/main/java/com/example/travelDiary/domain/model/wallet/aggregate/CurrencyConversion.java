@@ -15,7 +15,7 @@ import java.util.UUID;
 @Builder
 @AllArgsConstructor
 @NoArgsConstructor
-public class CurrencyConversion implements MonetaryEvent, IdentifiableResource {
+public class CurrencyConversion implements MonetaryEvent {
     private UUID id;
     private Currency currencyFrom;
     private Currency currencyTo;

@@ -1,22 +1,33 @@
 package com.example.travelDiary.common.permissions.service;
 
+import com.example.travelDiary.common.auth.domain.AuthUser;
 import com.example.travelDiary.common.permissions.domain.Resource;
+import com.example.travelDiary.common.permissions.domain.ResourcePermission;
+import com.example.travelDiary.common.permissions.domain.UserResourcePermissionTypes;
 import com.example.travelDiary.common.permissions.domain.exception.ResourceNotFoundException;
+import com.example.travelDiary.common.permissions.repository.ResourcePermissionRepository;
 import com.example.travelDiary.common.permissions.repository.ResourceRepository;
 import com.example.travelDiary.domain.IdentifiableResource;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.time.Instant;
+import java.util.List;
 import java.util.UUID;
 
 @Service
 public class ResourceService {
     private final ResourceRepository resourceRepository;
+    private final ResourcePermissionRepository resourcePermissionRepository;
+    private final AccessControlService accessControlService;
 
     @Autowired
-    public ResourceService(ResourceRepository resourceRepository) {
+    public ResourceService(ResourceRepository resourceRepository,
+                           ResourcePermissionRepository resourcePermissionRepository,
+                           AccessControlService accessControlService) {
         this.resourceRepository = resourceRepository;
+        this.resourcePermissionRepository = resourcePermissionRepository;
+        this.accessControlService = accessControlService;
     }
 
     public Resource getResourceById(UUID resourceId) {
@@ -24,22 +35,41 @@ public class ResourceService {
                 .orElseThrow(() -> new ResourceNotFoundException("Resource not found"));
     }
 
-    public Resource createResource(String visibility, UUID resourceUUID, String type) {
+    public Resource createResource(String visibility, UUID resourceUUID, String type, AuthUser owner) {
         Resource resource = Resource.builder()
                 .visibility(visibility)
                 .resourceUUID(resourceUUID)
                 .type(type)
                 .createTime(Instant.now())
                 .build();
-        return resourceRepository.save(resource);
+        resource = resourceRepository.save(resource);
+
+        // Assign OWNER permission to the creator
+        assignOwnerPermission(resource, owner);
+
+        return resource;
     }
 
-    public Resource linkResource(IdentifiableResource identifiableResource, String visibility) {
-        return createResource(visibility, identifiableResource.getId(), identifiableResource.getClass().getSimpleName());
+    public Resource linkResource(IdentifiableResource identifiableResource, String visibility, AuthUser owner) {
+        return createResource(visibility, identifiableResource.getId(), identifiableResource.getClass().getSimpleName(), owner);
     }
 
     public void deleteResourceById(UUID resourceId) {
+        resourcePermissionRepository.deleteByResourceId(resourceId);
         resourceRepository.deleteById(resourceId);
     }
 
+    public void deleteAllById(List<UUID> resourceIds) {
+        resourcePermissionRepository.deleteAllByResourceIdIn(resourceIds);
+        resourceRepository.deleteAllById(resourceIds);
+    }
+
+    private void assignOwnerPermission(Resource resource, AuthUser owner) {
+        ResourcePermission permission = ResourcePermission.builder()
+                .user(owner)
+                .resource(resource)
+                .permissions(UserResourcePermissionTypes.OWNER)
+                .build();
+        resourcePermissionRepository.save(permission);
+    }
 }

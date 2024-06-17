@@ -7,4 +7,7 @@ public interface AuthUserService {
 
     public AuthUser register(RegistrationRequest registrationRequest);
 
+    void logout(String token);
+
+    AuthUser getCurrentAuthenticatedUser();
 }
