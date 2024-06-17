@@ -1,12 +1,12 @@
 package com.example.travelDiary.common.auth.permissions.aop;
 
 import com.example.travelDiary.common.auth.domain.AuthUser;
-import com.example.travelDiary.common.auth.permissions.repository.ResourceRepository;
+import com.example.travelDiary.common.auth.permissions.aop.CheckAccess;
+import com.example.travelDiary.common.auth.permissions.domain.UserResourcePermissionTypes;
 import com.example.travelDiary.common.auth.permissions.service.AccessControlService;
 import org.aspectj.lang.ProceedingJoinPoint;
 import org.aspectj.lang.annotation.Around;
 import org.aspectj.lang.annotation.Aspect;
-import org.aspectj.lang.reflect.MethodSignature;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.access.AccessDeniedException;
 import org.springframework.security.core.Authentication;
@@ -19,31 +19,36 @@ import java.util.UUID;
 @Component
 public class AccessControlAspect {
 
-
     private final AccessControlService accessControlService;
-    private final ResourceRepository resourceRepository;
 
     @Autowired
-    public AccessControlAspect(AccessControlService accessControlService, ResourceRepository resourceRepository) {
+    public AccessControlAspect(AccessControlService accessControlService) {
         this.accessControlService = accessControlService;
-        this.resourceRepository = resourceRepository;
     }
 
-    @Around("@annotation(CheckAccess)")
-    public Object checkAccess(ProceedingJoinPoint joinPoint) throws Throwable {
-        MethodSignature signature = (MethodSignature) joinPoint.getSignature();
-        CheckAccess checkAccess = signature.getMethod().getAnnotation(CheckAccess.class);
+    @Around("@annotation(checkAccess)")
+    public Object checkAccess(ProceedingJoinPoint joinPoint, CheckAccess checkAccess) throws Throwable {
+        // Extract the class type and resource ID from the annotation
+        String resourceType = checkAccess.resourceType();
+        String resourceIdParam = checkAccess.resourceId();
+        UserResourcePermissionTypes permissionType = checkAccess.permissionType();
 
+        // Get the method arguments to find the resourceId
+        Object[] args = joinPoint.getArgs();
+        UUID resourceId = null;
+        for (Object arg : args) {
+            if (arg instanceof UUID && arg.toString().equals(resourceIdParam)) {
+                resourceId = (UUID) arg;
+                break;
+            }
+        }
+
+        // Get the authenticated user
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
         AuthUser user = (AuthUser) authentication.getPrincipal();
 
-        // Assuming the first parameter is the resource ID (UUID)
-        Object[] args = joinPoint.getArgs();
-        UUID resourceId = (UUID) args[0];
-
-        boolean hasPermission = accessControlService.hasPermission(
-                user, resourceId, checkAccess.permissionType());
-
+        // Check permissions
+        boolean hasPermission = accessControlService.hasPermission(user, resourceId, permissionType);
         if (!hasPermission) {
             throw new AccessDeniedException("Access denied");
         }
@@ -51,4 +56,3 @@ public class AccessControlAspect {
         return joinPoint.proceed();
     }
 }
-

@@ -25,4 +25,6 @@ public interface ScheduleRepository extends JpaRepository<Schedule, UUID> {
     Page<Schedule> findAllByPlaceNameContaining(String name, Pageable pageable);
 
     List<Schedule> findByPlaceId(UUID id);
+
+    List<Schedule> findAllByTravelPlanId(UUID travelPlanId);
 }

@@ -14,4 +14,6 @@ public interface ResourcePermissionRepository extends JpaRepository<ResourcePerm
     ResourcePermission findByUserAndResource(AuthUser user, Resource resource);
 
     Optional<ResourcePermission> findByUserIdAndResourceId(UUID id, UUID resourceId);
+
+    void deleteByUserIdAndResourceId(UUID userId, UUID resourceId);
 }

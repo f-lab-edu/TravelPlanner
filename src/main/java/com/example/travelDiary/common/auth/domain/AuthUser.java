@@ -37,7 +37,6 @@ public class AuthUser {
     private String providerId;
 
     @Enumerated(EnumType.STRING)
-    @Column(nullable = false)
     private ApplicationPermits applicationPermits;
 
 }

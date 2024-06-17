@@ -45,7 +45,7 @@ public class ScheduleController {
 
     @PatchMapping("/update_schedule_metadata")
     public Schedule modifySchedule(@PathVariable(value = "travelPlanId") UUID travelPlanId, @RequestBody ScheduleMetadataUpdateRequest request) {
-        return scheduleMutationService.updateScheduleMetadata(request);
+        return scheduleMutationService.updateScheduleMetadata(travelPlanId, request);
     }
 
     @DeleteMapping("/delete_schedule")
@@ -68,6 +68,11 @@ public class ScheduleController {
                                            @RequestParam Integer pageSize) {
         log.info("search schedule by day reached");
         return scheduleQueryService.getSchedulesOnGivenDay(date, pageNumber, pageSize);
+    }
+
+    @GetMapping("/search_all")
+    public List<Schedule> getSchedule(@PathVariable(value = "travelPlanId") UUID travelPlanId) {
+        return scheduleQueryService.getAllSchedules(travelPlanId);
     }
 
     @GetMapping("/search_schedule")

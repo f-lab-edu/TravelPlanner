@@ -23,6 +23,8 @@ public class Resource {
     @Column(nullable = false)
     private String visibility; // 'public' or 'private'
 
+    private UUID resourceUUID;
+
     private String type;
 
     private Instant createTime;

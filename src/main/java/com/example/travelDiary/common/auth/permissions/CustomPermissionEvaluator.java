@@ -1,7 +1,7 @@
 package com.example.travelDiary.common.auth.permissions;
 
 import com.example.travelDiary.common.auth.domain.AuthUser;
-import com.example.travelDiary.common.auth.permissions.domain.UserPermissionTypes;
+import com.example.travelDiary.common.auth.permissions.domain.UserResourcePermissionTypes;
 import com.example.travelDiary.common.auth.permissions.service.AccessControlService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.access.PermissionEvaluator;
@@ -14,15 +14,19 @@ import java.util.UUID;
 @Component
 public class CustomPermissionEvaluator implements PermissionEvaluator {
 
+    private final AccessControlService accessControlService;
+
     @Autowired
-    private AccessControlService accessControlService;
+    public CustomPermissionEvaluator(AccessControlService accessControlService) {
+        this.accessControlService = accessControlService;
+    }
 
     @Override
     public boolean hasPermission(Authentication authentication, Object targetDomainObject, Object permission) {
         if (targetDomainObject instanceof UUID) {
             AuthUser user = (AuthUser) authentication.getPrincipal();
             UUID resourceId = (UUID) targetDomainObject;
-            UserPermissionTypes permissionType = UserPermissionTypes.valueOf((String) permission);
+            UserResourcePermissionTypes permissionType = UserResourcePermissionTypes.valueOf((String) permission);
             return accessControlService.hasPermission(user, resourceId, permissionType);
         }
         return false;
@@ -33,7 +37,7 @@ public class CustomPermissionEvaluator implements PermissionEvaluator {
         if (targetId instanceof UUID) {
             AuthUser user = (AuthUser) authentication.getPrincipal();
             UUID resourceId = (UUID) targetId;
-            UserPermissionTypes permissionType = UserPermissionTypes.valueOf((String) permission);
+            UserResourcePermissionTypes permissionType = UserResourcePermissionTypes.valueOf((String) permission);
             return accessControlService.hasPermission(user, resourceId, permissionType);
         }
         return false;

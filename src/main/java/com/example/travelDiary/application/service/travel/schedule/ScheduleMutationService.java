@@ -83,10 +83,13 @@ public class ScheduleMutationService {
     }
 
 
-    public Schedule updateScheduleMetadata(ScheduleMetadataUpdateRequest request) {
+    public Schedule updateScheduleMetadata(UUID travelPlanId, ScheduleMetadataUpdateRequest request) {
         Schedule schedule = scheduleRepository.findById(request.getScheduleId()).orElseThrow();
         Schedule sanitizedSchedule = conversionService.convert(request, Schedule.class);
 
+        assert sanitizedSchedule != null;
+        schedule.setName(sanitizedSchedule.getName());
+        schedule.setDescription(sanitizedSchedule.getDescription());
         schedule.setIsActuallyVisited(sanitizedSchedule.getIsActuallyVisited());
         schedule.setTravelStartTimeEstimate(sanitizedSchedule.getTravelStartTimeEstimate());
         schedule.setTravelDepartTimeEstimate(sanitizedSchedule.getTravelDepartTimeEstimate());
