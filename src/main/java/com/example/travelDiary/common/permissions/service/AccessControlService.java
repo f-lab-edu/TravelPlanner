@@ -29,20 +29,6 @@ public class AccessControlService {
         this.resourcePermissionRepository = resourcePermissionRepository;
     }
 
-    public boolean hasPermission(Class<? extends IdentifiableResource> resourceType, UUID resourceId, AuthUser currentUser, String permission) {
-        Resource resource = resourceRepository.findByResourceUUIDAndType(resourceId, resourceType.getSimpleName())
-                .orElseThrow(() -> new ResourceNotFoundException("Resource not found"));
-
-        // If resource is public, allow view permission
-        if ("public".equals(resource.getVisibility()) && UserResourcePermissionTypes.VIEW.name().equals(permission)) {
-            return true;
-        }
-
-        Optional<ResourcePermission> resourcePermissionOpt = resourcePermissionRepository.findByUserAndResource(currentUser, resource);
-
-        return resourcePermissionOpt.isPresent() && resourcePermissionOpt.get().getPermissions().name().equals(permission);
-    }
-
     public boolean hasPermission(Class<? extends IdentifiableResource> resourceType, UUID resourceId, String permission) {
         Resource resource = resourceRepository.findByResourceUUIDAndType(resourceId, resourceType.getSimpleName())
                 .orElseThrow(() -> new ResourceNotFoundException("Resource not found"));
@@ -68,11 +54,8 @@ public class AccessControlService {
         resourcePermissionRepository.save(permission);
     }
 
-
     public void revokePermission(UUID userId, UUID resourceId) {
         resourcePermissionRepository.deleteByUserIdAndResourceId(userId, resourceId);
     }
-
-
-    // Additional methods for managing permissions can be added here
 }
+

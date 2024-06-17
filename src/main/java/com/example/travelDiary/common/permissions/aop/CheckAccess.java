@@ -1,6 +1,5 @@
 package com.example.travelDiary.common.permissions.aop;
 
-import com.example.travelDiary.common.permissions.domain.UserResourcePermissionTypes;
 import com.example.travelDiary.domain.IdentifiableResource;
 
 import java.lang.annotation.ElementType;

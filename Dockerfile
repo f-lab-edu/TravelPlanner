@@ -13,7 +13,7 @@ RUN apt-get update && apt-get install -y dos2unix
 # Ensure correct permissions and line endings for gradlew script
 RUN dos2unix gradlew && chmod +x gradlew
 
-# Build the application using Gradle, skipping tests
+# Build the application using Gradle
 RUN ./gradlew build --scan
 
 # Create a custom JRE using jlink with all necessary modules

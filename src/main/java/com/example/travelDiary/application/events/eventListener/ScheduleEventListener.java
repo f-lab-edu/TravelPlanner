@@ -28,14 +28,12 @@ public class ScheduleEventListener {
 
     private final ScheduleRepository scheduleRepository;
     private final PlaceMutationService placeMutationService;
-    private final PlaceRepository placeRepository;
     private final TravelPlanRepository travelPlanRepository;
 
     @Autowired
-    public ScheduleEventListener(ScheduleRepository scheduleRepository, PlaceMutationService placeMutationService, PlaceRepository placeRepository, TravelPlanRepository travelPlanRepository) {
+    public ScheduleEventListener(ScheduleRepository scheduleRepository, PlaceMutationService placeMutationService, TravelPlanRepository travelPlanRepository) {
         this.scheduleRepository = scheduleRepository;
         this.placeMutationService = placeMutationService;
-        this.placeRepository = placeRepository;
         this.travelPlanRepository = travelPlanRepository;
     }
 
@@ -72,8 +70,6 @@ public class ScheduleEventListener {
             placeMutationService.deletePlace(placeId);
         }
     }
-
-
 
     @EventListener
     public void handleScheduleUpdatedEvent(ScheduleUpdatedEvent event) {

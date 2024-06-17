@@ -26,7 +26,7 @@ public class CustomPermissionEvaluator implements PermissionEvaluator {
         if (targetDomainObject instanceof IdentifiableResource) {
             IdentifiableResource resource = (IdentifiableResource) targetDomainObject;
             AuthUser currentUser = ((PrincipalDetails) authentication.getPrincipal()).getUser();
-            return accessControlService.hasPermission(resource.getClass(), resource.getId(), currentUser, (String) permission);
+            return accessControlService.hasPermission(resource.getClass(), resource.getId(), (String) permission);
         }
         return false;
     }
@@ -38,7 +38,7 @@ public class CustomPermissionEvaluator implements PermissionEvaluator {
             Class<? extends IdentifiableResource> resourceType = (Class<? extends IdentifiableResource>) Class.forName(targetType);
             UUID resourceId = (UUID) targetId;
             AuthUser currentUser = ((PrincipalDetails) authentication.getPrincipal()).getUser();
-            return accessControlService.hasPermission(resourceType, resourceId, currentUser, (String) permission);
+            return accessControlService.hasPermission(resourceType, resourceId, (String) permission);
         } catch (ClassNotFoundException e) {
             return false;
         }
