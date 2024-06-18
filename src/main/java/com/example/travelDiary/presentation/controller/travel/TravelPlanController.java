@@ -6,6 +6,7 @@ import com.example.travelDiary.presentation.dto.request.travel.TravelPlanUpsertR
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.client.RestTemplate;
 
@@ -40,9 +41,10 @@ public class TravelPlanController {
 
 
     @GetMapping("/get_all")
-    public List<TravelPlan> getAll() {
+    public ResponseEntity<List<TravelPlan>> getAll() {
         log.info("get all METHOD TRIGGERED BY REACT");
-        return planAccessService.getAllTravelPlan();
+        List<TravelPlan> travelPlanList = planAccessService.getAllTravelPlan();
+        return ResponseEntity.ok(travelPlanList);
     }
 
     @PostMapping("/create_travel_plan")

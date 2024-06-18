@@ -1,7 +1,6 @@
 package com.example.travelDiary.common.permissions.service;
 
 import com.example.travelDiary.common.auth.domain.AuthUser;
-import com.example.travelDiary.common.auth.domain.PrincipalDetails;
 import com.example.travelDiary.common.auth.service.AuthUserService;
 import com.example.travelDiary.common.permissions.domain.Resource;
 import com.example.travelDiary.common.permissions.domain.ResourcePermission;
@@ -11,12 +10,12 @@ import com.example.travelDiary.common.permissions.repository.ResourceRepository;
 import com.example.travelDiary.domain.IdentifiableResource;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.access.AccessDeniedException;
-import org.springframework.security.core.Authentication;
-import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 
+import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
+
 
 @Service
 public class AccessControlService {
@@ -49,8 +48,20 @@ public class AccessControlService {
         AuthUser currentUser = authUserService.getCurrentAuthenticatedUser();
 
         Optional<ResourcePermission> resourcePermissionOpt = resourcePermissionRepository.findByUserAndResource(currentUser, resource);
+        if (resourcePermissionOpt.isEmpty()) {
+            return false;
+        }
 
-        return resourcePermissionOpt.isPresent() && resourcePermissionOpt.get().getPermissions().name().equals(permission);
+        try {
+            UserResourcePermissionTypes requiredPermission = UserResourcePermissionTypes.valueOf(permission.toUpperCase());
+            UserResourcePermissionTypes currentUserPermission = resourcePermissionOpt.get().getPermissions();
+
+            return currentUserPermission.hasHigherOrEqualPermission(requiredPermission);
+        } catch (IllegalArgumentException e) {
+            // Handle the case where the permission string is not a valid enum value
+            return false;
+        }
+
     }
 
     public void assignPermission(Resource resource, AuthUser user, UserResourcePermissionTypes permission) {
@@ -73,6 +84,20 @@ public class AccessControlService {
     private boolean hasPermissionToAssign(AuthUser currentUser, Resource resource) {
         Optional<ResourcePermission> resourcePermissionOpt = resourcePermissionRepository.findByUserAndResource(currentUser, resource);
         return resourcePermissionOpt.isPresent() && resourcePermissionOpt.get().getPermissions().compareTo(UserResourcePermissionTypes.EDIT) > 0;
+    }
+
+    public void inheritParentPermissions(Resource childResource, Resource parentResource) {
+        List<ResourcePermission> parentPermissions = resourcePermissionRepository.findByResource(parentResource);
+
+        for (ResourcePermission parentPermission : parentPermissions) {
+            ResourcePermission childPermission = ResourcePermission.builder()
+                    .user(parentPermission.getUser())
+                    .resource(childResource)
+                    .permissions(parentPermission.getPermissions())
+                    .build();
+
+            resourcePermissionRepository.save(childPermission);
+        }
     }
 
     public void revokePermission(UUID userId, UUID resourceId) {

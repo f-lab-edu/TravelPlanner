@@ -50,6 +50,9 @@ public class RouteAccessService {
 
     @Transactional
     public void resetRoute(Route route) {
+        if(route == null) {
+            return;
+        }
         route.setDurationOfTravel(null);
         route.setDistanceOfTravel(null);
         route.setMethodOfTravel(null);

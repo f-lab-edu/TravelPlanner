@@ -18,8 +18,10 @@ import org.springframework.context.event.EventListener;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.transaction.event.TransactionPhase;
 import org.springframework.transaction.event.TransactionalEventListener;
 
+import java.util.List;
 import java.util.UUID;
 
 @Component
@@ -37,7 +39,8 @@ public class ScheduleEventListener {
         this.travelPlanRepository = travelPlanRepository;
     }
 
-    @TransactionalEventListener(fallbackExecution=true)
+    @EventListener
+    @Transactional(propagation = Propagation.REQUIRES_NEW)
     public void handleScheduleCreatedEvent(ScheduleCreatedEvent event) {
         Schedule schedule = event.getSchedule();
         if(schedule.getPlace() != null) {
@@ -58,7 +61,7 @@ public class ScheduleEventListener {
         travelPlanRepository.save(travelPlan);
     }
 
-    @EventListener()
+    @TransactionalEventListener(phase = TransactionPhase.AFTER_COMMIT)
     @Transactional(propagation = Propagation.REQUIRES_NEW)
     public void handleScheduleDeletedEvent(ScheduleDeletedEvent event) {
         log.info("postHandler is published");
@@ -66,6 +69,7 @@ public class ScheduleEventListener {
         if(placeId == null) {
             return;
         }
+        List<Schedule> schedule = scheduleRepository.findByPlaceId(placeId);
         if (scheduleRepository.findByPlaceId(placeId).isEmpty()) {
             placeMutationService.deletePlace(placeId);
         }
@@ -75,5 +79,7 @@ public class ScheduleEventListener {
     public void handleScheduleUpdatedEvent(ScheduleUpdatedEvent event) {
         // Additional logic if needed for Schedule update
     }
+
+
 }
 
