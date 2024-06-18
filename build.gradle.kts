@@ -15,7 +15,7 @@ java {
 }
 
 jacoco {
-	toolVersion = "0.8.7" // specify the JaCoCo version
+	toolVersion = "0.8.12" // specify the JaCoCo version
 }
 
 
@@ -57,9 +57,17 @@ dependencies {
     implementation(kotlin("stdlib-jdk8"))
 }
 
+tasks.register<Test>("testWithCoverage") {
+	useJUnitPlatform()
+	systemProperty("spring.profiles.active", "test")
+	finalizedBy("jacocoTestReport", "jacocoTestCoverageVerification")
+}
+
+
 tasks.withType<Test> {
 	useJUnitPlatform()
-	finalizedBy("jacocoTestReport", "jacocoTestCoverageVerification")
+	systemProperty("spring.profiles.active", "test")
+	finalizedBy("jacocoTestReport")
 }
 kotlin {
     jvmToolchain(21)
@@ -68,6 +76,7 @@ kotlin {
 // Configure the existing jacocoTestReport task
 tasks.named<JacocoReport>("jacocoTestReport") {
 	dependsOn(tasks.test)
+	dependsOn(tasks.named("testWithCoverage"))
 
 	reports {
 		xml.required.set(true)

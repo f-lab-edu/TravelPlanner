@@ -39,10 +39,11 @@ public class ScheduleEventListener {
         this.travelPlanRepository = travelPlanRepository;
     }
 
-    @EventListener
+    @TransactionalEventListener(phase = TransactionPhase.AFTER_COMMIT)
     @Transactional(propagation = Propagation.REQUIRES_NEW)
     public void handleScheduleCreatedEvent(ScheduleCreatedEvent event) {
         Schedule schedule = event.getSchedule();
+        schedule = scheduleRepository.findById(schedule.getId()).orElseThrow();
         if(schedule.getPlace() != null) {
             Place place = placeMutationService.createPlace(schedule.getPlace());
             schedule.setPlace(place);
