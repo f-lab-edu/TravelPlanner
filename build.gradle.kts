@@ -2,6 +2,7 @@ val springCloudAwsVersion= project.findProperty("springCloudAwsVersion") as Stri
 
 plugins {
 	java
+	jacoco
 	id("org.springframework.boot") version "3.2.5"
 	id("io.spring.dependency-management") version "1.1.4"
     kotlin("jvm")
@@ -11,6 +12,10 @@ group = "com.example"
 version = "0.0.1-SNAPSHOT"
 
 java {
+}
+
+jacoco {
+	toolVersion = "0.8.7" // specify the JaCoCo version
 }
 
 
@@ -54,7 +59,56 @@ dependencies {
 
 tasks.withType<Test> {
 	useJUnitPlatform()
+	finalizedBy("jacocoTestReport", "jacocoTestCoverageVerification")
 }
 kotlin {
     jvmToolchain(21)
+}
+
+// Configure the existing jacocoTestReport task
+tasks.named<JacocoReport>("jacocoTestReport") {
+	dependsOn(tasks.test)
+
+	reports {
+		xml.required.set(true)
+		html.required.set(true)
+	}
+
+	val coverageSourceDirs = files("src/main/java")
+	val classFiles = fileTree("build/classes/java/main") {
+		exclude("**/Q*")
+	}
+	val executionDataFiles = fileTree("build") {
+		include("jacoco/test.exec")
+	}
+
+	sourceDirectories.setFrom(coverageSourceDirs)
+	classDirectories.setFrom(classFiles)
+	executionData.setFrom(executionDataFiles)
+}
+
+// Configure the existing jacocoTestCoverageVerification task
+tasks.named<JacocoCoverageVerification>("jacocoTestCoverageVerification") {
+	dependsOn("jacocoTestReport")
+
+	violationRules {
+		rule {
+			element = "CLASS"
+			limit {
+				counter = "BRANCH"
+				value = "COVEREDRATIO"
+				minimum = BigDecimal("0.8") // 80% minimum coverage
+			}
+		}
+	}
+
+	classDirectories.setFrom(
+		fileTree("build/classes/java/main") {
+			exclude("**/Q*", "**/*Controller.class", "**/*.dto.*", "**/*.config.*", "**/domain/Q*")
+		}
+	)
+}
+
+tasks.check {
+	dependsOn("jacocoTestCoverageVerification")
 }
