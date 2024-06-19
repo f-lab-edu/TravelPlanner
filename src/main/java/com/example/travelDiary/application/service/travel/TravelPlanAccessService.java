@@ -53,13 +53,11 @@ public class TravelPlanAccessService {
         return travelPlan.getId();
     }
 
-    @FilterResultsForUser(resourceType = TravelPlan.class, permission = "EDIT")
+    @CheckAccess(resourceType = TravelPlan.class, resourceId = "#root[0]", permission = "EDIT", isList = true)
     public List<UUID> deletePlan(List<UUID> request) {
         travelPlanRepository.deleteAllById(request);
-
         return request;
     }
-
     @CheckAccess(resourceType = TravelPlan.class, resourceId = "#request.uuid", permission = "EDIT")
     public TravelPlan modifyPlanMetadata(TravelPlanUpsertRequestDTO request) {
         TravelPlan travelPlan = travelPlanRepository.findById(request.getUuid()).orElseThrow();

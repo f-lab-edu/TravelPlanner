@@ -13,10 +13,11 @@ import java.lang.annotation.RetentionPolicy;
 import java.util.Collections;
 import java.util.UUID;
 
+
 @Retention(RetentionPolicy.RUNTIME)
 @WithSecurityContext(factory = WithMockAuthUser.SecurityContextFactory.class)
 public @interface WithMockAuthUser {
-
+    String id();
     String username() default "testUser";
     String email() default "test@test.com";
     String password() default "test";
@@ -26,12 +27,11 @@ public @interface WithMockAuthUser {
         @Override
         public SecurityContext createSecurityContext(WithMockAuthUser withMockAuthUser) {
             AuthUser authUser = new AuthUser();
-            authUser.setId(UUID.randomUUID());
+            authUser.setId(UUID.fromString(withMockAuthUser.id()));
             authUser.setUsername(withMockAuthUser.username());
             authUser.setEmail(withMockAuthUser.email());
             authUser.setName(withMockAuthUser.name());
             authUser.setSaltedPassword(withMockAuthUser.password());
-            // Set other properties as needed
 
             PrincipalDetails principalDetails = new PrincipalDetails(authUser);
             UsernamePasswordAuthenticationToken authentication = new UsernamePasswordAuthenticationToken(
@@ -43,4 +43,5 @@ public @interface WithMockAuthUser {
         }
     }
 }
+
 

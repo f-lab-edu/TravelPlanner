@@ -24,6 +24,10 @@ public class SecurityTestUtils {
     public static AuthUser createMockAuthUser() {
         AuthUser authUser = new AuthUser();
         authUser.setId(UUID.randomUUID());
+        authUser.setUsername("testUser");
+        authUser.setEmail("test@test.com");
+        authUser.setSaltedPassword("test");
+        authUser.setName("test");
         // Set other properties as needed
         return authUser;
     }

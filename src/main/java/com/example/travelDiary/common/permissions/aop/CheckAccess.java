@@ -13,5 +13,8 @@ public @interface CheckAccess {
     Class<? extends IdentifiableResource> resourceType();
     String resourceId();
     String permission();
+    boolean isList() default false;
 }
+
+
 

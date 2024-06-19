@@ -1,6 +1,8 @@
 package com.example.travelDiary.common.permissions.service;
 
+import com.example.travelDiary.authenticationUtils.WithMockAuthUser;
 import com.example.travelDiary.common.auth.domain.AuthUser;
+import com.example.travelDiary.common.auth.repository.AuthUserRepository;
 import com.example.travelDiary.common.auth.service.AuthUserService;
 import com.example.travelDiary.common.permissions.domain.Resource;
 import com.example.travelDiary.common.permissions.domain.ResourcePermission;
@@ -14,10 +16,10 @@ import org.mockito.MockitoAnnotations;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
-import org.springframework.security.test.context.support.WithMockUser;
+import org.springframework.context.ApplicationEventPublisher;
+import org.springframework.security.access.AccessDeniedException;
 import org.springframework.test.context.ActiveProfiles;
 
-import java.nio.file.AccessDeniedException;
 import java.util.Collections;
 import java.util.Optional;
 import java.util.UUID;
@@ -30,11 +32,6 @@ import static org.mockito.Mockito.*;
 @ActiveProfiles({"test", "secretsLocal"})
 public class AccessControlServiceTest {
 
-//    @Test
-//    void contextLoads() {
-//        // Simple test to check if the context loads successfully
-//    }
-
     @MockBean
     private ResourceRepository resourceRepository;
 
@@ -42,6 +39,12 @@ public class AccessControlServiceTest {
     private ResourcePermissionRepository resourcePermissionRepository;
 
     @MockBean
+    private AuthUserRepository authUserRepository;
+
+    @MockBean
+    private ApplicationEventPublisher eventPublisher;
+
+    @Autowired
     private AuthUserService authUserService;
 
     @Autowired
@@ -49,19 +52,23 @@ public class AccessControlServiceTest {
 
     private AuthUser mockUser;
 
+    private final String authUserId = "b3a0a82f-f737-46f6-9d41-c475a7cc20ec";
+
     @BeforeEach
     void setUp() {
         MockitoAnnotations.openMocks(this);
         mockUser = new AuthUser();
         mockUser.setId(UUID.randomUUID());
         mockUser.setUsername("testUser");
+        mockUser.setId(UUID.fromString(authUserId));
+        authUserRepository.save(mockUser);
 
-        // Mock authentication
-        when(authUserService.getCurrentAuthenticatedUser()).thenReturn(mockUser);
+        // Ensure the repository mock returns the user
+        when(authUserRepository.findById(mockUser.getId())).thenReturn(Optional.of(mockUser));
     }
 
     @Test
-    @WithMockUser(username = "testUser")
+    @WithMockAuthUser(id = authUserId)
     void testHasPermission_PublicResource() {
         Resource resource = new Resource();
         resource.setVisibility("public");
@@ -73,7 +80,7 @@ public class AccessControlServiceTest {
     }
 
     @Test
-    @WithMockUser(username = "testUser")
+    @WithMockAuthUser(id = authUserId)
     void testHasPermission_NoResource() {
         when(resourceRepository.findByResourceUUIDAndType(any(UUID.class), anyString())).thenReturn(Optional.empty());
 
@@ -82,7 +89,7 @@ public class AccessControlServiceTest {
     }
 
     @Test
-    @WithMockUser(username = "testUser")
+    @WithMockAuthUser(id = authUserId)
     void testHasPermission_ValidPermission() {
         Resource resource = new Resource();
         ResourcePermission resourcePermission = new ResourcePermission();
@@ -96,7 +103,7 @@ public class AccessControlServiceTest {
     }
 
     @Test
-    @WithMockUser(username = "testUser")
+    @WithMockAuthUser(id = authUserId)
     void testHasPermission_InvalidPermission() {
         Resource resource = new Resource();
         ResourcePermission resourcePermission = new ResourcePermission();
@@ -110,7 +117,7 @@ public class AccessControlServiceTest {
     }
 
     @Test
-    @WithMockUser(username = "testUser")
+    @WithMockAuthUser(id = authUserId)
     void testAssignPermission_ValidUser() {
         Resource resource = new Resource();
         ResourcePermission resourcePermission = new ResourcePermission();
@@ -122,7 +129,7 @@ public class AccessControlServiceTest {
     }
 
     @Test
-    @WithMockUser(username = "testUser")
+    @WithMockAuthUser(id = authUserId)
     void testAssignPermission_InvalidUser() {
         Resource resource = new Resource();
 
@@ -132,7 +139,7 @@ public class AccessControlServiceTest {
     }
 
     @Test
-    @WithMockUser(username = "testUser")
+    @WithMockAuthUser(id = authUserId)
     void testInheritParentPermissions() {
         Resource parentResource = new Resource();
         Resource childResource = new Resource();
@@ -148,7 +155,7 @@ public class AccessControlServiceTest {
     }
 
     @Test
-    @WithMockUser(username = "testUser")
+    @WithMockAuthUser(id = authUserId)
     void testRevokePermission() {
         UUID userId = UUID.randomUUID();
         UUID resourceId = UUID.randomUUID();

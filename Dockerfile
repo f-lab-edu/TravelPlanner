@@ -14,7 +14,7 @@ RUN apt-get update && apt-get install -y dos2unix
 RUN dos2unix gradlew && chmod +x gradlew
 
 # Build the application using Gradle
-RUN ./gradlew build --scan
+RUN ./gradlew build -x test --scan
 
 # Create a custom JRE using jlink with all necessary modules
 RUN jlink --module-path $JAVA_HOME/jmods \

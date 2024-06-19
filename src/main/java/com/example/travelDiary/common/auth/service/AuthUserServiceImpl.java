@@ -67,11 +67,14 @@ public class AuthUserServiceImpl implements AuthUserService {
         if (authentication == null || !authentication.isAuthenticated()) {
             return null;
         }
-        AuthUser currentUser = ((PrincipalDetails) authentication.getPrincipal()).getUser();
-        AuthUser managedUser = authUserRepository.findById(currentUser.getId())
-                .orElseThrow(() -> new IllegalStateException("Authenticated user not found"));
+        if (authentication.getPrincipal() instanceof PrincipalDetails) {
+            AuthUser currentUser = ((PrincipalDetails) authentication.getPrincipal()).getUser();
+            AuthUser managedUser = authUserRepository.findById(currentUser.getId())
+                    .orElseThrow(() -> new IllegalStateException("Authenticated user not found"));
 
-        return managedUser;
+            return managedUser;
+        }
+        throw new IllegalStateException("Principal is not of type PrincipalDetails");
     }
 
 }
