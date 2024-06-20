@@ -10,6 +10,7 @@ import com.example.travelDiary.common.permissions.repository.ResourceRepository;
 import com.example.travelDiary.domain.IdentifiableResource;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.time.Instant;
 import java.util.List;
@@ -35,6 +36,7 @@ public class ResourceService {
                 .orElseThrow(() -> new ResourceNotFoundException("Resource not found"));
     }
 
+    @Transactional
     public Resource createResource(String visibility, UUID resourceUUID, String type, AuthUser owner) {
         Resource resource = Resource.builder()
                 .visibility(visibility)
@@ -59,9 +61,11 @@ public class ResourceService {
         resourceRepository.deleteById(resourceId);
     }
 
+    @Transactional
     public void deleteAllById(List<UUID> resourceIds) {
-        resourcePermissionRepository.deleteAllByResourceIdIn(resourceIds);
-        resourceRepository.deleteAllById(resourceIds);
+        List<UUID> resourceId = resourceRepository.findAllByResourceUUIDIn(resourceIds).stream().map(Resource::getId).toList();
+        resourcePermissionRepository.deleteAllByResourceIdIn(resourceId);
+        resourceRepository.deleteAllById(resourceId);
     }
 
     private void assignOwnerPermission(Resource resource, AuthUser owner) {

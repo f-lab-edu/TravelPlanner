@@ -2,6 +2,7 @@ package com.example.travelDiary.application.service.travel;
 
 import com.example.travelDiary.application.events.EventPublisher;
 import com.example.travelDiary.application.events.permission.ResourceCreationEvent;
+import com.example.travelDiary.application.events.permission.ResourceDeletionEvent;
 import com.example.travelDiary.application.service.travel.schedule.ScheduleMutationService;
 import com.example.travelDiary.application.service.travel.schedule.ScheduleQueryService;
 import com.example.travelDiary.common.permissions.aop.CheckAccess;
@@ -16,6 +17,7 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 import java.util.UUID;
@@ -37,17 +39,21 @@ public class TravelPlanAccessService {
         this.scheduleMutationService = scheduleMutationService;
     }
 
+    @Transactional
     @FilterResultsForUser(resourceType = TravelPlan.class, permission = "VIEW")
     public Page<TravelPlan> getTravelPageContainingName(String name, int pageNumber, int pageSize) {
         PageRequest pageRequest = PageRequest.of(pageNumber, pageSize);
-        return travelPlanRepository.findAllByNameContaining(name, pageRequest);
+        Page<TravelPlan> result = travelPlanRepository.findAllByNameContaining(name, pageRequest);
+        return result;
     }
 
+    @Transactional
     @CheckAccess(resourceType = TravelPlan.class, resourceId = "#planId", permission = "VIEW")
     public TravelPlan getTravelPlan(UUID planId) {
         return travelPlanRepository.findById(planId).orElseThrow();
     }
 
+    @Transactional
     public UUID createPlan(TravelPlanUpsertRequestDTO request) {
         TravelPlan createdPlan = conversionService.convert(request, TravelPlan.class);
         assert createdPlan != null;
@@ -56,12 +62,15 @@ public class TravelPlanAccessService {
         return travelPlan.getId();
     }
 
+    @Transactional
     @CheckAccess(resourceType = TravelPlan.class, resourceId = "#request", permission = "EDIT", isList = true)
     public List<UUID> deletePlan(List<UUID> request) {
         travelPlanRepository.deleteAllById(request);
+        eventPublisher.publishEvent(new ResourceDeletionEvent(request));
         return request;
     }
 
+    @Transactional
     @CheckAccess(resourceType = TravelPlan.class, resourceId = "#request.uuid", permission = "EDIT")
     public TravelPlan modifyPlanMetadata(TravelPlanUpsertRequestDTO request) {
         TravelPlan travelPlan = travelPlanRepository.findById(request.getUuid()).orElseThrow();
