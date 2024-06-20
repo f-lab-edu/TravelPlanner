@@ -32,9 +32,10 @@ public class FilterResultsAspect {
 
         if (result instanceof List) {
             List<?> resources = (List<?>) result;
-            return resources.stream()
+            List<?> filteredResources = resources.stream()
                     .filter(resource -> accessControlService.hasPermission(resourceType, ((IdentifiableResource) resource).getId(), permission))
                     .collect(Collectors.toList());
+            return filteredResources;
         } else if (result instanceof Page) {
             Page<?> resources = (Page<?>) result;
             List<?> filteredResources = resources.getContent().stream()

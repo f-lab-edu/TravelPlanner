@@ -157,4 +157,8 @@ public class ScheduleMutationService {
         travelPlanRepository.save(travelPlan);
     }
 
+//    Todo
+    public void importSchedule(TravelPlan importedTravelPlan) {
+        return;
+    }
 }

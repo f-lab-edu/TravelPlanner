@@ -13,6 +13,7 @@ import org.springframework.stereotype.Component;
 
 import java.lang.reflect.Method;
 import java.lang.reflect.Parameter;
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import java.util.UUID;
@@ -29,8 +30,10 @@ public class AccessControlAspect {
 
     @Around("@annotation(checkAccess)")
     public Object checkAccess(ProceedingJoinPoint joinPoint, CheckAccess checkAccess) throws Throwable {
-        Method method = getMethodFromJoinPoint(joinPoint);
         Object[] args = joinPoint.getArgs();
+
+        Method method = getMethodFromJoinPoint(joinPoint);
+
         StandardEvaluationContext context = new StandardEvaluationContext(args);
 
         String[] parameterNames = getParameterNames(method);
@@ -54,7 +57,7 @@ public class AccessControlAspect {
         } else {
             UUID resourceId = (UUID) new SpelExpressionParser()
                     .parseExpression(checkAccess.resourceId())
-                    .getValue(new StandardEvaluationContext(args));
+                    .getValue(context);
             if (!accessControlService.hasPermission(resourceType, resourceId, permission)) {
                 throw new AccessDeniedException("Access Denied for resource id: " + resourceId);
             }
@@ -66,7 +69,13 @@ public class AccessControlAspect {
     private Method getMethodFromJoinPoint(ProceedingJoinPoint joinPoint) throws NoSuchMethodException {
         String methodName = joinPoint.getSignature().getName();
         Class<?>[] parameterTypes = Arrays.stream(joinPoint.getArgs())
-                .map(Object::getClass)
+                .map(arg -> {
+                    // Convert any type of List to List.class
+                    if (arg instanceof List) {
+                        return List.class;
+                    }
+                    return arg.getClass();
+                })
                 .toArray(Class<?>[]::new);
         return joinPoint.getTarget().getClass().getMethod(methodName, parameterTypes);
     }
@@ -76,5 +85,17 @@ public class AccessControlAspect {
         return Arrays.stream(method.getParameters())
                 .map(Parameter::getName)
                 .toArray(String[]::new);
+    }
+
+    private Object[] convertImmutableListsToMutable(Object[] args) {
+        Object[] modifiedArgs = Arrays.copyOf(args, args.length);
+
+        for (int i = 0; i < modifiedArgs.length; i++) {
+            if (modifiedArgs[i] instanceof List && modifiedArgs[i].getClass().getName().contains("ImmutableCollections")) {
+                modifiedArgs[i] = new ArrayList<>((List<?>) modifiedArgs[i]);
+            }
+        }
+
+        return modifiedArgs;
     }
 }

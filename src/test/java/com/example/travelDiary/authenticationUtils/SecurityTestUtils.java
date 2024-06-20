@@ -21,9 +21,9 @@ public class SecurityTestUtils {
         SecurityContextHolder.setContext(securityContext);
     }
 
-    public static AuthUser createMockAuthUser() {
+    public static AuthUser createMockAuthUser(String UUIDString) {
         AuthUser authUser = new AuthUser();
-        authUser.setId(UUID.randomUUID());
+        authUser.setId(UUID.fromString(UUIDString));
         authUser.setUsername("testUser");
         authUser.setEmail("test@test.com");
         authUser.setSaltedPassword("test");

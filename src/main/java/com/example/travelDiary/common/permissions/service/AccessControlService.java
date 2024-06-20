@@ -32,28 +32,30 @@ public class AccessControlService {
     }
 
     public boolean hasPermission(Class<? extends IdentifiableResource> resourceType, UUID resourceId, String permission) {
-        Optional<Resource> resourceOpt = resourceRepository.findByResourceUUIDAndType(resourceId, resourceType.getSimpleName());
-//                .orElseThrow(() -> new ResourceNotFoundException("Resource not found"));
-        if(resourceOpt.isEmpty()) {
-            return false;
-        }
-
-        Resource resource = resourceOpt.get();
-        // If resource is public, allow view permission
-        if ("public".equals(resource.getVisibility()) && UserResourcePermissionTypes.VIEW.name().equals(permission)) {
-            return true;
-        }
-
-        // Check if the current user has permission to assign this permission
-        AuthUser currentUser = authUserService.getCurrentAuthenticatedUser();
-
-        Optional<ResourcePermission> resourcePermissionOpt = resourcePermissionRepository.findByUserAndResource(currentUser, resource);
-        if (resourcePermissionOpt.isEmpty()) {
-            return false;
-        }
-
         try {
             UserResourcePermissionTypes requiredPermission = UserResourcePermissionTypes.valueOf(permission.toUpperCase());
+
+            Optional<Resource> resourceOpt = resourceRepository.findByResourceUUIDAndType(resourceId, resourceType.getSimpleName());
+//                .orElseThrow(() -> new ResourceNotFoundException("Resource not found"));
+            if (resourceOpt.isEmpty()) {
+                return false;
+            }
+
+            Resource resource = resourceOpt.get();
+            // If resource is public, allow view permission
+            if ("public".equals(resource.getVisibility()) && requiredPermission.hasHigherOrEqualPermission(UserResourcePermissionTypes.VIEW)) {
+                return true;
+            }
+
+            // Check if the current user has permission to assign this permission
+            AuthUser currentUser = authUserService.getCurrentAuthenticatedUser();
+
+            Optional<ResourcePermission> resourcePermissionOpt = resourcePermissionRepository.findByUserAndResource(currentUser, resource);
+            if (resourcePermissionOpt.isEmpty()) {
+                return false;
+            }
+
+
             UserResourcePermissionTypes currentUserPermission = resourcePermissionOpt.get().getPermissions();
 
             return currentUserPermission.hasHigherOrEqualPermission(requiredPermission);

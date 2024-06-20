@@ -2,6 +2,7 @@ package com.example.travelDiary.application.service.travel;
 
 import com.example.travelDiary.application.events.EventPublisher;
 import com.example.travelDiary.application.events.permission.ResourceCreationEvent;
+import com.example.travelDiary.application.service.travel.schedule.ScheduleMutationService;
 import com.example.travelDiary.application.service.travel.schedule.ScheduleQueryService;
 import com.example.travelDiary.common.permissions.aop.CheckAccess;
 import com.example.travelDiary.common.permissions.aop.FilterResultsForUser;
@@ -25,13 +26,15 @@ public class TravelPlanAccessService {
     private final ConversionService conversionService;
     private final ScheduleQueryService scheduleQueryService;
     private final EventPublisher eventPublisher;
+    private final ScheduleMutationService scheduleMutationService;
 
     @Autowired
-    public TravelPlanAccessService(TravelPlanRepository travelPlanRepository, ConversionService conversionService, ScheduleQueryService scheduleQueryService, EventPublisher eventPublisher) {
+    public TravelPlanAccessService(TravelPlanRepository travelPlanRepository, ConversionService conversionService, ScheduleQueryService scheduleQueryService, EventPublisher eventPublisher, ScheduleMutationService scheduleMutationService) {
         this.travelPlanRepository = travelPlanRepository;
         this.conversionService = conversionService;
         this.scheduleQueryService = scheduleQueryService;
         this.eventPublisher = eventPublisher;
+        this.scheduleMutationService = scheduleMutationService;
     }
 
     @FilterResultsForUser(resourceType = TravelPlan.class, permission = "VIEW")
@@ -53,11 +56,12 @@ public class TravelPlanAccessService {
         return travelPlan.getId();
     }
 
-    @CheckAccess(resourceType = TravelPlan.class, resourceId = "#root[0]", permission = "EDIT", isList = true)
+    @CheckAccess(resourceType = TravelPlan.class, resourceId = "#request", permission = "EDIT", isList = true)
     public List<UUID> deletePlan(List<UUID> request) {
         travelPlanRepository.deleteAllById(request);
         return request;
     }
+
     @CheckAccess(resourceType = TravelPlan.class, resourceId = "#request.uuid", permission = "EDIT")
     public TravelPlan modifyPlanMetadata(TravelPlanUpsertRequestDTO request) {
         TravelPlan travelPlan = travelPlanRepository.findById(request.getUuid()).orElseThrow();
@@ -66,9 +70,21 @@ public class TravelPlanAccessService {
         return travelPlan;
     }
 
+    @CheckAccess(resourceType = TravelPlan.class, resourceId = "#travelPlanId", permission = "EDIT")
+    public TravelPlan importPlan(UUID travelPlanId){
+        TravelPlan travelPlan = travelPlanRepository.findById(travelPlanId).orElseThrow();
+        TravelPlan importedTravelPlan = TravelPlan
+                .builder()
+                .name(travelPlan.getName())
+                .travelEndDate(travelPlan.getTravelEndDate())
+                .travelStartDate(travelPlan.getTravelStartDate())
+                .isPublic(false)
+                .build();
 
-    public TravelPlan importPlan (TravelPlan travelPlan) {
-        return travelPlanRepository.save(travelPlan);
+        scheduleMutationService.importSchedule(importedTravelPlan);
+        travelPlanRepository.save(importedTravelPlan);
+        new ResourceCreationEvent(importedTravelPlan, "private");
+        return importedTravelPlan;
     }
 
     @CheckAccess(resourceType = TravelPlan.class, resourceId = "#travelPlanId", permission = "VIEW")
