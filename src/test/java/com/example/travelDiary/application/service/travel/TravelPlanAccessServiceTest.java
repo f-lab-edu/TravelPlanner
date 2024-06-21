@@ -101,7 +101,7 @@ public class TravelPlanAccessServiceTest {
         ResourcePermission resourcePermission = new ResourcePermission();
         resourcePermission.setResource(resource);
         resourcePermission.setPermissions(UserResourcePermissionTypes.OWNER);
-        resourcePermission.setUser(authUser);
+        resourcePermission.setUserProfile(authUser);
         when(this.resourcePermissionRepository.findByUserAndResource(any(AuthUser.class), eq(resource))).thenReturn(Optional.of(resourcePermission));
 
         return createPlanTravelPlanId;

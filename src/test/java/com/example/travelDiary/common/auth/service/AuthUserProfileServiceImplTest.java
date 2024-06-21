@@ -24,7 +24,7 @@ import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.*;
 
 
-public class AuthUserServiceImplTest {
+public class AuthUserProfileServiceImplTest {
 
     @Mock
     private AuthUserRepository authUserRepository;

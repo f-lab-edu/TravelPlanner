@@ -8,6 +8,7 @@ import com.example.travelDiary.common.permissions.domain.UserResourcePermissionT
 import com.example.travelDiary.common.permissions.repository.ResourcePermissionRepository;
 import com.example.travelDiary.common.permissions.repository.ResourceRepository;
 import com.example.travelDiary.domain.IdentifiableResource;
+import com.example.travelDiary.domain.model.user.UserProfile;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.access.AccessDeniedException;
 import org.springframework.stereotype.Service;
@@ -48,9 +49,9 @@ public class AccessControlService {
             }
 
             // Check if the current user has permission to assign this permission
-            AuthUser currentUser = authUserService.getCurrentAuthenticatedUser();
+            UserProfile currentUserProfile = authUserService.getCurrentUser();
 
-            Optional<ResourcePermission> resourcePermissionOpt = resourcePermissionRepository.findByUserAndResource(currentUser, resource);
+            Optional<ResourcePermission> resourcePermissionOpt = resourcePermissionRepository.findByUserAndResource(currentUserProfile, resource);
             if (resourcePermissionOpt.isEmpty()) {
                 return false;
             }
@@ -68,14 +69,15 @@ public class AccessControlService {
 
     public void assignPermission(Resource resource, AuthUser user, UserResourcePermissionTypes permission) {
         // Check if the current user has permission to assign this permission
-        AuthUser currentUser = authUserService.getCurrentAuthenticatedUser();
+        UserProfile currentUserProfile = authUserService.getCurrentUser();
 
-        if (!hasPermissionToAssign(currentUser, resource)) {
+        if (!hasPermissionToAssign(currentUserProfile, resource)) {
             throw new AccessDeniedException("You do not have permission to assign this permission");
         }
 
+        UserProfile assignedUserProfile = authUserService.toUser(user);
         ResourcePermission resourcePermission = ResourcePermission.builder()
-                .user(user)
+                .userProfile(assignedUserProfile)
                 .resource(resource)
                 .permissions(permission)
                 .build();
@@ -83,8 +85,8 @@ public class AccessControlService {
         resourcePermissionRepository.save(resourcePermission);
     }
 
-    private boolean hasPermissionToAssign(AuthUser currentUser, Resource resource) {
-        Optional<ResourcePermission> resourcePermissionOpt = resourcePermissionRepository.findByUserAndResource(currentUser, resource);
+    private boolean hasPermissionToAssign(UserProfile currentUserProfile, Resource resource) {
+        Optional<ResourcePermission> resourcePermissionOpt = resourcePermissionRepository.findByUserAndResource(currentUserProfile, resource);
         return resourcePermissionOpt.isPresent() && resourcePermissionOpt.get().getPermissions().compareTo(UserResourcePermissionTypes.EDIT) > 0;
     }
 
@@ -93,7 +95,7 @@ public class AccessControlService {
 
         for (ResourcePermission parentPermission : parentPermissions) {
             ResourcePermission childPermission = ResourcePermission.builder()
-                    .user(parentPermission.getUser())
+                    .userProfile(parentPermission.getUserProfile())
                     .resource(childResource)
                     .permissions(parentPermission.getPermissions())
                     .build();

@@ -1,6 +1,5 @@
 package com.example.travelDiary.common.permissions.service;
 
-import com.example.travelDiary.common.auth.domain.AuthUser;
 import com.example.travelDiary.common.permissions.domain.Resource;
 import com.example.travelDiary.common.permissions.domain.ResourcePermission;
 import com.example.travelDiary.common.permissions.domain.UserResourcePermissionTypes;
@@ -8,6 +7,7 @@ import com.example.travelDiary.common.permissions.domain.exception.ResourceNotFo
 import com.example.travelDiary.common.permissions.repository.ResourcePermissionRepository;
 import com.example.travelDiary.common.permissions.repository.ResourceRepository;
 import com.example.travelDiary.domain.IdentifiableResource;
+import com.example.travelDiary.domain.model.user.UserProfile;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -37,7 +37,7 @@ public class ResourceService {
     }
 
     @Transactional
-    public Resource createResource(String visibility, UUID resourceUUID, String type, AuthUser owner) {
+    public Resource createResource(String visibility, UUID resourceUUID, String type, UserProfile owner) {
         Resource resource = Resource.builder()
                 .visibility(visibility)
                 .resourceUUID(resourceUUID)
@@ -52,7 +52,7 @@ public class ResourceService {
         return resource;
     }
 
-    public Resource linkResource(IdentifiableResource identifiableResource, String visibility, AuthUser owner) {
+    public Resource linkResource(IdentifiableResource identifiableResource, String visibility, UserProfile owner) {
         return createResource(visibility, identifiableResource.getId(), identifiableResource.getClass().getSimpleName(), owner);
     }
 
@@ -68,9 +68,9 @@ public class ResourceService {
         resourceRepository.deleteAllById(resourceId);
     }
 
-    private void assignOwnerPermission(Resource resource, AuthUser owner) {
+    private void assignOwnerPermission(Resource resource, UserProfile owner) {
         ResourcePermission permission = ResourcePermission.builder()
-                .user(owner)
+                .userProfile(owner)
                 .resource(resource)
                 .permissions(UserResourcePermissionTypes.OWNER)
                 .build();

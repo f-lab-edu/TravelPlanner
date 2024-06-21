@@ -1,12 +1,16 @@
 package com.example.travelDiary.common.auth.service;
 
 
+import com.example.travelDiary.application.events.EventPublisher;
+import com.example.travelDiary.application.events.authuser.UserCreationEvent;
 import com.example.travelDiary.common.auth.domain.AuthUser;
 import com.example.travelDiary.common.auth.domain.PrincipalDetails;
 import com.example.travelDiary.common.auth.dto.RegistrationRequest;
 import com.example.travelDiary.common.auth.repository.AuthUserRepository;
 import com.example.travelDiary.common.auth.domain.ApplicationPermits;
 import com.example.travelDiary.common.auth.v2.jwt.JwtProvider;
+import com.example.travelDiary.domain.model.user.UserProfile;
+import com.example.travelDiary.repository.persistence.user.UserProfileRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
@@ -24,14 +28,18 @@ public class AuthUserServiceImpl implements AuthUserService {
     private final JwtProvider jwtProvider;
     private final String PROVIDER = "APP";
     private final ApplicationPermits USER = ApplicationPermits.USER;
+    private final EventPublisher eventPublisher;
+    private final UserProfileRepository userProfileRepository;
 
     @Autowired
-    public AuthUserServiceImpl(AuthUserRepository userRepository, PasswordEncoder passwordEncoder, TokenBlacklistService tokenBlacklistService, JwtProvider jwtProvider) {
+    public AuthUserServiceImpl(AuthUserRepository userRepository, PasswordEncoder passwordEncoder, TokenBlacklistService tokenBlacklistService, JwtProvider jwtProvider, EventPublisher eventPublisher, UserProfileRepository userProfileRepository1) {
 
         this.authUserRepository = userRepository;
         this.passwordEncoder = passwordEncoder;
         this.tokenBlacklistService = tokenBlacklistService;
         this.jwtProvider = jwtProvider;
+        this.eventPublisher = eventPublisher;
+        this.userProfileRepository = userProfileRepository1;
     }
 
     @Override
@@ -52,6 +60,7 @@ public class AuthUserServiceImpl implements AuthUserService {
 
         AuthUser registeredUser = authUserRepository.save(user);
         user.setProviderId(String.valueOf(registeredUser.getId()));
+        eventPublisher.publishEvent(new UserCreationEvent(user));
         return authUserRepository.save(user);
     }
 
@@ -76,6 +85,20 @@ public class AuthUserServiceImpl implements AuthUserService {
         }
         throw new IllegalStateException("Principal is not of type PrincipalDetails");
     }
+
+    @Override
+    public UserProfile getCurrentUser() {
+        AuthUser currentUser = getCurrentAuthenticatedUser();
+        UserProfile userProfile = userProfileRepository.findByAuthUserId(currentUser.getId()).orElseThrow(() -> new IllegalStateException("Authenticated user not found"));
+        return userProfile;
+    }
+
+    @Override
+    public UserProfile toUser(AuthUser authUser) {
+        UserProfile userProfile = userProfileRepository.findByAuthUserId(authUser.getId()).orElseThrow(() -> new IllegalStateException("Authenticated user not found"));
+        return userProfile;
+    }
+
 
 }
 

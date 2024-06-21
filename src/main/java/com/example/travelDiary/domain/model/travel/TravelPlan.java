@@ -1,5 +1,6 @@
 package com.example.travelDiary.domain.model.travel;
 
+import com.example.travelDiary.common.permissions.domain.Resource;
 import com.example.travelDiary.domain.IdentifiableResource;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
@@ -35,4 +36,9 @@ public class TravelPlan implements IdentifiableResource {
     @OneToMany
     @Cascade(CascadeType.ALL)
     public List<Schedule> ScheduleList;
+
+    @OneToOne(fetch = FetchType.LAZY)
+    @Cascade(CascadeType.ALL)
+    @JoinColumn(name = "resource_id", referencedColumnName = "id")
+    private Resource resource;
 }

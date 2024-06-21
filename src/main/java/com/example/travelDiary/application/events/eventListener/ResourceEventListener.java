@@ -26,7 +26,7 @@ public class ResourceEventListener {
 
     @EventListener
     public void handleResourceCreation(ResourceCreationEvent event ) {
-        resourceService.linkResource(event.getResource(), event.getVisibility(), authUserService.getCurrentAuthenticatedUser());
+        resourceService.linkResource(event.getResource(), event.getVisibility(), authUserService.getCurrentUser());
     }
 
     @EventListener

@@ -197,8 +197,8 @@ java.sql.SQLClientInfoException: Client info name 'ApplicationName' not supporte
 	at java.base/java.util.concurrent.ThreadPoolExecutor.runWorker(ThreadPoolExecutor.java:1136)
 	at java.base/java.util.concurrent.ThreadPoolExecutor$Worker.run(ThreadPoolExecutor.java:635)
 	at java.base/java.lang.Thread.run(Thread.java:840)
-2024-06-02 18:31:16.446378+09:00 database: wrong user or password; user: "SA"
-org.h2.message.DbException: Wrong user name or password [28000-224]
+2024-06-02 18:31:16.446378+09:00 database: wrong userProfile or password; userProfile: "SA"
+org.h2.message.DbException: Wrong userProfile name or password [28000-224]
 	at org.h2.message.DbException.get(DbException.java:223)
 	at org.h2.message.DbException.get(DbException.java:199)
 	at org.h2.message.DbException.get(DbException.java:188)
@@ -261,12 +261,12 @@ org.h2.message.DbException: Wrong user name or password [28000-224]
 	at org.apache.tomcat.util.threads.ThreadPoolExecutor$Worker.run(ThreadPoolExecutor.java:659)
 	at org.apache.tomcat.util.threads.TaskThread$WrappingRunnable.run(TaskThread.java:63)
 	at java.base/java.lang.Thread.run(Thread.java:1583)
-Caused by: org.h2.jdbc.JdbcSQLInvalidAuthorizationSpecException: Wrong user name or password [28000-224]
+Caused by: org.h2.jdbc.JdbcSQLInvalidAuthorizationSpecException: Wrong userProfile name or password [28000-224]
 	at org.h2.message.DbException.getJdbcSQLException(DbException.java:522)
 	at org.h2.message.DbException.getJdbcSQLException(DbException.java:489)
 	... 62 more
-2024-06-03 01:20:51.977924+09:00 database: wrong user or password; user: "SA"
-org.h2.message.DbException: Wrong user name or password [28000-224]
+2024-06-03 01:20:51.977924+09:00 database: wrong userProfile or password; userProfile: "SA"
+org.h2.message.DbException: Wrong userProfile name or password [28000-224]
 	at org.h2.message.DbException.get(DbException.java:223)
 	at org.h2.message.DbException.get(DbException.java:199)
 	at org.h2.message.DbException.get(DbException.java:188)
@@ -329,7 +329,7 @@ org.h2.message.DbException: Wrong user name or password [28000-224]
 	at org.apache.tomcat.util.threads.ThreadPoolExecutor$Worker.run(ThreadPoolExecutor.java:659)
 	at org.apache.tomcat.util.threads.TaskThread$WrappingRunnable.run(TaskThread.java:63)
 	at java.base/java.lang.Thread.run(Thread.java:1583)
-Caused by: org.h2.jdbc.JdbcSQLInvalidAuthorizationSpecException: Wrong user name or password [28000-224]
+Caused by: org.h2.jdbc.JdbcSQLInvalidAuthorizationSpecException: Wrong userProfile name or password [28000-224]
 	at org.h2.message.DbException.getJdbcSQLException(DbException.java:522)
 	at org.h2.message.DbException.getJdbcSQLException(DbException.java:489)
 	... 62 more
@@ -710,8 +710,8 @@ Caused by: org.h2.mvstore.MVStoreException: The file is locked: /Users/kimseungh
 	at org.h2.mvstore.SingleFileStore.open(SingleFileStore.java:81)
 	at org.h2.mvstore.MVStore.<init>(MVStore.java:286)
 	... 28 more
-2024-06-11 11:53:25.034479+09:00 database: wrong user or password; user: "SA"
-org.h2.message.DbException: Wrong user name or password [28000-224]
+2024-06-11 11:53:25.034479+09:00 database: wrong userProfile or password; userProfile: "SA"
+org.h2.message.DbException: Wrong userProfile name or password [28000-224]
 	at org.h2.message.DbException.get(DbException.java:223)
 	at org.h2.message.DbException.get(DbException.java:199)
 	at org.h2.message.DbException.get(DbException.java:188)
@@ -827,7 +827,7 @@ org.h2.message.DbException: Wrong user name or password [28000-224]
 	at org.apache.tomcat.util.threads.ThreadPoolExecutor$Worker.run(ThreadPoolExecutor.java:659)
 	at org.apache.tomcat.util.threads.TaskThread$WrappingRunnable.run(TaskThread.java:63)
 	at java.base/java.lang.Thread.run(Thread.java:1583)
-Caused by: org.h2.jdbc.JdbcSQLInvalidAuthorizationSpecException: Wrong user name or password [28000-224]
+Caused by: org.h2.jdbc.JdbcSQLInvalidAuthorizationSpecException: Wrong userProfile name or password [28000-224]
 	at org.h2.message.DbException.getJdbcSQLException(DbException.java:522)
 	at org.h2.message.DbException.getJdbcSQLException(DbException.java:489)
 	... 115 more
@@ -17189,6 +17189,80 @@ org.h2.jdbc.JdbcSQLNonTransientConnectionException: Database is already closed (
 	at org.springframework.boot.SpringApplicationShutdownHook.run(SpringApplicationShutdownHook.java:114)
 	at java.base/java.lang.Thread.run(Thread.java:1583)
 2024-06-21 00:37:57.322341+09:00 jdbc[3]: exception
+org.h2.jdbc.JdbcSQLNonTransientConnectionException: Database is already closed (to disable automatic closing at VM shutdown, add ";DB_CLOSE_ON_EXIT=FALSE" to the db URL) [90121-224]
+	at org.h2.message.DbException.getJdbcSQLException(DbException.java:690)
+	at org.h2.message.DbException.getJdbcSQLException(DbException.java:489)
+	at org.h2.message.DbException.get(DbException.java:223)
+	at org.h2.message.DbException.get(DbException.java:199)
+	at org.h2.message.DbException.get(DbException.java:188)
+	at org.h2.jdbc.JdbcConnection.checkClosed(JdbcConnection.java:1425)
+	at org.h2.jdbc.JdbcConnection.clearWarnings(JdbcConnection.java:660)
+	at com.zaxxer.hikari.pool.ProxyConnection.close(ProxyConnection.java:257)
+	at org.hibernate.engine.jdbc.connections.internal.DatasourceConnectionProviderImpl.closeConnection(DatasourceConnectionProviderImpl.java:127)
+	at org.hibernate.engine.jdbc.env.internal.JdbcEnvironmentInitiator$ConnectionProviderJdbcConnectionAccess.releaseConnection(JdbcEnvironmentInitiator.java:433)
+	at org.hibernate.resource.transaction.backend.jdbc.internal.DdlTransactionIsolatorNonJtaImpl.release(DdlTransactionIsolatorNonJtaImpl.java:106)
+	at org.hibernate.tool.schema.internal.exec.GenerationTargetToDatabase.release(GenerationTargetToDatabase.java:134)
+	at org.hibernate.tool.schema.internal.SchemaDropperImpl$DelayedDropActionImpl.perform(SchemaDropperImpl.java:635)
+	at org.hibernate.boot.internal.SessionFactoryObserverForSchemaExport.sessionFactoryClosing(SessionFactoryObserverForSchemaExport.java:48)
+	at org.hibernate.internal.SessionFactoryObserverChain.sessionFactoryClosing(SessionFactoryObserverChain.java:48)
+	at org.hibernate.internal.SessionFactoryImpl.close(SessionFactoryImpl.java:908)
+	at java.base/jdk.internal.reflect.DirectMethodHandleAccessor.invoke(DirectMethodHandleAccessor.java:103)
+	at java.base/java.lang.reflect.Method.invoke(Method.java:580)
+	at org.springframework.orm.jpa.AbstractEntityManagerFactoryBean.invokeProxyMethod(AbstractEntityManagerFactoryBean.java:519)
+	at org.springframework.orm.jpa.AbstractEntityManagerFactoryBean$ManagedEntityManagerFactoryInvocationHandler.invoke(AbstractEntityManagerFactoryBean.java:735)
+	at jdk.proxy3/jdk.proxy3.$Proxy183.close(Unknown Source)
+	at org.springframework.orm.jpa.AbstractEntityManagerFactoryBean.destroy(AbstractEntityManagerFactoryBean.java:652)
+	at org.springframework.beans.factory.support.DisposableBeanAdapter.destroy(DisposableBeanAdapter.java:211)
+	at org.springframework.beans.factory.support.DefaultSingletonBeanRegistry.destroyBean(DefaultSingletonBeanRegistry.java:587)
+	at org.springframework.beans.factory.support.DefaultSingletonBeanRegistry.destroySingleton(DefaultSingletonBeanRegistry.java:559)
+	at org.springframework.beans.factory.support.DefaultListableBeanFactory.destroySingleton(DefaultListableBeanFactory.java:1202)
+	at org.springframework.beans.factory.support.DefaultSingletonBeanRegistry.destroySingletons(DefaultSingletonBeanRegistry.java:520)
+	at org.springframework.beans.factory.support.DefaultListableBeanFactory.destroySingletons(DefaultListableBeanFactory.java:1195)
+	at org.springframework.context.support.AbstractApplicationContext.destroyBeans(AbstractApplicationContext.java:1186)
+	at org.springframework.context.support.AbstractApplicationContext.doClose(AbstractApplicationContext.java:1147)
+	at org.springframework.context.support.AbstractApplicationContext.close(AbstractApplicationContext.java:1093)
+	at org.springframework.boot.SpringApplicationShutdownHook.closeAndWait(SpringApplicationShutdownHook.java:145)
+	at java.base/java.lang.Iterable.forEach(Iterable.java:75)
+	at org.springframework.boot.SpringApplicationShutdownHook.run(SpringApplicationShutdownHook.java:114)
+	at java.base/java.lang.Thread.run(Thread.java:1583)
+2024-06-21 09:40:15.241349+09:00 jdbc[3]: exception
+org.h2.jdbc.JdbcSQLNonTransientConnectionException: Database is already closed (to disable automatic closing at VM shutdown, add ";DB_CLOSE_ON_EXIT=FALSE" to the db URL) [90121-224]
+	at org.h2.message.DbException.getJdbcSQLException(DbException.java:690)
+	at org.h2.message.DbException.getJdbcSQLException(DbException.java:489)
+	at org.h2.message.DbException.get(DbException.java:223)
+	at org.h2.message.DbException.get(DbException.java:199)
+	at org.h2.message.DbException.get(DbException.java:188)
+	at org.h2.jdbc.JdbcConnection.checkClosed(JdbcConnection.java:1425)
+	at org.h2.jdbc.JdbcConnection.getAutoCommit(JdbcConnection.java:465)
+	at com.zaxxer.hikari.pool.HikariProxyConnection.getAutoCommit(HikariProxyConnection.java)
+	at org.hibernate.resource.transaction.backend.jdbc.internal.DdlTransactionIsolatorNonJtaImpl.getIsolatedConnection(DdlTransactionIsolatorNonJtaImpl.java:49)
+	at org.hibernate.tool.schema.internal.exec.GenerationTargetToDatabase.getIsolatedConnection(GenerationTargetToDatabase.java:60)
+	at org.hibernate.tool.schema.internal.exec.GenerationTargetToDatabase.jdbcStatement(GenerationTargetToDatabase.java:112)
+	at org.hibernate.tool.schema.internal.exec.GenerationTargetToDatabase.accept(GenerationTargetToDatabase.java:79)
+	at org.hibernate.tool.schema.internal.SchemaDropperImpl$DelayedDropActionImpl.perform(SchemaDropperImpl.java:624)
+	at org.hibernate.boot.internal.SessionFactoryObserverForSchemaExport.sessionFactoryClosing(SessionFactoryObserverForSchemaExport.java:48)
+	at org.hibernate.internal.SessionFactoryObserverChain.sessionFactoryClosing(SessionFactoryObserverChain.java:48)
+	at org.hibernate.internal.SessionFactoryImpl.close(SessionFactoryImpl.java:908)
+	at java.base/jdk.internal.reflect.DirectMethodHandleAccessor.invoke(DirectMethodHandleAccessor.java:103)
+	at java.base/java.lang.reflect.Method.invoke(Method.java:580)
+	at org.springframework.orm.jpa.AbstractEntityManagerFactoryBean.invokeProxyMethod(AbstractEntityManagerFactoryBean.java:519)
+	at org.springframework.orm.jpa.AbstractEntityManagerFactoryBean$ManagedEntityManagerFactoryInvocationHandler.invoke(AbstractEntityManagerFactoryBean.java:735)
+	at jdk.proxy3/jdk.proxy3.$Proxy183.close(Unknown Source)
+	at org.springframework.orm.jpa.AbstractEntityManagerFactoryBean.destroy(AbstractEntityManagerFactoryBean.java:652)
+	at org.springframework.beans.factory.support.DisposableBeanAdapter.destroy(DisposableBeanAdapter.java:211)
+	at org.springframework.beans.factory.support.DefaultSingletonBeanRegistry.destroyBean(DefaultSingletonBeanRegistry.java:587)
+	at org.springframework.beans.factory.support.DefaultSingletonBeanRegistry.destroySingleton(DefaultSingletonBeanRegistry.java:559)
+	at org.springframework.beans.factory.support.DefaultListableBeanFactory.destroySingleton(DefaultListableBeanFactory.java:1202)
+	at org.springframework.beans.factory.support.DefaultSingletonBeanRegistry.destroySingletons(DefaultSingletonBeanRegistry.java:520)
+	at org.springframework.beans.factory.support.DefaultListableBeanFactory.destroySingletons(DefaultListableBeanFactory.java:1195)
+	at org.springframework.context.support.AbstractApplicationContext.destroyBeans(AbstractApplicationContext.java:1186)
+	at org.springframework.context.support.AbstractApplicationContext.doClose(AbstractApplicationContext.java:1147)
+	at org.springframework.context.support.AbstractApplicationContext.close(AbstractApplicationContext.java:1093)
+	at org.springframework.boot.SpringApplicationShutdownHook.closeAndWait(SpringApplicationShutdownHook.java:145)
+	at java.base/java.lang.Iterable.forEach(Iterable.java:75)
+	at org.springframework.boot.SpringApplicationShutdownHook.run(SpringApplicationShutdownHook.java:114)
+	at java.base/java.lang.Thread.run(Thread.java:1583)
+2024-06-21 09:40:15.243024+09:00 jdbc[3]: exception
 org.h2.jdbc.JdbcSQLNonTransientConnectionException: Database is already closed (to disable automatic closing at VM shutdown, add ";DB_CLOSE_ON_EXIT=FALSE" to the db URL) [90121-224]
 	at org.h2.message.DbException.getJdbcSQLException(DbException.java:690)
 	at org.h2.message.DbException.getJdbcSQLException(DbException.java:489)

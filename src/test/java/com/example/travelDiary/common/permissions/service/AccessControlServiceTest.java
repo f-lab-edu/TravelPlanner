@@ -10,6 +10,7 @@ import com.example.travelDiary.common.permissions.domain.UserResourcePermissionT
 import com.example.travelDiary.common.permissions.repository.ResourcePermissionRepository;
 import com.example.travelDiary.common.permissions.repository.ResourceRepository;
 import com.example.travelDiary.domain.IdentifiableResource;
+import com.example.travelDiary.domain.model.user.UserProfile;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mockito.MockitoAnnotations;
@@ -96,7 +97,7 @@ public class AccessControlServiceTest {
         resourcePermission.setPermissions(UserResourcePermissionTypes.EDIT);
 
         when(resourceRepository.findByResourceUUIDAndType(any(UUID.class), anyString())).thenReturn(Optional.of(resource));
-        when(resourcePermissionRepository.findByUserAndResource(any(AuthUser.class), any(Resource.class))).thenReturn(Optional.of(resourcePermission));
+        when(resourcePermissionRepository.findByUserAndResource(any(UserProfile.class), any(Resource.class))).thenReturn(Optional.of(resourcePermission));
 
         boolean result = accessControlService.hasPermission(IdentifiableResource.class, UUID.randomUUID(), "EDIT");
         assertTrue(result);
@@ -110,7 +111,7 @@ public class AccessControlServiceTest {
         resourcePermission.setPermissions(UserResourcePermissionTypes.VIEW);
 
         when(resourceRepository.findByResourceUUIDAndType(any(UUID.class), anyString())).thenReturn(Optional.of(resource));
-        when(resourcePermissionRepository.findByUserAndResource(any(AuthUser.class), any(Resource.class))).thenReturn(Optional.of(resourcePermission));
+        when(resourcePermissionRepository.findByUserAndResource(any(UserProfile.class), any(Resource.class))).thenReturn(Optional.of(resourcePermission));
 
         boolean result = accessControlService.hasPermission(IdentifiableResource.class, UUID.randomUUID(), "EDIT");
         assertFalse(result);
@@ -123,7 +124,7 @@ public class AccessControlServiceTest {
         ResourcePermission resourcePermission = new ResourcePermission();
         resourcePermission.setPermissions(UserResourcePermissionTypes.OWNER);
 
-        when(resourcePermissionRepository.findByUserAndResource(any(AuthUser.class), any(Resource.class))).thenReturn(Optional.of(resourcePermission));
+        when(resourcePermissionRepository.findByUserAndResource(any(UserProfile.class), any(Resource.class))).thenReturn(Optional.of(resourcePermission));
 
         assertDoesNotThrow(() -> accessControlService.assignPermission(resource, mockUser, UserResourcePermissionTypes.EDIT));
     }
@@ -133,7 +134,7 @@ public class AccessControlServiceTest {
     void testAssignPermission_InvalidUser() {
         Resource resource = new Resource();
 
-        when(resourcePermissionRepository.findByUserAndResource(any(AuthUser.class), any(Resource.class))).thenReturn(Optional.empty());
+        when(resourcePermissionRepository.findByUserAndResource(any(UserProfile.class), any(Resource.class))).thenReturn(Optional.empty());
 
         assertThrows(AccessDeniedException.class, () -> accessControlService.assignPermission(resource, mockUser, UserResourcePermissionTypes.EDIT));
     }
@@ -144,7 +145,7 @@ public class AccessControlServiceTest {
         Resource parentResource = new Resource();
         Resource childResource = new Resource();
         ResourcePermission parentPermission = new ResourcePermission();
-        parentPermission.setUser(mockUser);
+        parentPermission.setUserProfile(mockUser);
         parentPermission.setPermissions(UserResourcePermissionTypes.EDIT);
 
         when(resourcePermissionRepository.findByResource(parentResource)).thenReturn(Collections.singletonList(parentPermission));
