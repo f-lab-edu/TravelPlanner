@@ -1,12 +1,15 @@
 package com.example.travelDiary.application.service.travel;
 
-import com.example.travelDiary.application.events.EventPublisher;
-import com.example.travelDiary.application.events.permission.ResourceCreationEvent;
-import com.example.travelDiary.application.events.permission.ResourceDeletionEvent;
 import com.example.travelDiary.application.service.travel.schedule.ScheduleMutationService;
 import com.example.travelDiary.application.service.travel.schedule.ScheduleQueryService;
 import com.example.travelDiary.common.permissions.aop.CheckAccess;
-import com.example.travelDiary.common.permissions.aop.FilterResultsForUser;
+import com.example.travelDiary.common.permissions.domain.Resource;
+import com.example.travelDiary.common.permissions.domain.ResourcePermission;
+import com.example.travelDiary.common.permissions.domain.UserResourcePermissionTypes;
+import com.example.travelDiary.common.permissions.repository.ResourcePermissionRepository;
+import com.example.travelDiary.common.permissions.repository.ResourceRepository;
+import com.example.travelDiary.common.permissions.service.ResourcePermissionService;
+import com.example.travelDiary.common.permissions.service.ResourceService;
 import com.example.travelDiary.domain.model.travel.TravelPlan;
 import com.example.travelDiary.domain.model.wallet.aggregate.MonetaryEvent;
 import com.example.travelDiary.repository.persistence.travel.TravelPlanRepository;
@@ -27,23 +30,31 @@ public class TravelPlanAccessService {
     private final TravelPlanRepository travelPlanRepository;
     private final ConversionService conversionService;
     private final ScheduleQueryService scheduleQueryService;
-    private final EventPublisher eventPublisher;
     private final ScheduleMutationService scheduleMutationService;
+    private final ResourceService resourceService;
+    private final ResourcePermissionService resourcePermissionService;
+    private final ResourceRepository resourceRepository;
+    private final ResourcePermissionRepository resourcePermissionRepository;
 
     @Autowired
-    public TravelPlanAccessService(TravelPlanRepository travelPlanRepository, ConversionService conversionService, ScheduleQueryService scheduleQueryService, EventPublisher eventPublisher, ScheduleMutationService scheduleMutationService) {
+    public TravelPlanAccessService(TravelPlanRepository travelPlanRepository, ConversionService conversionService, ScheduleQueryService scheduleQueryService, ScheduleMutationService scheduleMutationService, ResourceService resourceService, ResourcePermissionService resourcePermissionService, ResourceRepository resourceRepository, ResourcePermissionRepository resourcePermissionRepository) {
         this.travelPlanRepository = travelPlanRepository;
         this.conversionService = conversionService;
         this.scheduleQueryService = scheduleQueryService;
-        this.eventPublisher = eventPublisher;
         this.scheduleMutationService = scheduleMutationService;
+        this.resourceService = resourceService;
+        this.resourcePermissionService = resourcePermissionService;
+        this.resourceRepository = resourceRepository;
+        this.resourcePermissionRepository = resourcePermissionRepository;
     }
 
     @Transactional
-    @FilterResultsForUser(resourceType = TravelPlan.class, permission = "VIEW")
     public Page<TravelPlan> getTravelPageContainingName(String name, int pageNumber, int pageSize) {
         PageRequest pageRequest = PageRequest.of(pageNumber, pageSize);
-        Page<TravelPlan> result = travelPlanRepository.findAllByNameContaining(name, pageRequest);
+        // Delegate the permission handling to PermissionService
+        List<UUID> resourceIds = resourcePermissionService.getResourceIdsByUserPermission(UserResourcePermissionTypes.VIEW);
+        // Fetch travel plans by resource IDs
+        Page<TravelPlan> result = travelPlanRepository.findAllByNameContainingAndResourceIds(name, resourceIds, pageRequest);
         return result;
     }
 
@@ -58,15 +69,19 @@ public class TravelPlanAccessService {
         TravelPlan createdPlan = conversionService.convert(request, TravelPlan.class);
         assert createdPlan != null;
         TravelPlan travelPlan = travelPlanRepository.save(createdPlan);
-        eventPublisher.publishEvent(new ResourceCreationEvent(travelPlan, "private"));
+        Resource resource = resourceService.createResource(travelPlan, "private");
+        travelPlanRepository.save(travelPlan);
         return travelPlan.getId();
     }
 
     @Transactional
     @CheckAccess(resourceType = TravelPlan.class, resourceId = "#request", permission = "EDIT", isList = true)
     public List<UUID> deletePlan(List<UUID> request) {
+        // First, delete permissions in a separate transaction
+        resourceService.delinkPermissions(request);
+        // Delete travel plans
         travelPlanRepository.deleteAllById(request);
-        eventPublisher.publishEvent(new ResourceDeletionEvent(request));
+
         return request;
     }
 
@@ -92,12 +107,15 @@ public class TravelPlanAccessService {
 
         scheduleMutationService.importSchedule(importedTravelPlan);
         travelPlanRepository.save(importedTravelPlan);
-        new ResourceCreationEvent(importedTravelPlan, "private");
+        // Create the Resource and assign it to the TravelPlan
+        Resource resource = resourceService.createResource(importedTravelPlan ,"private");
+        importedTravelPlan.setResource(resource);
+        travelPlanRepository.save(importedTravelPlan);
         return importedTravelPlan;
     }
 
     @CheckAccess(resourceType = TravelPlan.class, resourceId = "#travelPlanId", permission = "VIEW")
-    @FilterResultsForUser(resourceType = MonetaryEvent.class, permission = "VIEW")
+//    @FilterResultsForUser(resourceType = MonetaryEvent.class, permission = "VIEW")
     public Page<MonetaryEvent> getAssociatedMonetaryEvent(UUID travelPlanId, PageRequest pageRequest) {
         List<MonetaryEvent> monetaryEvents = travelPlanRepository
                 .findById(travelPlanId)
@@ -130,7 +148,7 @@ public class TravelPlanAccessService {
         }
     }
 
-    @FilterResultsForUser(resourceType = TravelPlan.class, permission = "VIEW")
+//    @FilterResultsForUser(resourceType = TravelPlan.class, permission = "VIEW")
     public List<TravelPlan> getAllTravelPlan() {
         return travelPlanRepository.findAll();
     }

@@ -15,6 +15,16 @@ import java.util.UUID;
 @NoArgsConstructor
 @AllArgsConstructor
 public class ResourcePermission {
+
+    public UserResourcePermissionTypes getPermissions() {
+        return UserResourcePermissionTypes.fromLevel(this.permissionsLevel);
+    }
+
+    public void setPermissions(UserResourcePermissionTypes permissions) {
+        this.permissions = permissions;
+        this.permissionsLevel = permissions.getLevel();
+    }
+
     @Id
     @GeneratedValue(strategy = GenerationType.UUID)
     private UUID id;
@@ -30,6 +40,9 @@ public class ResourcePermission {
     @Enumerated(EnumType.STRING)
     @Column(nullable = false)
     private UserResourcePermissionTypes permissions;
+
+    @Column(nullable = false)
+    private int permissionsLevel;
 }
 
 

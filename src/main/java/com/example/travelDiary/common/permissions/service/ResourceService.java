@@ -1,5 +1,6 @@
 package com.example.travelDiary.common.permissions.service;
 
+import com.example.travelDiary.common.auth.service.AuthUserService;
 import com.example.travelDiary.common.permissions.domain.Resource;
 import com.example.travelDiary.common.permissions.domain.ResourcePermission;
 import com.example.travelDiary.common.permissions.domain.UserResourcePermissionTypes;
@@ -10,6 +11,7 @@ import com.example.travelDiary.domain.IdentifiableResource;
 import com.example.travelDiary.domain.model.user.UserProfile;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.time.Instant;
@@ -20,15 +22,16 @@ import java.util.UUID;
 public class ResourceService {
     private final ResourceRepository resourceRepository;
     private final ResourcePermissionRepository resourcePermissionRepository;
-    private final AccessControlService accessControlService;
+    private final AuthUserService authUserService;
+
 
     @Autowired
     public ResourceService(ResourceRepository resourceRepository,
-                           ResourcePermissionRepository resourcePermissionRepository,
-                           AccessControlService accessControlService) {
+                           ResourcePermissionRepository resourcePermissionRepository, AuthUserService authUserService
+    ) {
         this.resourceRepository = resourceRepository;
         this.resourcePermissionRepository = resourcePermissionRepository;
-        this.accessControlService = accessControlService;
+        this.authUserService = authUserService;
     }
 
     public Resource getResourceById(UUID resourceId) {
@@ -37,7 +40,10 @@ public class ResourceService {
     }
 
     @Transactional
-    public Resource createResource(String visibility, UUID resourceUUID, String type, UserProfile owner) {
+    public Resource createResource(IdentifiableResource identifiableResource, String visibility) {
+        UserProfile owner = authUserService.getCurrentUser();
+        String type = identifiableResource.getClass().getSimpleName();
+        UUID resourceUUID = identifiableResource.getId();
         Resource resource = Resource.builder()
                 .visibility(visibility)
                 .resourceUUID(resourceUUID)
@@ -50,15 +56,6 @@ public class ResourceService {
         assignOwnerPermission(resource, owner);
 
         return resource;
-    }
-
-    public Resource linkResource(IdentifiableResource identifiableResource, String visibility, UserProfile owner) {
-        return createResource(visibility, identifiableResource.getId(), identifiableResource.getClass().getSimpleName(), owner);
-    }
-
-    public void deleteResourceById(UUID resourceId) {
-        resourcePermissionRepository.deleteByResourceId(resourceId);
-        resourceRepository.deleteById(resourceId);
     }
 
     @Transactional
@@ -75,5 +72,13 @@ public class ResourceService {
                 .permissions(UserResourcePermissionTypes.OWNER)
                 .build();
         resourcePermissionRepository.save(permission);
+    }
+
+    @Transactional
+    public void delinkPermissions(List<UUID> resourceIds) {
+        List<Resource> resources = resourceRepository.findAll();
+        List<Resource> resourceId = resourceRepository.findAllByResourceUUIDIn(resourceIds);
+        resourcePermissionRepository.deleteAllByResourceIn(resourceId);
+        resourcePermissionRepository.flush();
     }
 }

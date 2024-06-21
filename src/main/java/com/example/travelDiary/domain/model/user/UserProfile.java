@@ -25,7 +25,4 @@ public class UserProfile {
     private String userProfileName;
 
     private String userDescription;
-
-    @OneToMany(mappedBy = "user_profile", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
-    private List<ResourcePermission> resourcePermissions;
 }

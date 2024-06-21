@@ -32,14 +32,14 @@ public class AuthUserServiceImpl implements AuthUserService {
     private final UserProfileRepository userProfileRepository;
 
     @Autowired
-    public AuthUserServiceImpl(AuthUserRepository userRepository, PasswordEncoder passwordEncoder, TokenBlacklistService tokenBlacklistService, JwtProvider jwtProvider, EventPublisher eventPublisher, UserProfileRepository userProfileRepository1) {
+    public AuthUserServiceImpl(AuthUserRepository userRepository, PasswordEncoder passwordEncoder, TokenBlacklistService tokenBlacklistService, JwtProvider jwtProvider, EventPublisher eventPublisher, UserProfileRepository userProfileRepository) {
 
         this.authUserRepository = userRepository;
         this.passwordEncoder = passwordEncoder;
         this.tokenBlacklistService = tokenBlacklistService;
         this.jwtProvider = jwtProvider;
         this.eventPublisher = eventPublisher;
-        this.userProfileRepository = userProfileRepository1;
+        this.userProfileRepository = userProfileRepository;
     }
 
     @Override

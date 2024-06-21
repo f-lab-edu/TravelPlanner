@@ -51,7 +51,7 @@ public class AccessControlService {
             // Check if the current user has permission to assign this permission
             UserProfile currentUserProfile = authUserService.getCurrentUser();
 
-            Optional<ResourcePermission> resourcePermissionOpt = resourcePermissionRepository.findByUserAndResource(currentUserProfile, resource);
+            Optional<ResourcePermission> resourcePermissionOpt = resourcePermissionRepository.findByUserProfileAndResource(currentUserProfile, resource);
             if (resourcePermissionOpt.isEmpty()) {
                 return false;
             }
@@ -86,7 +86,7 @@ public class AccessControlService {
     }
 
     private boolean hasPermissionToAssign(UserProfile currentUserProfile, Resource resource) {
-        Optional<ResourcePermission> resourcePermissionOpt = resourcePermissionRepository.findByUserAndResource(currentUserProfile, resource);
+        Optional<ResourcePermission> resourcePermissionOpt = resourcePermissionRepository.findByUserProfileAndResource(currentUserProfile, resource);
         return resourcePermissionOpt.isPresent() && resourcePermissionOpt.get().getPermissions().compareTo(UserResourcePermissionTypes.EDIT) > 0;
     }
 
@@ -105,7 +105,7 @@ public class AccessControlService {
     }
 
     public void revokePermission(UUID userId, UUID resourceId) {
-        resourcePermissionRepository.deleteByUserIdAndResourceId(userId, resourceId);
+        resourcePermissionRepository.deleteByUserProfileIdAndResourceId(userId, resourceId);
     }
 }
 

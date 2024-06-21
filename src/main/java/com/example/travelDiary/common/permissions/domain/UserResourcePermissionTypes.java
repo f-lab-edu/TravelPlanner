@@ -18,5 +18,14 @@ public enum UserResourcePermissionTypes {
     public boolean hasHigherOrEqualPermission(UserResourcePermissionTypes other) {
         return this.level >= other.level;
     }
+
+    public static UserResourcePermissionTypes fromLevel(int level) {
+        for (UserResourcePermissionTypes type : values()) {
+            if (type.level == level) {
+                return type;
+            }
+        }
+        throw new IllegalArgumentException("Invalid permission level: " + level);
+    }
 }
 

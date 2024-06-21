@@ -8,10 +8,8 @@ import com.example.travelDiary.application.service.location.PlaceMutationService
 import com.example.travelDiary.domain.model.location.Place;
 import com.example.travelDiary.domain.model.travel.Schedule;
 import com.example.travelDiary.domain.model.travel.TravelPlan;
-import com.example.travelDiary.repository.persistence.location.PlaceRepository;
 import com.example.travelDiary.repository.persistence.travel.ScheduleRepository;
 import com.example.travelDiary.repository.persistence.travel.TravelPlanRepository;
-import jakarta.persistence.PreRemove;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.event.EventListener;
