@@ -14,6 +14,8 @@ import java.util.UUID;
 
 public interface TravelPlanRepository extends JpaRepository<TravelPlan, UUID> {
 
+    Page<TravelPlan> findAllByNameContaining(String name, Pageable pageable);
+
     @Query("SELECT tp FROM TravelPlan tp JOIN tp.resource r JOIN ResourcePermission rp ON rp.resource = r " +
             "WHERE tp.name LIKE %:name% AND rp.userProfile = :user AND rp.permissions >= :permission")
     Page<TravelPlan> findAllByNameContainingAndUserPermission(@Param("name") String name,
@@ -28,6 +30,8 @@ public interface TravelPlanRepository extends JpaRepository<TravelPlan, UUID> {
                                                            @Param("resourceIds") List<UUID> resourceIds,
                                                            Pageable pageable);
 
-    Page<TravelPlan> findAllByNameContaining(String name, Pageable pageable);
+    @Query("SELECT tp FROM TravelPlan tp " +
+            "WHERE tp.resource.id IN :resourceIds ")
+    List<TravelPlan> findAllByResourceIds(List<UUID> resourceIds);
 }
 

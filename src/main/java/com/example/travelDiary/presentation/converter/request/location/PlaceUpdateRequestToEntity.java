@@ -1,4 +1,4 @@
-package com.example.travelDiary.presentation.converter.location;
+package com.example.travelDiary.presentation.converter.request.location;
 
 import com.example.travelDiary.domain.model.location.Place;
 import com.example.travelDiary.presentation.dto.request.travel.location.PlaceUpdateRequest;

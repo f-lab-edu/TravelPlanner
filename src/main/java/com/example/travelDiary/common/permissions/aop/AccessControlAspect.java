@@ -5,6 +5,7 @@ import com.example.travelDiary.domain.IdentifiableResource;
 import org.aspectj.lang.ProceedingJoinPoint;
 import org.aspectj.lang.annotation.Around;
 import org.aspectj.lang.annotation.Aspect;
+import org.jetbrains.annotations.NotNull;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.expression.spel.standard.SpelExpressionParser;
 import org.springframework.expression.spel.support.StandardEvaluationContext;
@@ -28,45 +29,54 @@ public class AccessControlAspect {
         this.accessControlService = accessControlService;
     }
 
-    @Around("@annotation(checkAccess)")
-    public Object checkAccess(ProceedingJoinPoint joinPoint, CheckAccess checkAccess) throws Throwable {
+    @Around("@annotation(CheckAccess) || @annotation(CheckAccesses)")
+    public Object checkAccess(ProceedingJoinPoint joinPoint) throws Throwable {
         Object[] args = joinPoint.getArgs();
-
         Method method = getMethodFromJoinPoint(joinPoint);
+        CheckAccesses checkAccessesAnnotation = method.getAnnotation(CheckAccesses.class);
+        CheckAccess[] checkAccessArray = checkAccessesAnnotation != null ? checkAccessesAnnotation.value() : new CheckAccess[]{method.getAnnotation(CheckAccess.class)};
 
-        StandardEvaluationContext context = new StandardEvaluationContext(args);
+        for (CheckAccess checkAccess : checkAccessArray) {
+            StandardEvaluationContext context = new StandardEvaluationContext(args);
 
-        String[] parameterNames = getParameterNames(method);
-        for (int i = 0; i < parameterNames.length; i++) {
-            context.setVariable(parameterNames[i], args[i]);
-        }
 
-        String permission = checkAccess.permission();
-        Class<? extends IdentifiableResource> resourceType = checkAccess.resourceType();
+            String[] parameterNames = getParameterNames(method);
+            for (int i = 0; i < parameterNames.length; i++) {
+                context.setVariable(parameterNames[i], args[i]);
+            }
 
-        if (checkAccess.isList()) {
-            @SuppressWarnings("unchecked")
-            List<?> resourceIds = (List<?>) new SpelExpressionParser()
-                    .parseExpression(checkAccess.resourceId())
-                    .getValue(context);
-            for (Object resourceId : resourceIds) {
-                if (!accessControlService.hasPermission(resourceType, (UUID)resourceId, permission)) {
+            String permission = checkAccess.permission();
+            Class<? extends IdentifiableResource> resourceType = checkAccess.resourceType();
+
+            if (checkAccess.isList()) {
+                @SuppressWarnings("unchecked")
+                List<?> resourceIds = (List<?>) new SpelExpressionParser()
+                        .parseExpression(checkAccess.spelResourceId())
+                        .getValue(context);
+                for (Object resourceId : resourceIds) {
+                    if (!accessControlService.hasPermission(resourceType, (UUID) resourceId, permission)) {
+                        throw new AccessDeniedException("Access Denied for resource id: " + resourceId);
+                    }
+                }
+            } else {
+                UUID resourceId = (UUID) new SpelExpressionParser()
+                        .parseExpression(checkAccess.spelResourceId())
+                        .getValue(context);
+                if (!accessControlService.hasPermission(resourceType, resourceId, permission)) {
                     throw new AccessDeniedException("Access Denied for resource id: " + resourceId);
                 }
-            }
-        } else {
-            UUID resourceId = (UUID) new SpelExpressionParser()
-                    .parseExpression(checkAccess.resourceId())
-                    .getValue(context);
-            if (!accessControlService.hasPermission(resourceType, resourceId, permission)) {
-                throw new AccessDeniedException("Access Denied for resource id: " + resourceId);
             }
         }
 
         return joinPoint.proceed();
     }
 
-    private Method getMethodFromJoinPoint(ProceedingJoinPoint joinPoint) throws NoSuchMethodException {
+    protected Method getMethodFromJoinPoint(ProceedingJoinPoint joinPoint) throws NoSuchMethodException {
+        return getMethod(joinPoint);
+    }
+
+    @NotNull
+    private Method getMethod(ProceedingJoinPoint joinPoint) throws NoSuchMethodException {
         String methodName = joinPoint.getSignature().getName();
         Class<?>[] parameterTypes = Arrays.stream(joinPoint.getArgs())
                 .map(arg -> {

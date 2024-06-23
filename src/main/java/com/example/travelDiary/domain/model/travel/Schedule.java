@@ -1,10 +1,14 @@
 package com.example.travelDiary.domain.model.travel;
 
+import com.example.travelDiary.common.permissions.domain.Resource;
 import com.example.travelDiary.domain.IdentifiableResource;
 import com.example.travelDiary.domain.model.location.Place;
 import com.example.travelDiary.domain.model.review.Review;
 import jakarta.persistence.*;
+import lombok.AllArgsConstructor;
+import lombok.Builder;
 import lombok.Data;
+import lombok.NoArgsConstructor;
 import org.hibernate.annotations.Cascade;
 import org.hibernate.annotations.CascadeType;
 
@@ -14,6 +18,9 @@ import java.util.UUID;
 
 @Entity
 @Data
+@Builder
+@NoArgsConstructor
+@AllArgsConstructor
 public class Schedule implements IdentifiableResource {
     @Id
     @GeneratedValue(strategy = GenerationType.UUID)
@@ -50,5 +57,10 @@ public class Schedule implements IdentifiableResource {
     @OneToMany
     @Cascade(CascadeType.ALL)
     public List<Activity> activities;
+
+    @OneToOne(fetch = FetchType.LAZY)
+    @Cascade(CascadeType.ALL)
+    @JoinColumn(name = "resource_id", referencedColumnName = "id")
+    private Resource resource;
 
 }

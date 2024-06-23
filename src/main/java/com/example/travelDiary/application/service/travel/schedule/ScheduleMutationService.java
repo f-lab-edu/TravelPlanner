@@ -7,12 +7,12 @@ import com.example.travelDiary.application.events.travel.SchedulePreDeletedEvent
 import com.example.travelDiary.application.events.travel.ScheduleUpdatedEvent;
 import com.example.travelDiary.application.service.location.PlaceMutationService;
 import com.example.travelDiary.application.service.travel.RouteAccessService;
+import com.example.travelDiary.common.permissions.aop.CheckAccess;
 import com.example.travelDiary.domain.model.location.Place;
 import com.example.travelDiary.domain.model.travel.Route;
 import com.example.travelDiary.domain.model.travel.Schedule;
 import com.example.travelDiary.domain.model.travel.TravelPlan;
 import com.example.travelDiary.repository.persistence.travel.ScheduleRepository;
-import com.example.travelDiary.repository.persistence.travel.TravelPlanRepository;
 import com.example.travelDiary.presentation.dto.request.travel.location.PlaceUpdateRequest;
 import com.example.travelDiary.presentation.dto.request.travel.RouteUpdateRequest;
 import com.example.travelDiary.presentation.dto.request.travel.schedule.ScheduleInsertRequest;
@@ -23,13 +23,11 @@ import org.springframework.core.convert.ConversionService;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.util.List;
 import java.util.UUID;
 
 @Service
 public class ScheduleMutationService {
     private final ScheduleRepository scheduleRepository;
-    private final TravelPlanRepository travelPlanRepository;
     private final PlaceMutationService placeMutationService;
     private final ConversionService conversionService;
     private final EventPublisher eventPublisher;
@@ -37,12 +35,11 @@ public class ScheduleMutationService {
 
     @Autowired
     public ScheduleMutationService(ScheduleRepository scheduleRepository,
-                                   TravelPlanRepository travelPlanRepository,
                                    PlaceMutationService placeMutationService,
-                                   ConversionService conversionService, EventPublisher eventPublisher,
+                                   ConversionService conversionService,
+                                   EventPublisher eventPublisher,
                                    RouteAccessService routeAccessService) {
         this.scheduleRepository = scheduleRepository;
-        this.travelPlanRepository = travelPlanRepository;
         this.placeMutationService = placeMutationService;
         this.conversionService = conversionService;
         this.eventPublisher = eventPublisher;
@@ -50,13 +47,13 @@ public class ScheduleMutationService {
     }
 
     @Transactional
+    @CheckAccess(resourceType = TravelPlan.class, spelResourceId = "#travelPlanId", permission = "EDIT")
     public Schedule createSchedule(UUID travelPlanId, ScheduleInsertRequest request) {
         Schedule schedule = conversionService.convert(request, Schedule.class);
         assert schedule != null;
         schedule.setTravelPlanId(travelPlanId);
 
         schedule = scheduleRepository.save(schedule);
-        updateTravelPlanOnInsert(travelPlanId, schedule);
 
         if(request.getPreviousScheduleId() != null) {
             Schedule previousSchedule = scheduleRepository.findById(request.getPreviousScheduleId()).orElseThrow();
@@ -65,12 +62,13 @@ public class ScheduleMutationService {
             schedule.setInwardRoute(route);
         }
 
-        eventPublisher.publishEvent(new ScheduleCreatedEvent(schedule));
+        eventPublisher.publishEvent(new ScheduleCreatedEvent(schedule, travelPlanId));
 
         return schedule;
     }
 
     @Transactional
+    @CheckAccess(resourceType = Schedule.class, spelResourceId = "#scheduleId", permission = "EDIT")
     public UUID deleteSchedule(UUID travelPlanId, UUID scheduleId) {
         Schedule schedule = scheduleRepository.findById(scheduleId).orElseThrow(() -> new EntityNotFoundException("Schedule not found"));
         eventPublisher.publishEvent(new SchedulePreDeletedEvent(travelPlanId,scheduleId));
@@ -83,6 +81,8 @@ public class ScheduleMutationService {
     }
 
 
+    @Transactional
+    @CheckAccess(resourceType = Schedule.class, spelResourceId = "#request.scheduleId", permission = "EDIT")
     public Schedule updateScheduleMetadata(UUID travelPlanId, ScheduleMetadataUpdateRequest request) {
         Schedule schedule = scheduleRepository.findById(request.getScheduleId()).orElseThrow();
         Schedule sanitizedSchedule = conversionService.convert(request, Schedule.class);
@@ -96,17 +96,17 @@ public class ScheduleMutationService {
 
         scheduleRepository.save(schedule);
 
-        eventPublisher.publishEvent(new ScheduleUpdatedEvent(schedule));
+        eventPublisher.publishEvent(new ScheduleUpdatedEvent(schedule, travelPlanId));
 
         return schedule;
     }
 
     //PLACE UPDATES
     @Transactional
+    @CheckAccess(resourceType = Schedule.class, spelResourceId = "#scheduleId", permission = "EDIT")
     public Schedule reassignPlace(UUID scheduleId, PlaceUpdateRequest request) {
         //move to controller
         Place place = placeMutationService.createNewPlaceIfNotExists(request);
-
 
         assert place != null;
         Schedule schedule = scheduleRepository.findById(scheduleId).orElseThrow(() -> new EntityNotFoundException("Schedule not found"));
@@ -116,20 +116,17 @@ public class ScheduleMutationService {
         routeAccessService.resetRoute(schedule.getOutwardRoute());
 
         scheduleRepository.save(schedule);
-
-        eventPublisher.publishEvent(new ScheduleUpdatedEvent(schedule));
+        scheduleRepository.flush();
+        eventPublisher.publishEvent(new ScheduleUpdatedEvent(schedule, schedule.travelPlanId));
         eventPublisher.publishEvent(new ScheduleDeletedEvent(scheduleId, oldPlaceId));
         return schedule;
     }
 
     //ROUTE related
     @Transactional
-    public Route updateRouteDetails(RouteUpdateRequest request) {
-        return routeAccessService.updateRoute(request);
-    }
-
-    @Deprecated
-    public Route updateRouteManually(RouteUpdateRequest updateRequest) {
+    @CheckAccess(resourceType = Schedule.class, spelResourceId = "#updateRequest.outBoundScheduleId", permission = "EDIT")
+    @CheckAccess(resourceType = Schedule.class, spelResourceId = "#updateRequest.inBoundScheduleId", permission = "EDIT")
+    public Route updateRouteDetails(RouteUpdateRequest updateRequest) {
         Schedule inboundSchedule = scheduleRepository
                 .findById(
                         updateRequest
@@ -142,22 +139,16 @@ public class ScheduleMutationService {
                                 .getOutBoundScheduleId())
                 .orElseThrow(() -> new EntityNotFoundException("Outbound Schedule not found"));
 
-        Route route = conversionService.convert(updateRequest, Route.class);
+        Route route = routeAccessService.updateRoute(updateRequest);
         inboundSchedule.setInwardRoute(route);
         outBoundSchedule.setOutwardRoute(route);
-
         return route;
     }
 
-//    UTILS
-    private void updateTravelPlanOnInsert(UUID travelPlanId, Schedule scheduleToModify) {
-        TravelPlan travelPlan = travelPlanRepository.getReferenceById(travelPlanId);
-        List<Schedule> travelPlanSchedule = travelPlan.getScheduleList();
-        travelPlanSchedule.add(scheduleToModify);
-        travelPlanRepository.save(travelPlan);
-    }
+
 
 //    Todo
+    @Transactional
     public void importSchedule(TravelPlan importedTravelPlan) {
         return;
     }

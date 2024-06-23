@@ -14,17 +14,28 @@ import java.util.UUID;
 
 public interface ScheduleRepository extends JpaRepository<Schedule, UUID> {
 
-    @Query("SELECT s FROM Schedule s WHERE " +
-            "s.travelStartTimeEstimate BETWEEN :startOfDay AND :endOfDay")
+    @Query("SELECT s FROM Schedule s" +
+            " WHERE (s.travelStartTimeEstimate BETWEEN :startOfDay AND :endOfDay)" +
+            " AND s.resource.id IN :resourceIds")
     Page<Schedule> findAllByTravelDate(@Param("startOfDay") LocalDateTime startOfDay,
                                        @Param("endOfDay") LocalDateTime endOfDay,
+                                       @Param("resourceIds") List<UUID> resourceIds,
                                        Pageable pageable);
 
 
+    @Query("SELECT s FROM Schedule s" +
+            " WHERE s.place.name LIKE :name" +
+            " AND s.resource.id IN :resourceIds")
+    Page<Schedule> findAllByPlaceNameContaining(@Param("name") String name,
+                                                @Param("resourceIds") List<UUID> resourceIds,
+                                                Pageable pageable);
 
-    Page<Schedule> findAllByPlaceNameContaining(String name, Pageable pageable);
+    @Query("SELECT s FROM Schedule s" +
+            " WHERE s.travelPlanId = :travelPlanId" +
+            " AND s.resource.id IN :resourceIds")
+    List<Schedule> findAllByTravelPlanId(@Param("travelPlanId") UUID travelPlanId,
+                                         @Param("resourceIds") List<UUID> resourceIds);
 
     List<Schedule> findByPlaceId(UUID id);
 
-    List<Schedule> findAllByTravelPlanId(UUID travelPlanId);
 }

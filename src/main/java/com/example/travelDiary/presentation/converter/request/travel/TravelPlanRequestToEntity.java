@@ -1,4 +1,4 @@
-package com.example.travelDiary.presentation.converter.travel;
+package com.example.travelDiary.presentation.converter.request.travel;
 
 import com.example.travelDiary.domain.model.travel.TravelPlan;
 import com.example.travelDiary.presentation.dto.request.travel.TravelPlanUpsertRequestDTO;

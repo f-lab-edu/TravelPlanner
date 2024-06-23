@@ -13,25 +13,18 @@ import java.lang.annotation.RetentionPolicy;
 import java.util.Collections;
 import java.util.UUID;
 
+import static com.example.travelDiary.authenticationUtils.SecurityTestUtils.createMockAuthUser;
+
 
 @Retention(RetentionPolicy.RUNTIME)
 @WithSecurityContext(factory = WithMockAuthUser.SecurityContextFactory.class)
 public @interface WithMockAuthUser {
     String id();
-    String username() default "testUser";
-    String email() default "test@test.com";
-    String password() default "test";
-    String name() default "test";
 
     class SecurityContextFactory implements WithSecurityContextFactory<WithMockAuthUser> {
         @Override
         public SecurityContext createSecurityContext(WithMockAuthUser withMockAuthUser) {
-            AuthUser authUser = new AuthUser();
-            authUser.setId(UUID.fromString(withMockAuthUser.id()));
-            authUser.setUsername(withMockAuthUser.username());
-            authUser.setEmail(withMockAuthUser.email());
-            authUser.setName(withMockAuthUser.name());
-            authUser.setSaltedPassword(withMockAuthUser.password());
+            AuthUser authUser = createMockAuthUser(withMockAuthUser.id());
 
             PrincipalDetails principalDetails = new PrincipalDetails(authUser);
             UsernamePasswordAuthenticationToken authentication = new UsernamePasswordAuthenticationToken(

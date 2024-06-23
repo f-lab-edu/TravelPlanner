@@ -1,4 +1,4 @@
-package com.example.travelDiary.presentation.converter.review;
+package com.example.travelDiary.presentation.converter.request.review;
 
 import com.example.travelDiary.domain.model.review.Review;
 import com.example.travelDiary.presentation.dto.request.review.ReviewUpsertRequest;

@@ -1,4 +1,4 @@
-package com.example.travelDiary.presentation.converter.wallet;
+package com.example.travelDiary.presentation.converter.request.wallet;
 
 import com.example.travelDiary.domain.model.wallet.aggregate.Expenditure;
 import com.example.travelDiary.presentation.dto.request.wallet.ExpenditureRequest;

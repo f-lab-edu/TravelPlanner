@@ -27,4 +27,8 @@ public class ResourcePermissionService {
         return resourcePermissionRepository.findResourceIdsByUserProfileAndPermission(userProfile, permission.getLevel());
     }
 
+    public List<UUID> getResourceIdsByUserPermissionAndType(UserResourcePermissionTypes permission, String type) {
+        UserProfile userProfile = authUserService.getCurrentUser();
+        return resourcePermissionRepository.findResourceIdsByUserProfileAndPermissionAndType(userProfile, permission.getLevel(), type);
+    }
 }

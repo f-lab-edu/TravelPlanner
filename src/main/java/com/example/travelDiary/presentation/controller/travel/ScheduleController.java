@@ -10,13 +10,15 @@ import com.example.travelDiary.presentation.dto.request.travel.location.PlaceUpd
 import com.example.travelDiary.presentation.dto.request.travel.RouteUpdateRequest;
 import com.example.travelDiary.presentation.dto.request.travel.schedule.ScheduleInsertRequest;
 import com.example.travelDiary.presentation.dto.request.travel.schedule.ScheduleMetadataUpdateRequest;
+import com.example.travelDiary.presentation.dto.response.travel.ScheduleResponse;
 import com.example.travelDiary.repository.persistence.travel.TravelPlanRepository;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.core.convert.ConversionService;
 import org.springframework.data.domain.Page;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.time.LocalDate;
-import java.time.LocalDateTime;
 import java.util.List;
 import java.util.UUID;
 
@@ -28,24 +30,27 @@ public class ScheduleController {
     private final TravelPlanRepository travelPlanRepository;
     private final PlaceMutationService placeMutationService;
     private final ScheduleQueryService scheduleQueryService;
+    private final ConversionService conversionService;
 
-    public ScheduleController(ScheduleMutationService scheduleMutationService, TravelPlanRepository travelPlanRepository, PlaceMutationService placeMutationService, ScheduleQueryService scheduleQueryService) {
+    public ScheduleController(ScheduleMutationService scheduleMutationService, TravelPlanRepository travelPlanRepository, PlaceMutationService placeMutationService, ScheduleQueryService scheduleQueryService, ConversionService conversionService) {
         this.scheduleMutationService = scheduleMutationService;
         this.travelPlanRepository = travelPlanRepository;
         this.placeMutationService = placeMutationService;
         this.scheduleQueryService = scheduleQueryService;
+        this.conversionService = conversionService;
     }
 
     @PutMapping("/create_schedule")
-    public Schedule createSchedule(@PathVariable("travelPlanId") UUID travelPlanId, @RequestBody ScheduleInsertRequest request) {
+    public ResponseEntity<ScheduleResponse> createSchedule(@PathVariable("travelPlanId") UUID travelPlanId, @RequestBody ScheduleInsertRequest request) {
         Schedule schedule = scheduleMutationService.createSchedule(travelPlanId, request);
         travelPlanRepository.findById(travelPlanId).ifPresent(travelPlan -> {travelPlan.getScheduleList().add(schedule);});
-        return schedule;
+        return ResponseEntity.ok(conversionService.convert(schedule,ScheduleResponse.class));
     }
 
     @PatchMapping("/update_schedule_metadata")
-    public Schedule modifySchedule(@PathVariable(value = "travelPlanId") UUID travelPlanId, @RequestBody ScheduleMetadataUpdateRequest request) {
-        return scheduleMutationService.updateScheduleMetadata(travelPlanId, request);
+    public ResponseEntity<ScheduleResponse> modifySchedule(@PathVariable(value = "travelPlanId") UUID travelPlanId, @RequestBody ScheduleMetadataUpdateRequest request) {
+        Schedule schedule = scheduleMutationService.updateScheduleMetadata(travelPlanId, request);
+        return ResponseEntity.ok(conversionService.convert(schedule,ScheduleResponse.class));
     }
 
     @DeleteMapping("/delete_schedule")
@@ -54,30 +59,34 @@ public class ScheduleController {
     }
 
     @GetMapping("/search_schedule_by_place_name")
-    public Page<Schedule> getScheduleContainingPlaceName(@PathVariable(value = "travelPlanId") UUID travelPlanId,
+    public ResponseEntity<Page<ScheduleResponse>> getScheduleContainingPlaceName(@PathVariable(value = "travelPlanId") UUID travelPlanId,
                                               @RequestParam(value="name") String name,
                                               @RequestParam(value="pageNumber") Integer pageNumber,
                                               @RequestParam(value="pageSize") Integer pageSize) {
-        return scheduleQueryService.getScheduleContainingName(name, pageNumber, pageSize);
+        Page<Schedule> schedulePages = scheduleQueryService.getScheduleContainingName(name, pageNumber, pageSize, null);
+        return ResponseEntity.ok(schedulePages.map(p->conversionService.convert(p,ScheduleResponse.class)));
     }
 
     @GetMapping("/search_schedule_by_day")
-    public Page<Schedule> getScheduleOnDay(@PathVariable(value = "travelPlanId") UUID travelPlanId,
+    public ResponseEntity<Page<ScheduleResponse>>getScheduleOnDay(@PathVariable(value = "travelPlanId") UUID travelPlanId,
                                            @RequestParam LocalDate date,
                                            @RequestParam Integer pageNumber,
                                            @RequestParam Integer pageSize) {
         log.info("search schedule by day reached");
-        return scheduleQueryService.getSchedulesOnGivenDay(date, pageNumber, pageSize);
+        Page<Schedule> schedulePages = scheduleQueryService.getSchedulesOnGivenDay(date, pageNumber, pageSize, null);
+        return ResponseEntity.ok(schedulePages.map(p->conversionService.convert(p,ScheduleResponse.class)));
     }
 
     @GetMapping("/search_all")
-    public List<Schedule> getSchedule(@PathVariable(value = "travelPlanId") UUID travelPlanId) {
-        return scheduleQueryService.getAllSchedules(travelPlanId);
+    public ResponseEntity<List<ScheduleResponse>> getSchedule(@PathVariable(value = "travelPlanId") UUID travelPlanId) {
+        List<Schedule> scheduleList = scheduleQueryService.getAllSchedules(travelPlanId, null);
+        return ResponseEntity.ok(scheduleList.stream().map(p->conversionService.convert(p,ScheduleResponse.class)).toList());
     }
 
     @GetMapping("/search_schedule")
-    public Schedule getSchedule(@PathVariable(value = "travelPlanId") UUID travelPlanId, @RequestParam(value = "scheduleId") UUID scheduleId) {
-        return scheduleQueryService.getSchedule(scheduleId);
+    public ResponseEntity<ScheduleResponse> getSchedule(@PathVariable(value = "travelPlanId") UUID travelPlanId, @RequestParam(value = "scheduleId") UUID scheduleId) {
+        Schedule schedule = scheduleQueryService.getSchedule(scheduleId);
+        return ResponseEntity.ok(conversionService.convert(schedule, ScheduleResponse.class));
     }
 
 //    @GetMapping("/search_schedule_by_day")
@@ -94,8 +103,9 @@ public class ScheduleController {
     }
 
     @PatchMapping("/update_place_on_schedule")
-    public Schedule reassignPlaceOnSchedule (@PathVariable(value = "travelPlanId") UUID travelPlanId, @RequestBody PlaceUpdateRequest request) {
-        return scheduleMutationService.reassignPlace(request.scheduleId, request);
+    public ResponseEntity<ScheduleResponse> reassignPlaceOnSchedule (@PathVariable(value = "travelPlanId") UUID travelPlanId, @RequestBody PlaceUpdateRequest request) {
+        Schedule schedule = scheduleMutationService.reassignPlace(request.scheduleId, request);
+        return ResponseEntity.ok(conversionService.convert(schedule,ScheduleResponse.class));
     }
 
     //update Route

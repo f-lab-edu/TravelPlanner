@@ -1,10 +1,12 @@
 package com.example.travelDiary.application.service.travel;
 
+import com.example.travelDiary.TestConfig;
 import com.example.travelDiary.application.service.travel.schedule.ScheduleQueryService;
 import com.example.travelDiary.authenticationUtils.SecurityTestUtils;
 import com.example.travelDiary.authenticationUtils.WithMockAuthUser;
 import com.example.travelDiary.common.auth.domain.AuthUser;
 import com.example.travelDiary.common.auth.repository.AuthUserRepository;
+import com.example.travelDiary.common.auth.service.AuthUserService;
 import com.example.travelDiary.common.auth.service.AuthUserServiceImpl;
 import com.example.travelDiary.common.permissions.domain.Resource;
 import com.example.travelDiary.common.permissions.domain.ResourcePermission;
@@ -26,7 +28,6 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mockito.MockitoAnnotations;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.autoconfigure.orm.jpa.TestEntityManager;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.context.annotation.Import;
@@ -47,11 +48,11 @@ import static org.mockito.Mockito.*;
 @Slf4j
 @SpringBootTest
 @ActiveProfiles({"test", "secretsLocal"})
-@Import(SecurityTestUtils.class)
-public class TravelPlanAccessServiceTest {
+@Import(TestConfig.class)
+public class TravelPlanServiceIntegratedTest {
 
     @MockBean
-    private AuthUserServiceImpl authUserService;
+    private AuthUserService authUserService;
 
     @MockBean
     private ScheduleQueryService scheduleQueryService;
@@ -84,7 +85,10 @@ public class TravelPlanAccessServiceTest {
     private AccessControlService accessControlService;
 
     @Autowired
-    private TravelPlanAccessService travelPlanAccessService;
+    private TravelPlanMutationService travelPlanMutationService;
+
+    @Autowired
+    private TravelPlanQueryService travelPlanQueryService;
 
     @Autowired
     private EntityManager testEntityManager;
@@ -92,7 +96,7 @@ public class TravelPlanAccessServiceTest {
 
     private final String authUserId = "b3a0a82f-f737-46f6-9d41-c475a7cc20ec";
     private final AuthUser authUser = SecurityTestUtils.createMockAuthUser(authUserId);
-    private UserProfile user = UserProfile.builder().authUserId(UUID.fromString(authUserId)).build();
+    private final UserProfile user = UserProfile.builder().authUserId(UUID.fromString(authUserId)).build();
 
     private UUID travelPlanId;
 
@@ -154,7 +158,7 @@ public class TravelPlanAccessServiceTest {
     void testGetTravelPageContainingName() {
         UUID createdTravelPlanUUID = createTravelPlanUtils("Test Create Plan");
         List<TravelPlan> travelPlanList = travelPlanRepository.findAll();
-        Page<TravelPlan> result = travelPlanAccessService.getTravelPageContainingName("Test Create Plan", 0, 10);
+        Page<TravelPlan> result = travelPlanQueryService.getTravelPageContainingName("Test Create Plan", 0, 10, null);
         assertThat(result.getContent()).isNotEmpty();
         assertThat(travelPlanRepository.findById(createdTravelPlanUUID).get().getName()).isEqualTo("Test Create Plan");
     }
@@ -164,7 +168,7 @@ public class TravelPlanAccessServiceTest {
     @Transactional
     @DirtiesContext
     void testGetTravelPlan() {
-        TravelPlan result = travelPlanAccessService.getTravelPlan(this.travelPlanId);
+        TravelPlan result = travelPlanQueryService.getTravelPlan(this.travelPlanId);
         assertThat(result).isNotNull();
         assertThat(result.getId()).isEqualTo(this.travelPlanId);
     }
@@ -177,7 +181,7 @@ public class TravelPlanAccessServiceTest {
         createTravelPlanUtils("Test Plan1");
         createTravelPlanUtils("Test Plan2");
 
-        List<TravelPlan> result = travelPlanAccessService.getAllTravelPlan();
+        List<TravelPlan> result = travelPlanQueryService.getAllTravelPlan(null);
         assertThat(result).isNotEmpty();
         assertThat(result.size()).isEqualTo(3);
     }
@@ -190,11 +194,16 @@ public class TravelPlanAccessServiceTest {
         TravelPlanUpsertRequestDTO requestDTO = new TravelPlanUpsertRequestDTO();
         requestDTO.setName("New Plan");
 
-        UUID result = travelPlanAccessService.createPlan(requestDTO);
-        Page<TravelPlan> travelPlanPage = travelPlanRepository.findAllByNameContaining("New Plan", PageRequest.of(1,10));
+        UUID result = travelPlanMutationService.createPlan(requestDTO);
+        Page<TravelPlan> travelPlanPage = travelPlanRepository.findAllByNameContaining("New Plan", PageRequest.of(0,10));
+        Page<TravelPlan> travelPlans = travelPlanQueryService.getTravelPageContainingName("New Plan", 0, 10, null);
+        log.info(travelPlans.getContent().toString());
 
-        assertThat(result).isNotNull();
+        assertThat(travelPlanPage).isNotNull();
+        assertThat(travelPlans).isNotNull();
         assertThat(travelPlanPage.getTotalElements()).isEqualTo(1);
+        assertThat(travelPlans.getTotalElements()).isEqualTo(1);
+        assertThat(travelPlans.getContent().get(0).getName()).isEqualTo("New Plan");
 
     }
 
@@ -210,7 +219,7 @@ public class TravelPlanAccessServiceTest {
         //mid-check
         assertThat(travelPlanRepository.findById(createdID)).isNotEmpty();
 
-        List<UUID> result = travelPlanAccessService.deletePlan(request);
+        List<UUID> result = travelPlanMutationService.deletePlan(request);
         assertThat(result).containsExactly(createdID);
 
         assertThat(travelPlanRepository.findById(createdID)).isEmpty();
@@ -235,7 +244,7 @@ public class TravelPlanAccessServiceTest {
 
         List<Resource> resources = resourceRepository.findAll();
 
-        List<UUID> result = travelPlanAccessService.deletePlan(request);
+        List<UUID> result = travelPlanMutationService.deletePlan(request);
         assertThat(result).containsExactly(createdID2, createdID3);
 
         assertThat(travelPlanRepository.findById(createdID2)).isEmpty();
@@ -255,7 +264,7 @@ public class TravelPlanAccessServiceTest {
         requestDTO.setUuid(planId);
         requestDTO.setName("Updated Name");
 
-        TravelPlan result = travelPlanAccessService.modifyPlanMetadata(requestDTO);
+        TravelPlan result = travelPlanMutationService.modifyPlanMetadata(requestDTO);
 
         Page<TravelPlan> repositoryResult = travelPlanRepository.findAllByNameContaining("Updated", PageRequest.of(1,10));
         assertThat(result.getName()).isEqualTo("Updated Name");
@@ -269,7 +278,7 @@ public class TravelPlanAccessServiceTest {
     void testImportPlanSameUser() {
         UUID createdId = createTravelPlanUtils("Test Plan 1");
 
-        TravelPlan result = travelPlanAccessService.importPlan(createdId);
+        TravelPlan result = travelPlanMutationService.importPlan(createdId);
         assertThat(result).isNotNull();
         assertThat(result.getId()).isNotEqualTo(createdId);
     }
@@ -283,7 +292,7 @@ public class TravelPlanAccessServiceTest {
         UUID planId = createTravelPlanUtils("Test Plan 1");
 
         PageRequest pageRequest = PageRequest.of(0, 10);
-        Page<MonetaryEvent> result = travelPlanAccessService.getAssociatedMonetaryEvent(planId, pageRequest);
+        Page<MonetaryEvent> result = travelPlanQueryService.getAssociatedMonetaryEvent(planId, pageRequest);
 
         assertThat(result.getContent()).isEmpty();
     }

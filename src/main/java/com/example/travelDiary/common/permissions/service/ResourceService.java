@@ -71,7 +71,9 @@ public class ResourceService {
                 .resource(resource)
                 .permissions(UserResourcePermissionTypes.OWNER)
                 .build();
+        String string = permission.toString();
         resourcePermissionRepository.save(permission);
+        ResourcePermission tempPerm = resourcePermissionRepository.findById(permission.getId()).orElseThrow();
     }
 
     @Transactional

@@ -1,6 +1,9 @@
 package com.example.travelDiary.application.service.travel.schedule;
 
 import com.example.travelDiary.application.service.travel.event.ActivityAccessService;
+import com.example.travelDiary.common.permissions.aop.CheckAccess;
+import com.example.travelDiary.common.permissions.aop.InjectResourceIds;
+import com.example.travelDiary.common.permissions.domain.UserResourcePermissionTypes;
 import com.example.travelDiary.domain.model.travel.Activity;
 import com.example.travelDiary.domain.model.travel.Schedule;
 import com.example.travelDiary.domain.model.wallet.aggregate.MonetaryEvent;
@@ -27,31 +30,37 @@ public class ScheduleQueryService {
         this.activityAccessService = activityAccessService;
     }
 
+    @CheckAccess(resourceType = Schedule.class, spelResourceId = "#scheduleId", permission = "VIEW")
     public Schedule getSchedule(UUID scheduleId) {
-        return scheduleRepository.getReferenceById(scheduleId);
+        return scheduleRepository.findById(scheduleId).orElseThrow();
     }
 
-    public Page<Schedule> getSchedulesOnGivenDay (LocalDate date, Integer pageNumber, Integer pageSize) {
+    @InjectResourceIds(parameterName = "resourceIds", resourceType = "Schedule", permissionType = UserResourcePermissionTypes.VIEW)
+    public Page<Schedule> getSchedulesOnGivenDay (LocalDate date, Integer pageNumber, Integer pageSize, List<UUID> resourceIds) {
         PageRequest pageable = PageRequest.of(pageNumber,pageSize);
         LocalDateTime start = date.atStartOfDay();
         LocalDateTime end = date.atTime(LocalTime.MAX);
-        return scheduleRepository.findAllByTravelDate(start, end, pageable);
+        return scheduleRepository.findAllByTravelDate(start, end, resourceIds, pageable);
     }
 
-    public Page<Schedule> getScheduleContainingName(String name, Integer pageNumber, Integer pageSize) {
+    @InjectResourceIds(parameterName = "resourceIds", resourceType = "Schedule", permissionType = UserResourcePermissionTypes.VIEW)
+    public Page<Schedule> getScheduleContainingName(String name, Integer pageNumber, Integer pageSize, List<UUID> resourceIds) {
         PageRequest pageable = PageRequest.of(pageNumber,pageSize);
-        return scheduleRepository.findAllByPlaceNameContaining(name, pageable);
+        return scheduleRepository.findAllByPlaceNameContaining(name, resourceIds, pageable);
     }
 
+    @InjectResourceIds(parameterName = "resourceIds", resourceType = "Schedule", permissionType = UserResourcePermissionTypes.VIEW)
+    public List<Schedule> getAllSchedules(UUID travelPlanId, List<UUID> resourceIds) {
+        return scheduleRepository.findAllByTravelPlanId(travelPlanId, resourceIds);
+    }
+
+    @CheckAccess(resourceType = Schedule.class, spelResourceId = "#scheduleId", permission = "VIEW")
     public List<MonetaryEvent> getAssociatedMonetaryEvent(UUID scheduleId) {
         List<Activity> activities = scheduleRepository.findById(scheduleId).orElseThrow().getActivities();
         return activities.stream().flatMap(event -> activityAccessService.getAllMonetaryEvents(event.getId()).stream()).toList();
     }
 
-    public List<Schedule> getAllSchedules(UUID travelPlanId) {
-        return scheduleRepository.findAllByTravelPlanId(travelPlanId);
-    }
-
-//"    public List<Schedule> getImmediatePrecedingAndSucceedingSchedule(UUID travelPlanId, LocalDateTime date) {
+//"    public List<Schedule> getImmediatePrecedingAndSucceedingSchedule(UUID travelPlanId, LocalDateTime
+// date) {
 //    }"
 }

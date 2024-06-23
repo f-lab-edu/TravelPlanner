@@ -2,19 +2,31 @@ package com.example.travelDiary.common.permissions.domain;
 
 import com.example.travelDiary.domain.model.user.UserProfile;
 import jakarta.persistence.*;
-import lombok.AllArgsConstructor;
-import lombok.Builder;
-import lombok.Data;
-import lombok.NoArgsConstructor;
+import lombok.*;
+import lombok.extern.slf4j.Slf4j;
 
 import java.util.UUID;
 
 @Entity
 @Data
-@Builder
 @NoArgsConstructor
-@AllArgsConstructor
+@ToString(exclude = {"permissionsLevel"})
+@Slf4j
 public class ResourcePermission {
+
+    @Builder
+    public ResourcePermission(UUID id, UserProfile userProfile, Resource resource, UserResourcePermissionTypes permissions) {
+        this.id = id;
+        this.userProfile = userProfile;
+        this.resource = resource;
+        this.permissions = permissions;
+        if (permissions != null) {
+            this.permissionsLevel = permissions.getLevel();
+        } else {
+            throw new IllegalStateException("permissions level is null");
+        }
+        log.info("ResourcePermission created: {}", this);
+    }
 
     public UserResourcePermissionTypes getPermissions() {
         return UserResourcePermissionTypes.fromLevel(this.permissionsLevel);
@@ -43,6 +55,8 @@ public class ResourcePermission {
 
     @Column(nullable = false)
     private int permissionsLevel;
+
+
 }
 
 

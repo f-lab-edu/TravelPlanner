@@ -27,5 +27,14 @@ public interface ResourcePermissionRepository extends JpaRepository<ResourcePerm
                                                          @Param("permissionLevel") int permissionLevel);
 
 
+    @Query("SELECT rp.resource.id FROM ResourcePermission rp " +
+            "JOIN rp.resource r " +
+            "WHERE rp.userProfile = :user " +
+            "AND rp.permissionsLevel >= :permissionLevel " +
+            "AND r.type = :type")
+    List<UUID> findResourceIdsByUserProfileAndPermissionAndType(@Param("user") UserProfile user,
+                                                                @Param("permissionLevel") int permissionLevel,
+                                                                @Param("type") String type);
+
 }
 
