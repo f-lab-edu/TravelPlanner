@@ -56,7 +56,6 @@ public class ResourcePermission {
     @Column(nullable = false)
     private int permissionsLevel;
 
-
 }
 
 
