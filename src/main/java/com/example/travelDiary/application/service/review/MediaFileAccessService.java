@@ -10,12 +10,15 @@ import com.example.travelDiary.repository.persistence.review.MediaFileRepository
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.convert.ConversionService;
+import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.stereotype.Service;
 import software.amazon.awssdk.services.s3.model.DeleteObjectResponse;
 
 import java.net.URL;
 import java.net.URLConnection;
+import java.time.Duration;
 import java.time.Instant;
+import java.util.Optional;
 import java.util.UUID;
 
 @Slf4j
@@ -24,31 +27,47 @@ public class MediaFileAccessService {
     private final S3Service s3Service;
     private final ConversionService conversionService;
     private final MediaFileRepository mediaFileRepository;
+    private final RedisTemplate<String, Object> redisTemplate;
+
+    private static final long CACHE_EXPIRATION_TIME = 30; // cache expiration time in minutes
 
     @Autowired
-    public MediaFileAccessService(S3Service s3Service, ConversionService conversionService, MediaFileRepository mediaFileRepository) {
+    public MediaFileAccessService(S3Service s3Service, ConversionService conversionService, MediaFileRepository mediaFileRepository, RedisTemplate<String, Object> redisTemplate) {
         this.s3Service = s3Service;
         this.conversionService = conversionService;
         this.mediaFileRepository = mediaFileRepository;
+        this.redisTemplate = redisTemplate;
     }
 
     //make idempotent for same file...
     //check for partial update/ failed update.
     private String saveMediaFile(PreSignedUploadInitiateRequest request) {
+        Optional<MediaFile> existingMediaFile = mediaFileRepository
+                .findByOriginalFileNameAndContentType(request.getOriginalFileName(), guessContentTypeFromName(request));
+
         MediaFile mediaFile = conversionService.convert(request, MediaFile.class);
         assert mediaFile != null;
-        UUID mediaFileId = mediaFileRepository.save(mediaFile).getId();
-        String key = generateKey(request, mediaFileId);
+        String key;
+        // Update existing media file
+        if (existingMediaFile.isPresent()) {
+            key = existingMediaFile.get().getS3Key();
+        } else {
+            UUID mediaFileId = UUID.randomUUID();
+            key = generateKey(request, mediaFileId);
+        }
         mediaFile.setS3Key(key);
-        mediaFileRepository.save(mediaFile);
+
+        // Cache media file in Redis with expiration
+        redisTemplate.opsForValue().set(key, mediaFile, Duration.ofMinutes(CACHE_EXPIRATION_TIME));
         return key;
+
     }
 
     private String guessContentTypeFromName(PreSignedUploadInitiateRequest request) {
         return URLConnection.guessContentTypeFromName(request.getFileType());
     }
 
-    private String generateKey(PreSignedUploadInitiateRequest request, UUID mediaFileId){
+    private String generateKey(PreSignedUploadInitiateRequest request, UUID mediaFileId) {
         String timestamp = Instant.now().toString();
         // Sanitize original file name
         String sanitizedFileName = request
@@ -65,8 +84,8 @@ public class MediaFileAccessService {
                 sanitizedFileName);
     }
 
-    public URL getMediaFile(String objectKey){
-        return s3Service.createPresignedUrlForGet(objectKey);
+    public URL getMediaFile(String s3Key) {
+        return s3Service.createPresignedUrlForGet(s3Key);
     }
 
     public URL uploadMediaFile(PreSignedUploadInitiateRequest request) {
@@ -102,13 +121,24 @@ public class MediaFileAccessService {
 
     public String abortUpload(PresignedUrlAbortRequest request) {
         s3Service.abortUpload(request.getObjectKey(), request);
-        mediaFileRepository.deleteByS3Key(request.getObjectKey());
+        redisTemplate.delete(request.getObjectKey());
         return "aborted";
     }
 
     public void markMediaUploadFinished(String objectKey) {
         log.info("mark media upload finished {}", objectKey);
-        MediaFile mediaFile = mediaFileRepository.findByS3Key(objectKey);
+        MediaFile mediaFile = (MediaFile) redisTemplate.opsForValue().get(objectKey);
+
+        if (mediaFile == null) {
+            mediaFile = mediaFileRepository.findByS3Key(objectKey);
+            if (mediaFile == null) {
+                s3Service.deleteS3Object(objectKey);
+                return;
+            }
+        } else {
+            redisTemplate.delete(objectKey);
+        }
+
         mediaFile.setMediaFileStatus(MediaFileStatus.UPLOADED);
         mediaFileRepository.save(mediaFile);
     }

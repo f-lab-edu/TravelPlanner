@@ -14,7 +14,6 @@ import java.util.UUID;
 public class MediaFile implements IdentifiableResource {
 
     @Id
-    @GeneratedValue(strategy = GenerationType.UUID)
     private UUID id;
 
     private UUID reviewId;
