@@ -47,7 +47,7 @@ import static org.mockito.Mockito.*;
 
 @Slf4j
 @SpringBootTest
-@ActiveProfiles({"test", "secretsLocal"})
+@ActiveProfiles("${spring.profiles.active}")
 @Import(TestConfig.class)
 public class TravelPlanServiceIntegratedTest {
 
