@@ -31,14 +31,14 @@ jobs:
 
       - name: Set up environment variables
         run: |
-          echo "AWS_S3_ACCESS_KEY=${{ secrets.AWS_S3_ACCESS_KEY }}" >> $GITHUB_ENV
-          echo "AWS_S3_SECRET_KEY=${{ secrets.AWS_S3_SECRET_KEY }}" >> $GITHUB_ENV
-          echo "AWS_S3_BUCKET=${{ secrets.AWS_S3_BUCKET }}" >> $GITHUB_ENV
-          echo "AWS_REGION=${{ secrets.AWS_REGION }}" >> $GITHUB_ENV
-          echo "AWS_EC2_URI=${{ secrets.AWS_EC2_URI }}" >> $GITHUB_ENV
+          echo "AWS_S3_ACCESS_KEY=${{ secrets.AMAZON_S3_ACCESS_KEY }}" >> $GITHUB_ENV
+          echo "AWS_S3_SECRET_KEY=${{ secrets.AMAZON_S3_SECRET_KEY }}" >> $GITHUB_ENV
+          echo "AWS_S3_BUCKET=${{ secrets.AMAZON_S3_BUCKET }}" >> $GITHUB_ENV
+          echo "AWS_REGION=${{ secrets.AMAZON_S3_REGION_STATIC }}" >> $GITHUB_ENV
+          echo "AWS_EC2_URI=${{ secrets.AMAZON_EC2_URI }}" >> $GITHUB_ENV
           echo "GOOGLE_CLIENT_SECRET=${{ secrets.GOOGLE_CLIENT_SECRET }}" >> $GITHUB_ENV
           echo "GOOGLE_CLIENT_ID=${{ secrets.GOOGLE_CLIENT_ID }}" >> $GITHUB_ENV
-          echo "JWT_KEY=${{ secrets.JWT_KEY }}" >> $GITHUB_ENV
+          echo "JWT_KEY=${{ secrets.JJWT_KEY }}" >> $GITHUB_ENV
           echo "DOCKER_USERNAME=${{ secrets.DOCKER_USERNAME }}" >> $GITHUB_ENV
           echo "DOCKER_PASSWORD=${{ secrets.DOCKER_PASSWORD }}" >> $GITHUB_ENV
           echo "POSTGRES_USERNAME=${{ secrets.POSTGRES_USERNAME }}" >> $GITHUB_ENV
