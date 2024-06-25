@@ -51,8 +51,8 @@ jobs:
           echo "FRONTEND_URL=https://deploy-roam.vercel.app" >> $GITHUB_ENV
         shell: bash
 
-      - name: Build with Gradle
-        run: ./gradlew build -i
+#      - name: Build with Gradle
+#        run: ./gradlew build
 
       - name: Jacoco Report to PR
         id: jacoco
