@@ -51,8 +51,8 @@ jobs:
           echo "FRONTEND_URL=https://deploy-roam.vercel.app" >> $GITHUB_ENV
         shell: bash
 
-#      - name: Build with Gradle
-#        run: ./gradlew build
+      - name: Build with Gradle
+        run: ./gradlew build
 
       - name: Jacoco Report to PR
         id: jacoco
@@ -75,10 +75,22 @@ jobs:
         uses: docker/setup-buildx-action@v2
 
       - name: Build and Push Docker image
-        uses: docker/build-push-action@v5
-        with:
-          context: .
-          file: Dockerfile
-          platforms: linux/amd64,linux/arm64
-          push: true
-          tags: ${{ secrets.DOCKER_USERNAME }}/roamgram:latest
+        run: |
+            export $(grep -v '^#' .env | xargs)
+            docker buildx build --platform linux/amd64,linux/arm64 \
+              --build-arg POSTGRES_USERNAME="${{ secrets.POSTGRES_USERNAME }}" \
+              --build-arg POSTGRES_PASSWORD="${{ secrets.POSTGRES_PASSWORD }}" \
+              --build-arg POSTGRES_URL="${{ secrets.POSTGRES_URL }}" \
+              --build-arg REDIS_HOST="${{ secrets.REDIS_HOST }}" \
+              --build-arg REDIS_PORT="${{ secrets.REDIS_PORT }}" \
+              --build-arg AWS_S3_ACCESS_KEY="${{ secrets.AMAZON_S3_ACCESS_KEY }}" \
+              --build-arg AWS_S3_SECRET_KEY="${{ secrets.AMAZON_S3_SECRET_KEY }}" \
+              --build-arg AWS_S3_BUCKET="${{ secrets.AMAZON_S3_BUCKET }}" \
+              --build-arg AWS_REGION="${{ secrets.AMAZON_S3_REGION_STATIC }}" \
+              --build-arg AWS_EC2_URI="${{ secrets.AMAZON_EC2_URI }}" \
+              --build-arg GOOGLE_CLIENT_SECRET="${{ secrets.GOOGLE_CLIENT_SECRET }}" \
+              --build-arg GOOGLE_CLIENT_ID="${{ secrets.GOOGLE_CLIENT_ID }}" \
+              --build-arg JWT_KEY="${{ secrets.JJWT_KEY }}" \
+              --build-arg KEY_STORE_PASSWORD="${{ secrets.KEY_STORE_PASSWORD }}" \
+              -t "${{ secrets.DOCKER_USERNAME }}/roamgram:latest" \
+              --push .
