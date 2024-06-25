@@ -52,7 +52,6 @@ public class ScheduleMutationService {
         Schedule schedule = conversionService.convert(request, Schedule.class);
         assert schedule != null;
         schedule.setTravelPlanId(travelPlanId);
-
         schedule = scheduleRepository.save(schedule);
 
         if(request.getPreviousScheduleId() != null) {
@@ -85,21 +84,13 @@ public class ScheduleMutationService {
     @CheckAccess(resourceType = Schedule.class, spelResourceId = "#request.scheduleId", permission = "EDIT")
     public Schedule updateScheduleMetadata(UUID travelPlanId, ScheduleMetadataUpdateRequest request) {
         Schedule schedule = scheduleRepository.findById(request.getScheduleId()).orElseThrow();
-        Schedule sanitizedSchedule = conversionService.convert(request, Schedule.class);
-
-        assert sanitizedSchedule != null;
-        schedule.setName(sanitizedSchedule.getName());
-        schedule.setDescription(sanitizedSchedule.getDescription());
-        schedule.setIsActuallyVisited(sanitizedSchedule.getIsActuallyVisited());
-        schedule.setTravelStartTimeEstimate(sanitizedSchedule.getTravelStartTimeEstimate());
-        schedule.setTravelDepartTimeEstimate(sanitizedSchedule.getTravelDepartTimeEstimate());
-
+        updateNonNullMetaDataFields(request, schedule);
         scheduleRepository.save(schedule);
-
         eventPublisher.publishEvent(new ScheduleUpdatedEvent(schedule, travelPlanId));
 
         return schedule;
     }
+
 
     //PLACE UPDATES
     @Transactional
@@ -151,5 +142,24 @@ public class ScheduleMutationService {
     @Transactional
     public void importSchedule(TravelPlan importedTravelPlan) {
         return;
+    }
+
+
+    private static void updateNonNullMetaDataFields(ScheduleMetadataUpdateRequest request, Schedule schedule) {
+        if (request.getName() != null) {
+            schedule.setName(request.getName());
+        }
+        if (request.getDescription() != null) {
+            schedule.setDescription(request.getDescription());
+        }
+        if (request.getIsActuallyVisited() != null) {
+            schedule.setIsActuallyVisited(request.getIsActuallyVisited());
+        }
+        if (request.getTravelStartTimeEstimate() != null) {
+            schedule.setTravelStartTimeEstimate(request.getTravelStartTimeEstimate());
+        }
+        if (request.getTravelDepartTimeEstimate() != null) {
+            schedule.setTravelDepartTimeEstimate(request.getTravelDepartTimeEstimate());
+        }
     }
 }

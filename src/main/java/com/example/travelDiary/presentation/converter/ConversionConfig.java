@@ -2,7 +2,8 @@ package com.example.travelDiary.presentation.converter;
 
 import com.example.travelDiary.presentation.converter.request.location.PlaceUpdateRequestToEntity;
 import com.example.travelDiary.presentation.converter.request.mediaFile.PreSignedUploadRequestToMediaFile;
-import com.example.travelDiary.presentation.converter.request.review.ReviewUpsertRequestToReview;
+import com.example.travelDiary.presentation.converter.request.review.ReviewEditRequestToReview;
+import com.example.travelDiary.presentation.converter.request.review.ReviewUploadRequestToReview;
 import com.example.travelDiary.presentation.converter.request.travel.*;
 import com.example.travelDiary.presentation.converter.request.wallet.CurrencyConversionRequestToAggregate;
 import com.example.travelDiary.presentation.converter.request.wallet.ExpenditureRequestToAggregate;
@@ -21,10 +22,11 @@ public class ConversionConfig implements WebMvcConfigurer {
         registry.addConverter(new TravelPlanRequestToEntity());
         registry.addConverter(new ScheduleInsertRequestToEntity());
         registry.addConverter(new PreSignedUploadRequestToMediaFile());
-        registry.addConverter(new ReviewUpsertRequestToReview());
+        registry.addConverter(new ReviewUploadRequestToReview());
+        registry.addConverter(new ReviewEditRequestToReview());
         registry.addConverter(new ScheduleMetadataUpdateRequestToEntity());
         registry.addConverter(new PlaceUpdateRequestToEntity());
-        registry.addConverter(new ReviewUpsertRequestToReview());
+        registry.addConverter(new ReviewUploadRequestToReview());
         registry.addConverter(new IncomeRequestToAggregate());
         registry.addConverter(new ExpenditureRequestToAggregate());
         registry.addConverter(new CurrencyConversionRequestToAggregate());

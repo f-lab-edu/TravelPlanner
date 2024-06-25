@@ -6,12 +6,14 @@ import lombok.Data;
 import java.util.List;
 
 @Data
-public class ReviewUpsertRequest {
+public class ReviewUploadRequest {
 
-        public List<MediaFile> fileList;
+    public List<MediaFile> fileList;
 
-        public String userDescription;
+    public List<Long> fileLocation;
 
-        public Double rating;
+    public String userDescription;
+
+    public Double rating;
 
 }
