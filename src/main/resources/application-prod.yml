@@ -17,3 +17,6 @@ spring:
     redis:
       host: ${REDIS_HOST}
       port: ${REDIS_PORT}
+
+frontend:
+  uri: https://deploy-roam.vercel.app/

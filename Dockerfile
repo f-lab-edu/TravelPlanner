@@ -34,6 +34,9 @@ COPY --from=builder /app/build/libs/*.jar /app/app.jar
 # Copy the custom JRE from the builder stage
 COPY --from=builder /custom-jre /opt/custom-jre
 
+# Copy the keystore file from the builder stage
+COPY --from=builder /app/keystore.p12 /app/keystore.p12
+
 # Set the PATH environment variable to use the custom JRE
 ENV PATH="/opt/custom-jre/bin:$PATH"
 
@@ -51,6 +54,7 @@ ARG AWS_EC2_URI
 ARG GOOGLE_CLIENT_SECRET
 ARG GOOGLE_CLIENT_ID
 ARG JWT_KEY
+ARG KEY_STORE_PASSWORD
 
 ENV POSTGRES_USERNAME=${POSTGRES_USERNAME}
 ENV POSTGRES_PASSWORD=${POSTGRES_PASSWORD}
@@ -65,6 +69,7 @@ ENV AWS_EC2_URI=${AWS_EC2_URI}
 ENV GOOGLE_CLIENT_SECRET=${GOOGLE_CLIENT_SECRET}
 ENV GOOGLE_CLIENT_ID=${GOOGLE_CLIENT_ID}
 ENV JWT_KEY=${JWT_KEY}
+ENV KEY_STORE_PASSWORD=${KEY_STORE_PASSWORD}
 
 # Expose the port on which the application will run
 EXPOSE 8080

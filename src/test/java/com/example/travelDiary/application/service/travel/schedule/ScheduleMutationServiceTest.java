@@ -92,7 +92,7 @@ class ScheduleMutationServiceTest {
         Schedule schedule = new Schedule();
         Schedule sanitizedSchedule = new Schedule();
         when(scheduleRepository.findById(request.getScheduleId())).thenReturn(Optional.of(schedule));
-        when(conversionService.convert(request, Schedule.class)).thenReturn(sanitizedSchedule);
+//        when(conversionService.convert(request, Schedule.class)).thenReturn(sanitizedSchedule);
 
         Schedule result = scheduleMutationService.updateScheduleMetadata(travelPlanId, request);
 

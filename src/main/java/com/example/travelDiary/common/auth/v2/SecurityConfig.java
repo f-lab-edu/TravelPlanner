@@ -4,6 +4,7 @@ import com.example.travelDiary.common.auth.GlobalCorsConfig;
 import com.example.travelDiary.common.auth.service.PrincipalOauth2Service;
 import com.example.travelDiary.common.auth.v2.jwt.JwtAuthenticationFilter;
 import com.example.travelDiary.common.auth.v2.oauth2.CustomOAuth2SuccessHandler;
+import com.example.travelDiary.common.auth.v2.ratelimiter.RateLimitingFilter;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
@@ -29,16 +30,18 @@ import org.springframework.security.web.authentication.UsernamePasswordAuthentic
 @EnableWebSecurity
 @Slf4j
 @Import(GlobalCorsConfig.class)
-public class SecurityTestProfileSecurityConfig {
+public class SecurityConfig {
     private final PrincipalOauth2Service principalOauth2Service;
     private final JwtAuthenticationFilter jwtAuthenticationFilter;
     private final CustomOAuth2SuccessHandler customOAuth2SuccessHandler;
+    private final RateLimitingFilter rateLimitingFilter;
 
     @Autowired
-    public SecurityTestProfileSecurityConfig(PrincipalOauth2Service principalOauth2Service, JwtAuthenticationFilter jwtAuthenticationFilter, CustomOAuth2SuccessHandler customOAuth2SuccessHandler) {
+    public SecurityConfig(PrincipalOauth2Service principalOauth2Service, JwtAuthenticationFilter jwtAuthenticationFilter, CustomOAuth2SuccessHandler customOAuth2SuccessHandler, RateLimitingFilter rateLimitingFilter) {
         this.principalOauth2Service = principalOauth2Service;
         this.jwtAuthenticationFilter = jwtAuthenticationFilter;
         this.customOAuth2SuccessHandler = customOAuth2SuccessHandler;
+        this.rateLimitingFilter = rateLimitingFilter;
     }
 
     @Bean
@@ -71,6 +74,7 @@ public class SecurityTestProfileSecurityConfig {
                 )
                 .sessionManagement(customizer -> customizer.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
                 .headers(headers -> headers.frameOptions(HeadersConfigurer.FrameOptionsConfig::disable))
+                .addFilterBefore(rateLimitingFilter, UsernamePasswordAuthenticationFilter.class)
                 .addFilterBefore(jwtAuthenticationFilter, UsernamePasswordAuthenticationFilter.class);
 
         return http.build();

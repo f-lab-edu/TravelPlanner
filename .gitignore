@@ -8,6 +8,7 @@ build/
 .env
 build.log
 docker-buildx.sh
+keystore.p12
 
 
 ### STS ###

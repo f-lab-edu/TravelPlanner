@@ -17,10 +17,12 @@ import java.util.List;
 public class GlobalCorsConfig {
     @Value("${aws.ec2.uri}")
     private String EC2DNS;
+    @Value("${frontend.uri}")
+    private String frontEndEndPoint;
     @Bean
     public CorsConfigurationSource corsConfigurationSource() {
         CorsConfiguration configuration = new CorsConfiguration();
-        configuration.setAllowedOrigins(List.of("http://localhost:5173", "http://localhost:8080", EC2DNS));
+        configuration.setAllowedOrigins(List.of(frontEndEndPoint, "http://localhost:5173", "http://localhost:8080", EC2DNS));
         configuration.setAllowedMethods(Arrays.asList("GET", "POST", "PUT", "PATCH", "DELETE", "OPTIONS"));
         configuration.setAllowedHeaders(Arrays.asList("Authorization", "Cache-Control", "Content-Type", "X-Requested-With"));
         configuration.setExposedHeaders(Collections.singletonList("Authorization"));

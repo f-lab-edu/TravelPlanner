@@ -3,12 +3,13 @@ version: '3.8'
 services:
   spring-boot-app:
     container_name: roamgram
-    image: ${DOCKER_USERNAME}/roamgram:latest
+    image: ${DOCKER_USERNAME}/roamgram:https
     build:
       context: .
       dockerfile: Dockerfile
     ports:
       - "8080:8080"
+      - "443:443"
     environment:
       POSTGRES_USERNAME: ${POSTGRES_USERNAME}
       POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
@@ -23,6 +24,7 @@ services:
       GOOGLE_CLIENT_SECRET: ${GOOGLE_CLIENT_SECRET}
       GOOGLE_CLIENT_ID: ${GOOGLE_CLIENT_ID}
       JWT_KEY: ${JWT_KEY}
+      KEY_STORE_PASSWORD: ${KEY_STORE_PASSWORD}
     volumes:
       - h2-data:/app/h2-data
     networks:
