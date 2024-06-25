@@ -25,3 +25,6 @@ spring:
     redis:
       host: localhost
       port: 6380  # You can keep this as is if you are running Redis locally for tests
+
+frontend:
+  uri: https://deploy-roam.vercel.app/
