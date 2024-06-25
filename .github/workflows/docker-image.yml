@@ -47,7 +47,7 @@ jobs:
           echo "POSTGRES_DB_NAME=${{ secrets.POSTGRES_DB_NAME }}" >> $GITHUB_ENV
           echo "REDIS_HOST=${{ secrets.REDIS_HOST }}" >> $GITHUB_ENV
           echo "REDIS_PORT=${{ secrets.REDIS_PORT }}" >> $GITHUB_ENV
-          echo "KEYSTORE_PW"=${{ secrets.KEY_STORE_PASSWORD }}" >> $GITHUB_ENV
+          echo "KEYSTORE_PW=${{ secrets.KEY_STORE_PASSWORD }}" >> $GITHUB_ENV
           echo "FRONTEND_URL=https://deploy-roam.vercel.app" >> $GITHUB_ENV
         shell: bash
 
