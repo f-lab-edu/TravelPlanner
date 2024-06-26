@@ -28,17 +28,19 @@ public class RateLimitingFilter extends OncePerRequestFilter {
     }
 
     @Override
-    protected void doFilterInternal(HttpServletRequest request, @NotNull HttpServletResponse response, @NotNull FilterChain filterChain)
+    protected void doFilterInternal(HttpServletRequest request,
+                                    @NotNull HttpServletResponse response,
+                                    @NotNull FilterChain filterChain)
             throws ServletException, IOException {
 
         String clientIP = request.getRemoteAddr();
         String key = "rate_limit:" + clientIP;
         ValueOperations<String, Object> ops = redisTemplate.opsForValue();
 
-        Long currentCount = (Long) ops.get(key);
+        Number currentCount = (Number) ops.get(key);
         if (currentCount == null) {
-            ops.set(key, 1, WINDOW_SIZE, TimeUnit.SECONDS);
-        } else if (currentCount < MAX_REQUESTS) {
+            ops.set(key, 1L, WINDOW_SIZE, TimeUnit.SECONDS);
+        } else if (currentCount.longValue() < MAX_REQUESTS) {
             ops.increment(key);
         } else {
             response.setStatus(429);
