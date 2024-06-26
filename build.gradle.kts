@@ -60,14 +60,16 @@ dependencies {
 
 tasks.register<Test>("testWithCoverage") {
 	useJUnitPlatform()
-	systemProperty("spring.profiles.active", "test")
+	val activeProfiles = "test"
+	systemProperty("spring.profiles.active", activeProfiles)
 	finalizedBy("jacocoTestReport", "jacocoTestCoverageVerification")
 }
 
 
 tasks.withType<Test> {
 	useJUnitPlatform()
-	systemProperty("spring.profiles.active", "test")
+	val activeProfiles = "test"
+	systemProperty("spring.profiles.active", activeProfiles)
 	finalizedBy("jacocoTestReport")
 }
 

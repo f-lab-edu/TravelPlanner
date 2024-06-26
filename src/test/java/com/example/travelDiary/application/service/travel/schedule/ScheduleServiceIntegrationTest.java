@@ -56,7 +56,7 @@ import static org.mockito.Mockito.when;
 @ExtendWith(SpringExtension.class)
 @SpringBootTest
 @Slf4j
-@ActiveProfiles({"test", "secretsLocal"})
+@ActiveProfiles("${spring.profiles.active}")
 @Import(TestConfig.class)
 class ScheduleServiceIntegrationTest {
 

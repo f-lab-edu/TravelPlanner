@@ -31,7 +31,7 @@ import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.*;
 
 @SpringBootTest
-@ActiveProfiles({"test", "secretsLocal"})
+@ActiveProfiles("${spring.profiles.active}")
 public class AccessControlServiceTest {
 
     @MockBean

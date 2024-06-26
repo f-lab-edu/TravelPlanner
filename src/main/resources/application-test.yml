@@ -14,7 +14,7 @@ spring:
     driver-class-name: org.h2.Driver
     username: sa
     password: password
-    url: jdbc:h2:./roamGram;AUTO_SERVER=TRUE;AUTO_SERVER_PORT=9090;
+    url: jdbc:h2:mem:testdb;DB_CLOSE_DELAY=-1;DB_CLOSE_ON_EXIT=FALSE
 
   h2:
     console:
@@ -25,3 +25,6 @@ spring:
     redis:
       host: localhost
       port: 6380  # You can keep this as is if you are running Redis locally for tests
+
+frontend:
+  uri: https://deploy-roam.vercel.app/
