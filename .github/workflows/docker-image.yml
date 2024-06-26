@@ -82,3 +82,18 @@ jobs:
           platforms: linux/amd64,linux/arm64
           push: true
           tags: ${{ secrets.DOCKER_USERNAME }}/roamgram:latest
+          build-args: |
+            POSTGRES_USERNAME=${{ secrets.POSTGRES_USERNAME }}
+            POSTGRES_PASSWORD=${{ secrets.POSTGRES_PASSWORD }}
+            POSTGRES_URL=${{ secrets.POSTGRES_URL }}
+            REDIS_HOST=${{ secrets.REDIS_HOST }}
+            REDIS_PORT=${{ secrets.REDIS_PORT }}
+            AWS_S3_ACCESS_KEY=${{ secrets.AMAZON_S3_ACCESS_KEY }}
+            AWS_S3_SECRET_KEY=${{ secrets.AMAZON_S3_SECRET_KEY }}
+            AWS_S3_BUCKET=${{ secrets.AMAZON_S3_BUCKET }}
+            AWS_REGION=${{ secrets.AMAZON_S3_REGION_STATIC }}
+            AWS_EC2_URI=${{ secrets.AMAZON_EC2_URI }}
+            GOOGLE_CLIENT_SECRET=${{ secrets.GOOGLE_CLIENT_SECRET }}
+            GOOGLE_CLIENT_ID=${{ secrets.GOOGLE_CLIENT_ID }}
+            JWT_KEY=${{ secrets.JJWT_KEY }}
+            KEY_STORE_PASSWORD=${{ secrets.KEY_STORE_PASSWORD }}
