@@ -27,4 +27,4 @@ spring:
       port: 6380  # You can keep this as is if you are running Redis locally for tests
 
 frontend:
-  uri: https://deploy-roam.vercel.app/
+  uri: https://roamgram-deployment-git-deployment-shiraishies-projects.vercel.app/

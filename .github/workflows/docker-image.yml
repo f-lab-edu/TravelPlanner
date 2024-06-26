@@ -48,7 +48,7 @@ jobs:
           echo "REDIS_HOST=${{ secrets.REDIS_HOST }}" >> $GITHUB_ENV
           echo "REDIS_PORT=${{ secrets.REDIS_PORT }}" >> $GITHUB_ENV
           echo "KEYSTORE_PW=${{ secrets.KEY_STORE_PASSWORD }}" >> $GITHUB_ENV
-          echo "FRONTEND_URL=https://deploy-roam.vercel.app" >> $GITHUB_ENV
+          echo "FRONTEND_URL=https://roamgram-deployment-git-deployment-shiraishies-projects.vercel.app/" >> $GITHUB_ENV
         shell: bash
 
       - name: Build with Gradle
@@ -97,3 +97,4 @@ jobs:
             GOOGLE_CLIENT_ID=${{ secrets.GOOGLE_CLIENT_ID }}
             JWT_KEY=${{ secrets.JJWT_KEY }}
             KEY_STORE_PASSWORD=${{ secrets.KEY_STORE_PASSWORD }}
+            FRONTEND_URL="https://roamgram-deployment-git-deployment-shiraishies-projects.vercel.app/"
