@@ -52,7 +52,7 @@ jobs:
         shell: bash
 
       - name: Build with Gradle
-        run: ./gradlew build
+        run: ./gradlew build -i
 
       - name: Jacoco Report to PR
         id: jacoco
