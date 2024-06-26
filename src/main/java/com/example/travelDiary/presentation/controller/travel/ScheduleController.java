@@ -42,7 +42,8 @@ public class ScheduleController {
 
     @PutMapping("/create_schedule")
     public ResponseEntity<ScheduleResponse> createSchedule(@PathVariable("travelPlanId") UUID travelPlanId, @RequestBody ScheduleInsertRequest request) {
-        Schedule schedule = scheduleMutationService.createSchedule(travelPlanId, request);
+        UUID scheduleId = scheduleMutationService.createSchedule(travelPlanId, request);
+        Schedule schedule = scheduleQueryService.getSchedule(scheduleId);
         travelPlanRepository.findById(travelPlanId).ifPresent(travelPlan -> {travelPlan.getScheduleList().add(schedule);});
         return ResponseEntity.ok(conversionService.convert(schedule,ScheduleResponse.class));
     }

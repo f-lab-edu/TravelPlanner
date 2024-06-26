@@ -18,6 +18,7 @@ import com.example.travelDiary.presentation.dto.request.travel.location.PlaceUpd
 import com.example.travelDiary.presentation.dto.request.travel.schedule.ScheduleInsertRequest;
 import com.example.travelDiary.presentation.dto.request.travel.schedule.ScheduleMetadataUpdateRequest;
 import com.example.travelDiary.repository.persistence.travel.ScheduleRepository;
+import lombok.extern.slf4j.Slf4j;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
@@ -30,6 +31,7 @@ import java.util.Optional;
 import java.util.UUID;
 
 @ExtendWith(MockitoExtension.class)
+@Slf4j
 class ScheduleMutationServiceTest {
 
     @Mock
@@ -54,14 +56,18 @@ class ScheduleMutationServiceTest {
     @Transactional
     void testCreateSchedule() {
         UUID travelPlanId = UUID.randomUUID();
+        UUID scheduleId = UUID.randomUUID();
         ScheduleInsertRequest request = new ScheduleInsertRequest();
         Schedule schedule = new Schedule();
+        schedule.setId(scheduleId);
         when(conversionService.convert(request, Schedule.class)).thenReturn(schedule);
         when(scheduleRepository.save(schedule)).thenReturn(schedule);
 
-        Schedule result = scheduleMutationService.createSchedule(travelPlanId, request);
 
-        assertEquals(schedule, result);
+        UUID resultId = scheduleMutationService.createSchedule(travelPlanId, request);
+        log.info(String.valueOf(resultId));
+
+        assertEquals(schedule.getId(), resultId);
         verify(scheduleRepository).save(schedule);
         verify(eventPublisher).publishEvent(any(ScheduleCreatedEvent.class));
     }

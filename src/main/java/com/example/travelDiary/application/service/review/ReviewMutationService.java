@@ -2,7 +2,6 @@ package com.example.travelDiary.application.service.review;
 
 import com.example.travelDiary.application.events.EventPublisher;
 import com.example.travelDiary.application.events.review.ReviewCreatedEvent;
-import com.example.travelDiary.application.events.review.ReviewDeletedEvent;
 import com.example.travelDiary.application.events.review.ReviewPreDeletedEvent;
 import com.example.travelDiary.common.permissions.aop.CheckAccess;
 import com.example.travelDiary.common.permissions.service.ResourceService;

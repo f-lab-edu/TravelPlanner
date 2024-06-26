@@ -49,7 +49,7 @@ public class ScheduleMutationService {
 
     @Transactional
     @CheckAccess(resourceType = TravelPlan.class, spelResourceId = "#travelPlanId", permission = "EDIT")
-    public Schedule createSchedule(UUID travelPlanId, ScheduleInsertRequest request) {
+    public UUID createSchedule(UUID travelPlanId, ScheduleInsertRequest request) {
         Schedule schedule = conversionService.convert(request, Schedule.class);
         assert schedule != null;
         schedule.setTravelPlanId(travelPlanId);
@@ -61,10 +61,8 @@ public class ScheduleMutationService {
             previousSchedule.setOutwardRoute(route);
             schedule.setInwardRoute(route);
         }
-
-        eventPublisher.publishEvent(new ScheduleCreatedEvent(schedule, travelPlanId));
-
-        return schedule;
+        eventPublisher.publishEvent(new ScheduleCreatedEvent(schedule, travelPlanId, request.getPlace()));
+        return schedule.getId();
     }
 
     @Transactional

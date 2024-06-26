@@ -9,9 +9,9 @@ public class ScheduleInsertRequestToEntity implements Converter<ScheduleInsertRe
     public Schedule convert(ScheduleInsertRequest source) {
         Schedule schedule = new Schedule();
 
-        if (source.getPlace() != null) {
-            schedule.setPlace(source.getPlace());
-        }
+//        if (source.getPlace() != null) {
+//            schedule.setPlace(source.getPlace());
+//        }
         if (source.getIsActuallyVisited() != null) {
             schedule.setIsActuallyVisited(source.getIsActuallyVisited());
         }

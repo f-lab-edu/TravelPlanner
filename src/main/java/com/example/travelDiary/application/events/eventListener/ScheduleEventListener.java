@@ -57,13 +57,16 @@ public class ScheduleEventListener {
         travelPlanRepository.save(travelPlan);
 
         if(schedule.getPlace() != null) {
-            Place place = placeMutationService.createPlace(schedule.getPlace());
-            schedule.setPlace(place);
+            log.info("error resulted : {}", schedule.getPlace());
         }
+
+        Place place = placeMutationService.createPlace(event.getPlace());
+        schedule.setPlace(place);
 
         Resource resource = resourceService.createResource(schedule, "private");
         schedule.setResource(resource);
         scheduleRepository.save(schedule);
+        scheduleRepository.flush();
 
         // Additional logic if needed for Schedule creation
     }

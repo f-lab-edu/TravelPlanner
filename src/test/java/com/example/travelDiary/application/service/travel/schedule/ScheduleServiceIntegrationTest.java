@@ -186,7 +186,8 @@ class ScheduleServiceIntegrationTest {
         request.setName("Test Schedule");
         request.setPlace(place);
 
-        Schedule createdSchedule = scheduleMutationService.createSchedule(travelPlanId, request);
+        UUID createdScheduleId = scheduleMutationService.createSchedule(travelPlanId, request);
+        Schedule createdSchedule = scheduleQueryService.getSchedule(createdScheduleId);
         assertNotNull(createdSchedule);
         assertThat(createdSchedule.getName()).isEqualTo("Test Schedule");
         assertThat(createdSchedule.getPlace()).isEqualTo(place);
