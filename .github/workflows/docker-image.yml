@@ -85,8 +85,22 @@ jobs:
             KEY_STORE_PASSWORD=${{ secrets.KEY_STORE_PASSWORD }}
             FRONTEND_URL="https://roamgram-deployment-git-deployment-shiraishies-projects.vercel.app/"
 
-      - name: Copy JaCoCo Report
-        run: mkdir -p jacoco-report && cp /app/build/reports/jacoco/test/jacocoTestReport.xml jacoco-report/
+      - name: Run Docker container
+        run: docker run --name myapp-container -d myapp:latest
+
+      - name: Copy JaCoCo Report from Docker container
+        run: docker cp myapp-container:/app/build/reports/jacoco/test/jacocoTestReport.xml ./jacocoTestReport.xml
+
+      - name: Stop and remove Docker container
+        run: |
+          docker stop myapp-container
+          docker rm myapp-container
+
+      - name: Create JaCoCo report directory
+        run: mkdir -p jacoco-report
+
+      - name: Move JaCoCo report to directory
+        run: mv jacocoTestReport.xml jacoco-report/
 
       - name: Jacoco Report to PR
         id: jacoco
