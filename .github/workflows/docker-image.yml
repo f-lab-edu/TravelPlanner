@@ -51,20 +51,6 @@ jobs:
           echo "FRONTEND_URL=https://roamgram-deployment-git-deployment-shiraishies-projects.vercel.app/" >> $GITHUB_ENV
         shell: bash
 
-      - name: Build with Gradle
-        run: ./gradlew build
-
-      - name: Jacoco Report to PR
-        id: jacoco
-        uses: madrapps/jacoco-report@v1.6.1
-        with:
-          paths: ${{ github.workspace }}/build/reports/jacoco/test/jacocoTestReport.xml
-          token: ${{ secrets.GITHUB_TOKEN }}
-          min-coverage-overall: 75
-          min-coverage-changed-files: 75
-          title: "⭐️Code Coverage"
-          update-comment: true
-
       - name: Login to DockerHub
         uses: docker/login-action@v2
         with:
@@ -98,3 +84,17 @@ jobs:
             JWT_KEY=${{ secrets.JJWT_KEY }}
             KEY_STORE_PASSWORD=${{ secrets.KEY_STORE_PASSWORD }}
             FRONTEND_URL="https://roamgram-deployment-git-deployment-shiraishies-projects.vercel.app/"
+
+      - name: Copy JaCoCo Report
+        run: mkdir -p jacoco-report && cp /app/build/reports/jacoco/test/jacocoTestReport.xml jacoco-report/
+
+      - name: Jacoco Report to PR
+        id: jacoco
+        uses: madrapps/jacoco-report@v1.6.1
+        with:
+          paths: jacoco-report/jacocoTestReport.xml
+          token: ${{ secrets.GITHUB_TOKEN }}
+          min-coverage-overall: 75
+          min-coverage-changed-files: 75
+          title: "⭐️Code Coverage"
+          update-comment: true

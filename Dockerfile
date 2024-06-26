@@ -68,6 +68,9 @@ COPY --from=builder /custom-jre /opt/custom-jre
 # Copy the keystore file from the builder stage
 COPY --from=builder /app/keystore.p12 /app/keystore.p12
 
+# Copy the JaCoCo report from the builder stage
+COPY --from=builder /app/build/reports/jacoco/test/jacocoTestReport.xml /app/build/reports/jacoco/test/jacocoTestReport.xml
+
 # Set the PATH environment variable to use the custom JRE
 ENV PATH="/opt/custom-jre/bin:$PATH"
 
