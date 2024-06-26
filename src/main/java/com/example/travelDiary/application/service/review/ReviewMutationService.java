@@ -1,5 +1,9 @@
 package com.example.travelDiary.application.service.review;
 
+import com.example.travelDiary.application.events.EventPublisher;
+import com.example.travelDiary.application.events.review.ReviewCreatedEvent;
+import com.example.travelDiary.application.events.review.ReviewDeletedEvent;
+import com.example.travelDiary.application.events.review.ReviewPreDeletedEvent;
 import com.example.travelDiary.common.permissions.aop.CheckAccess;
 import com.example.travelDiary.common.permissions.service.ResourceService;
 import com.example.travelDiary.domain.model.review.MediaFile;
@@ -21,12 +25,14 @@ public class ReviewMutationService {
     private final ReviewRepository reviewRepository;
     private final ConversionService conversionService;
     private final ResourceService resourceService;
+    private final EventPublisher eventPublisher;
 
     @Autowired
-    public ReviewMutationService(ReviewRepository reviewRepository, ConversionService conversionService, ResourceService resourceService) {
+    public ReviewMutationService(ReviewRepository reviewRepository, ConversionService conversionService, ResourceService resourceService, EventPublisher eventPublisher) {
         this.reviewRepository = reviewRepository;
         this.conversionService = conversionService;
         this.resourceService = resourceService;
+        this.eventPublisher = eventPublisher;
     }
 
     @Transactional
@@ -36,7 +42,6 @@ public class ReviewMutationService {
         UUID reviewId = reviewEditRequest.getReviewId();
         Review review = reviewRepository.findById(reviewId).orElseThrow(() -> new IllegalArgumentException("Review not found"));
         updateNonNullFields(reviewEditRequest, review);
-
         return reviewRepository.save(review);
     }
 
@@ -46,11 +51,13 @@ public class ReviewMutationService {
         return reviewRepository.save(reviewToUpdate);
     }
 
-    @Transactional()
-    @CheckAccess(resourceType = Schedule.class, spelResourceId = "id", permission = "EDIT")
-    public UUID deleteReview(UUID id) {
-        reviewRepository.deleteById(id);
-        return id;
+    @Transactional
+    @CheckAccess(resourceType = Schedule.class, spelResourceId = "#scheduleId", permission = "EDIT")
+    @CheckAccess(resourceType = Review.class, spelResourceId = "#reviewId", permission = "EDIT")
+    public UUID deleteReview(UUID scheduleId, UUID reviewId) {
+        eventPublisher.publishEvent(new ReviewPreDeletedEvent(scheduleId, reviewId));
+        reviewRepository.deleteById(reviewId);
+        return reviewId;
     }
 
     @Transactional
@@ -66,7 +73,7 @@ public class ReviewMutationService {
         }
         review.setFileList(reviewUploadRequest.getFileList());
         review = reviewRepository.save(review);
-
+        eventPublisher.publishEvent(new ReviewCreatedEvent(scheduleId, review));
         return review;
     }
 

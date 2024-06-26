@@ -62,7 +62,7 @@ public class ReviewController {
                                @RequestParam("reviewID") UUID reviewId) {
 
 
-        return reviewMutationService.deleteReview(reviewId);
+        return reviewMutationService.deleteReview(scheduleId , reviewId);
     }
 
 

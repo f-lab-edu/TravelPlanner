@@ -1,12 +1,11 @@
 package com.example.travelDiary.application.events.review;
 
-import com.example.travelDiary.domain.model.review.Review;
 import lombok.Data;
 
 import java.util.UUID;
 
 @Data
-public class ReviewCreatedEvent {
+public class ReviewPreDeletedEvent {
     private final UUID scheduleId;
-    private final Review review;
+    private final UUID reviewId;
 }

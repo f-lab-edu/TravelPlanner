@@ -85,8 +85,8 @@ jobs:
             KEY_STORE_PASSWORD=${{ secrets.KEY_STORE_PASSWORD }}
             FRONTEND_URL="https://roamgram-deployment-git-deployment-shiraishies-projects.vercel.app/"
 
-      - name: Run Docker container
-        run: docker run --name myapp-container -d myapp:latest
+      - name: Run Docker container to get jacoco report.
+        run: docker run --name myapp-container -d ${{ secrets.DOCKER_USERNAME }}/roamgram:latest
 
       - name: Copy JaCoCo Report from Docker container
         run: docker cp myapp-container:/app/build/reports/jacoco/test/jacocoTestReport.xml ./jacocoTestReport.xml

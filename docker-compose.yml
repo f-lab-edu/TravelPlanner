@@ -25,6 +25,7 @@ services:
       GOOGLE_CLIENT_ID: ${GOOGLE_CLIENT_ID}
       JWT_KEY: ${JWT_KEY}
       KEY_STORE_PASSWORD: ${KEY_STORE_PASSWORD}
+      FRONTEND_URL: ${FRONTEND_URL}
     volumes:
       - h2-data:/app/h2-data
     networks:

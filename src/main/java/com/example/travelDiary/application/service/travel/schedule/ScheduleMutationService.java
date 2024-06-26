@@ -9,6 +9,7 @@ import com.example.travelDiary.application.service.location.PlaceMutationService
 import com.example.travelDiary.application.service.travel.RouteAccessService;
 import com.example.travelDiary.common.permissions.aop.CheckAccess;
 import com.example.travelDiary.domain.model.location.Place;
+import com.example.travelDiary.domain.model.review.Review;
 import com.example.travelDiary.domain.model.travel.Route;
 import com.example.travelDiary.domain.model.travel.Schedule;
 import com.example.travelDiary.domain.model.travel.TravelPlan;
@@ -161,5 +162,17 @@ public class ScheduleMutationService {
         if (request.getTravelDepartTimeEstimate() != null) {
             schedule.setTravelDepartTimeEstimate(request.getTravelDepartTimeEstimate());
         }
+    }
+
+    @Transactional
+    public void linkReview(UUID scheduleId, Review review) {
+        Schedule schedule = scheduleRepository.findById(scheduleId).orElseThrow(() -> new EntityNotFoundException("Schedule not found"));
+        schedule.setReview(review);
+    }
+
+    @Transactional
+    public void removeReview(UUID scheduleId) {
+        Schedule schedule = scheduleRepository.findById(scheduleId).orElseThrow(() -> new EntityNotFoundException("Schedule not found"));
+        schedule.setReview(null);
     }
 }
