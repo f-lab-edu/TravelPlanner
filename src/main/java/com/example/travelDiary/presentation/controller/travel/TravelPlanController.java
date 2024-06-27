@@ -54,8 +54,8 @@ public class TravelPlanController {
     public ResponseEntity<List<TravelPlanResponse>> getAll() {
         log.info("get all METHOD TRIGGERED BY REACT");
         List<TravelPlan> travelPlanList = planQueryService.getAllTravelPlan(null);
-        List<TravelPlanResponse> respnseList = travelPlanList.stream().map(travelPlan -> conversionService.convert(travelPlan, TravelPlanResponse.class)).toList();
-        return ResponseEntity.ok(respnseList);
+        List<TravelPlanResponse> responseList = travelPlanList.stream().map(travelPlan -> conversionService.convert(travelPlan, TravelPlanResponse.class)).toList();
+        return ResponseEntity.ok(responseList);
     }
 
     @PostMapping("/create_travel_plan")

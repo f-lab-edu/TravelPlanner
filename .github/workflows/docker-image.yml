@@ -47,7 +47,7 @@ jobs:
           echo "POSTGRES_DB_NAME=${{ secrets.POSTGRES_DB_NAME }}" >> $GITHUB_ENV
           echo "REDIS_HOST=${{ secrets.REDIS_HOST }}" >> $GITHUB_ENV
           echo "REDIS_PORT=${{ secrets.REDIS_PORT }}" >> $GITHUB_ENV
-          echo "KEYSTORE_PW=${{ secrets.KEY_STORE_PASSWORD }}" >> $GITHUB_ENV
+          echo "KEY_STORE_PASSWORD=${{ secrets.KEY_STORE_PASSWORD }}" >> $GITHUB_ENV
           echo "FRONTEND_URL=https://roamgram-deployment-git-deployment-shiraishies-projects.vercel.app/" >> $GITHUB_ENV
         shell: bash
 
@@ -101,6 +101,18 @@ jobs:
 
       - name: Move JaCoCo report to directory
         run: mv jacocoTestReport.xml jacoco-report/
+
+      - name: Upload JaCoCo report
+        uses: actions/upload-artifact@v2
+        with:
+          name: jacoco-report
+          path: build/reports/jacoco/test/html/
+
+      - name: Archive JaCoCo XML report
+        uses: actions/upload-artifact@v2
+        with:
+          name: jacoco-xml-report
+          path: build/reports/jacoco/test/jacocoTestReport.xml
 
       - name: Jacoco Report to PR
         id: jacoco
