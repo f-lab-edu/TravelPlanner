@@ -26,19 +26,21 @@ public class MediaFileController {
     }
 
     @PostMapping("/upload-file-small")
-    public URL uploadFileSmall(@RequestBody PreSignedUploadInitiateRequest request) {
-        return mediaFileAccessService.uploadMediaFile(request);
+    public ResponseEntity<URL> uploadFileSmall(@RequestBody PreSignedUploadInitiateRequest request) {
+        URL url = mediaFileAccessService.uploadMediaFile(request);
+        return ResponseEntity.ok(url);
     }
 
     @PostMapping("/get-file")
-    public URL getFile(@RequestBody String objectKey) {
-        return mediaFileAccessService.getMediaFile(objectKey);
+    public ResponseEntity<URL> getFile(@RequestBody String objectKey) {
+        URL url = mediaFileAccessService.getMediaFile(objectKey);
+        return ResponseEntity.ok(url);
     }
 
     @PostMapping("/upload-multipart")
-    public URL uploadFileMultipart(
-            @RequestBody PreSignedUploadInitiateRequest request) {
-        return mediaFileAccessService.uploadMediaFileMultipart(request);
+    public ResponseEntity<URL> uploadFileMultipart(@RequestBody PreSignedUploadInitiateRequest request) {
+        URL url = mediaFileAccessService.uploadMediaFileMultipart(request);
+        return ResponseEntity.ok(url);
     }
 
     @PostMapping("/upload-complete-multipart")
@@ -48,29 +50,21 @@ public class MediaFileController {
     }
 
     @PostMapping("/abort-upload")
-    public ResponseEntity<String> abortUpload (@RequestBody PresignedUrlAbortRequest request) {
+    public ResponseEntity<String> abortUpload(@RequestBody PresignedUrlAbortRequest request) {
         String responseMessage = mediaFileAccessService.abortUpload(request);
         return ResponseEntity.ok(responseMessage);
-    }
-
-    @PostMapping("/test-complete-upload")
-    public ResponseEntity<String> testCompleteUpload (@RequestBody String objectKey) {
-        log.info("objectKey is {}",objectKey);
-        return ResponseEntity.ok("<TEST> Upload completed with Object key");
     }
 
     @PostMapping("/complete-upload")
     public ResponseEntity<String> completeUpload(@RequestBody LambdaUploadCompleteRequest request) {
         log.info("Received upload complete request: {}", request);
-        log.info("objectKey at completeUpload is {}", request.getObjectKey());
-
         mediaFileAccessService.markMediaUploadFinished(request.getObjectKey());
         return ResponseEntity.ok("Upload completed");
     }
 
     @PostMapping("/delete-file")
-    public DeleteObjectResponse deleteFile(@RequestBody String objectKey) {
-        return mediaFileAccessService.deleteMediaFile(objectKey);
+    public ResponseEntity<DeleteObjectResponse> deleteFile(@RequestBody String objectKey) {
+        DeleteObjectResponse response = mediaFileAccessService.deleteMediaFile(objectKey);
+        return ResponseEntity.ok(response);
     }
-
 }

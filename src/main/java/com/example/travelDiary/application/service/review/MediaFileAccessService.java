@@ -90,7 +90,7 @@ public class MediaFileAccessService {
 
     public URL uploadMediaFile(PreSignedUploadInitiateRequest request) {
         String key = saveMediaFile(request);
-        log.info("on upload media file {}", mediaFileRepository.findByS3Key(key));
+//        log.info("on upload media file {}", mediaFileRepository.findByS3Key(key));
         log.info("media file key on upload {}", key);
 
         return s3Service.createPresignedUrlForPut(key,
@@ -141,6 +141,21 @@ public class MediaFileAccessService {
 
         mediaFile.setMediaFileStatus(MediaFileStatus.UPLOADED);
         mediaFileRepository.save(mediaFile);
+    }
+
+
+    public MediaFileStatus getUploadStatus(String key) {
+        MediaFile mediaFile = (MediaFile) redisTemplate.opsForValue().get(key);
+        if (mediaFile != null) {
+            return mediaFile.getMediaFileStatus();
+        }
+
+        mediaFile = mediaFileRepository.findByS3Key(key);
+        if (mediaFile != null) {
+            return mediaFile.getMediaFileStatus();
+        }
+
+        return MediaFileStatus.FAILED;
     }
 
 

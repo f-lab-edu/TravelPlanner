@@ -1,14 +1,14 @@
 package com.example.travelDiary.presentation.converter.request.review;
 
 import com.example.travelDiary.domain.model.review.Review;
-import com.example.travelDiary.presentation.dto.request.review.ReviewEditRequest;
+import com.example.travelDiary.presentation.dto.request.review.ReviewEditAppendRequest;
 import org.springframework.core.convert.converter.Converter;
 
 
-public class ReviewEditRequestToReview implements Converter<ReviewEditRequest, Review> {
+public class ReviewEditRequestToReview implements Converter<ReviewEditAppendRequest, Review> {
 
     @Override
-    public Review convert(ReviewEditRequest source) {
+    public Review convert(ReviewEditAppendRequest source) {
 
         Review review = new Review();
 

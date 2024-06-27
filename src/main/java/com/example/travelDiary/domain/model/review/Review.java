@@ -7,6 +7,7 @@ import org.hibernate.annotations.Cascade;
 import org.hibernate.annotations.CascadeType;
 
 import java.util.List;
+import java.util.Map;
 import java.util.UUID;
 
 @Entity
@@ -27,5 +28,5 @@ public class Review implements IdentifiableResource {
     public Double rating;
 
     @ElementCollection
-    public List<Long> contentLocation;
+    public Map<String,Long> contentLocation;
 }

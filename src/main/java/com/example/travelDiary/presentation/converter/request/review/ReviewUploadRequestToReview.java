@@ -13,14 +13,6 @@ public class ReviewUploadRequestToReview implements Converter<ReviewUploadReques
             review.setUserDescription(source.getUserDescription());
         }
 
-        if(source.getFileList() != null) {
-            review.setFileList(source.getFileList());
-        }
-
-        if(source.getFileLocation() != null) {
-            review.setContentLocation(source.getFileLocation());
-        }
-
         if (source.getRating() != null) {
             review.setRating(source.getRating());
         }

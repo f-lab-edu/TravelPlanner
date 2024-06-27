@@ -16,7 +16,7 @@ public class MediaFile implements IdentifiableResource {
     @Id
     private UUID id;
 
-    private UUID reviewId;
+    public UUID reviewId;
 
     public Long sizeBytes;
 
