@@ -7,6 +7,7 @@ import com.example.travelDiary.common.auth.service.AuthUserService;
 import com.example.travelDiary.common.auth.service.AuthUserServiceImpl;
 import org.mockito.Mockito;
 import org.springframework.boot.test.context.TestConfiguration;
+import org.springframework.boot.test.web.client.TestRestTemplate;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Primary;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
@@ -30,6 +31,11 @@ public class TestConfig {
     @Bean
     public WithSecurityContextFactory<WithMockAuthUser> securityContextFactory() {
         return new WithMockAuthUserSecurityContextFactory();
+    }
+
+    @Bean
+    public TestRestTemplate testRestTemplate() {
+        return new TestRestTemplate();
     }
 
     static class WithMockAuthUserSecurityContextFactory implements WithSecurityContextFactory<WithMockAuthUser> {
