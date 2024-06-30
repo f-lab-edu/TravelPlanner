@@ -8,10 +8,6 @@ import java.util.UUID;
 public class PreSignedUploadInitiateRequest {
     public Long fileSize;
 
-    public UUID userId;
-
-    public String fileType;
-
     public String originalFileName;
 
     private UUID reviewId;

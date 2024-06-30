@@ -14,9 +14,7 @@ public class PreSignedUploadRequestToMediaFile implements Converter<PreSignedUpl
         if (source.getFileSize() != null) {
             mediaFile.setSizeBytes(source.getFileSize());
         }
-        if (source.getFileType() != null) {
-            mediaFile.setContentType(source.getFileType());
-        }
+
         if (source.getOriginalFileName() != null) {
             mediaFile.setOriginalFileName(source.getOriginalFileName());
         }

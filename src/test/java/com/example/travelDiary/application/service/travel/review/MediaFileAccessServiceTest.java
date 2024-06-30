@@ -2,8 +2,10 @@ package com.example.travelDiary.application.service.travel.review;
 
 import com.example.travelDiary.application.S3.S3Service;
 import com.example.travelDiary.application.service.review.MediaFileAccessService;
+import com.example.travelDiary.common.auth.service.AuthUserServiceImpl;
 import com.example.travelDiary.domain.model.review.MediaFile;
 import com.example.travelDiary.domain.model.review.MediaFileStatus;
+import com.example.travelDiary.domain.model.user.UserProfile;
 import com.example.travelDiary.presentation.dto.request.s3.FinishUploadRequest;
 import com.example.travelDiary.presentation.dto.request.s3.PreSignedUploadInitiateRequest;
 import com.example.travelDiary.presentation.dto.request.s3.PresignedUrlAbortRequest;
@@ -44,6 +46,8 @@ public class MediaFileAccessServiceTest {
     private RedisTemplate<String, Object> redisTemplate;
     @Mock
     private ValueOperations<String, Object> valueOperations;
+    @Mock
+    private AuthUserServiceImpl authUserService;
 
     @InjectMocks
     private MediaFileAccessService mediaFileAccessService;
@@ -54,16 +58,16 @@ public class MediaFileAccessServiceTest {
     public void setUp() {
         request = new PreSignedUploadInitiateRequest();
         request.setOriginalFileName("example.txt");
-        request.setFileType("text/plain");
         request.setFileSize(1024L);
-        request.setUserId(UUID.randomUUID());
         request.setReviewId(UUID.randomUUID());
-
     }
 
     @Test
     public void testUploadMediaFile() throws MalformedURLException {
         URI uri = URI.create("http://example.com?fname=example.txt");
+        UserProfile user = new UserProfile();
+        user.setId(UUID.randomUUID());
+        when(authUserService.getCurrentUser()).thenReturn(user);
 
         when(conversionService.convert(any(PreSignedUploadInitiateRequest.class), eq(MediaFile.class)))
                 .thenReturn(new MediaFile());
@@ -99,6 +103,9 @@ public class MediaFileAccessServiceTest {
 
     @Test
     void testSaveMediaFile_NewFile() {
+        UserProfile user = new UserProfile();
+        user.setId(UUID.randomUUID());
+        when(authUserService.getCurrentUser()).thenReturn(user);
         ValueOperations<String, Object> mockValueOps = Mockito.mock(ValueOperations.class);
         when(redisTemplate.opsForValue()).thenReturn(mockValueOps);
         when(mediaFileRepository.findByOriginalFileNameAndContentType(any(), any())).thenReturn(Optional.empty());
@@ -124,6 +131,9 @@ public class MediaFileAccessServiceTest {
 
     @Test
     void testUploadMediaFileMultipart() {
+        UserProfile user = new UserProfile();
+        user.setId(UUID.randomUUID());
+        when(authUserService.getCurrentUser()).thenReturn(user);
         ValueOperations<String, Object> mockValueOps = Mockito.mock(ValueOperations.class);
         when(redisTemplate.opsForValue()).thenReturn(mockValueOps);
         when(mediaFileRepository.findByOriginalFileNameAndContentType(any(), any())).thenReturn(Optional.empty());

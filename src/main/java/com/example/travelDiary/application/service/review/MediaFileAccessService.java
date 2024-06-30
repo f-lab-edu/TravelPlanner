@@ -1,6 +1,7 @@
 package com.example.travelDiary.application.service.review;
 
 import com.example.travelDiary.application.S3.S3Service;
+import com.example.travelDiary.common.auth.service.AuthUserServiceImpl;
 import com.example.travelDiary.domain.model.review.MediaFile;
 import com.example.travelDiary.domain.model.review.MediaFileStatus;
 import com.example.travelDiary.presentation.dto.request.s3.FinishUploadRequest;
@@ -30,13 +31,15 @@ public class MediaFileAccessService {
     private final RedisTemplate<String, Object> redisTemplate;
 
     private static final long CACHE_EXPIRATION_TIME = 30; // cache expiration time in minutes
+    private final AuthUserServiceImpl authUserServiceImpl;
 
     @Autowired
-    public MediaFileAccessService(S3Service s3Service, ConversionService conversionService, MediaFileRepository mediaFileRepository, RedisTemplate<String, Object> redisTemplate) {
+    public MediaFileAccessService(S3Service s3Service, ConversionService conversionService, MediaFileRepository mediaFileRepository, RedisTemplate<String, Object> redisTemplate, AuthUserServiceImpl authUserServiceImpl) {
         this.s3Service = s3Service;
         this.conversionService = conversionService;
         this.mediaFileRepository = mediaFileRepository;
         this.redisTemplate = redisTemplate;
+        this.authUserServiceImpl = authUserServiceImpl;
     }
 
     //make idempotent for same file...
@@ -77,7 +80,7 @@ public class MediaFileAccessService {
 
         // Example key structure
         return String.format("uploads/%s/%s/%s/%s-%s",
-                request.getUserId(),
+                authUserServiceImpl.getCurrentUser().getId(),
                 request.getReviewId(),
                 mediaFileId,
                 timestamp,
