@@ -41,7 +41,7 @@ public class MediaFileAccessService {
 
     //make idempotent for same file...
     //check for partial update/ failed update.
-    private String saveMediaFile(PreSignedUploadInitiateRequest request) {
+    public String saveMediaFile(PreSignedUploadInitiateRequest request) {
         Optional<MediaFile> existingMediaFile = mediaFileRepository
                 .findByOriginalFileNameAndContentType(request.getOriginalFileName(), guessContentTypeFromName(request));
 
@@ -64,7 +64,7 @@ public class MediaFileAccessService {
     }
 
     private String guessContentTypeFromName(PreSignedUploadInitiateRequest request) {
-        return URLConnection.guessContentTypeFromName(request.getFileType());
+        return URLConnection.guessContentTypeFromName(request.getOriginalFileName());
     }
 
     private String generateKey(PreSignedUploadInitiateRequest request, UUID mediaFileId) {

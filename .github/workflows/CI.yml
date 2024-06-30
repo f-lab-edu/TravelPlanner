@@ -88,7 +88,10 @@ jobs:
       - name: Run Docker container to get jacoco report.
         run: docker run --name myapp-container -d ${{ secrets.DOCKER_USERNAME }}/roamgram:latest
 
-      - name: Copy JaCoCo Report from Docker container
+      - name: Copy JaCoCo HTML Report from Docker container
+        run: docker cp myapp-container:/app/build/reports/jacoco/test/html ./html
+
+      - name: Copy JaCoCo XML Report from Docker container
         run: docker cp myapp-container:/app/build/reports/jacoco/test/jacocoTestReport.xml ./jacocoTestReport.xml
 
       - name: Stop and remove Docker container
@@ -100,19 +103,22 @@ jobs:
         run: mkdir -p jacoco-report
 
       - name: Move JaCoCo report to directory
-        run: mv jacocoTestReport.xml jacoco-report/
+        run: |
+          mv jacocoTestReport.xml jacoco-report/
+          mv html jacoco-report/
 
-      - name: Upload JaCoCo report
+      - name: Upload JaCoCo HTML report
         uses: actions/upload-artifact@v2
         with:
-          name: jacoco-report
-          path: build/reports/jacoco/test/html/
+          name: jacoco-html-report
+          path: jacoco-report/html/
 
-      - name: Archive JaCoCo XML report
+      - name: Upload JaCoCo XML report
         uses: actions/upload-artifact@v2
         with:
           name: jacoco-xml-report
-          path: build/reports/jacoco/test/jacocoTestReport.xml
+          path: jacoco-report/jacocoTestReport.xml
+
 
       - name: Jacoco Report to PR
         id: jacoco

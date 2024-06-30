@@ -1,4 +1,4 @@
-# Roamgram: A Travel Diary Backend
+~~# Roamgram: A Travel Diary Backend
 
 Roamgram is a sophisticated backend service for a travel diary application, enabling users to log, manage, and share their travel experiences. Built using Java Spring Boot, Roamgram leverages a wide array of technologies to ensure security, scalability, and performance.
 
@@ -109,6 +109,7 @@ providing valuable insights for maintaining and improving the service.
 - AWS EC2: For deployment.
 - AWS Lambda: For serverless functions primarily for S3 upload reporting.
 - GitHub Actions: For CI/CD.
+
 ## <--- Future Enhancements( to be implemented ) --->
 - Prometheus: For monitoring.
 - Loki: For log aggregation.
@@ -121,4 +122,4 @@ We welcome contributions! Please see our CONTRIBUTING.md for more details.
 This project is licensed under the MIT License. See the LICENSE file for details.
 
 ## Contact
-For any inquiries or issues, please reach out to us at incongnito12@gmail.com.
+For any inquiries or issues, please reach out to us at incongnito12@gmail.com.~~

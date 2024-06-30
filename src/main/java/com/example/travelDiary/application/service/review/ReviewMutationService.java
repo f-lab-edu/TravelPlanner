@@ -50,6 +50,10 @@ public class ReviewMutationService {
         UUID reviewId = reviewEditAppendRequest.getReviewId();
         Review review = reviewRepository.findById(reviewId).orElseThrow(() -> new IllegalArgumentException("Review not found"));
         updateNonNullReviewMetaData(reviewEditAppendRequest, review);
+        if(reviewEditAppendRequest.getFileLocation() == null) {
+            return reviewRepository.save(review);
+        }
+
         for(String mediaFileId : reviewEditAppendRequest.getFileLocation().keySet()) {
             if(review.getContentLocation().get(mediaFileId) == null) {
                 MediaFile mediaFile = mediaFileRepository.findByS3Key(mediaFileId);
@@ -61,6 +65,7 @@ public class ReviewMutationService {
             }
             review.getContentLocation().put(mediaFileId, reviewEditAppendRequest.getFileLocation().get(mediaFileId));
         }
+
         return reviewRepository.save(review);
     }
 
@@ -69,7 +74,9 @@ public class ReviewMutationService {
     public Review editReviewRemoveFiles(ReviewEditRemoveRequest reviewEditRemoveRequest) {
         UUID reviewId = reviewEditRemoveRequest.getReviewId();
         Review reviewToUpdate = reviewRepository.findById(reviewId).orElseThrow();
-
+        if(reviewToUpdate.getFileList() == null) {
+            return reviewRepository.save(reviewToUpdate);
+        }
         for(String mediaFileKey : reviewEditRemoveRequest.getFileList()) {
             MediaFile mediaFile = mediaFileRepository.findByS3Key(mediaFileKey);
             reviewToUpdate.getFileList().remove(mediaFile);
@@ -97,17 +104,22 @@ public class ReviewMutationService {
         List<MediaFile> uploadedFiles = new ArrayList<>();
         List<MediaFile> pendingOrFailedFiles = new ArrayList<>();
         ReviewUploadResponse uploadResponse = new ReviewUploadResponse();
+        if(reviewUploadRequest.getFileLocation() != null || reviewUploadRequest.getFileList() != null) {
+            if(reviewUploadRequest.getFileLocation() == null || reviewUploadRequest.getFileList() == null) {
+                throw new IllegalStateException("non-matching file location and file list sizes");
+            }
 
-        if(reviewUploadRequest.getFileLocation().size()!= reviewUploadRequest.getFileList().size()) {
-            throw new IllegalStateException("non-matching file location and file list sizes");
-        }
+            if (reviewUploadRequest.getFileLocation().size() != reviewUploadRequest.getFileList().size()) {
+                throw new IllegalStateException("non-matching file location and file list sizes");
+            }
 
-        for (MediaFile file : reviewUploadRequest.getFileList()) {
-            MediaFileStatus status = mediaFileAccessService.getUploadStatus(file.getS3Key());
-            if (status == MediaFileStatus.UPLOADED) {
-                uploadedFiles.add(file);
-            } else {
-                pendingOrFailedFiles.add(file);
+            for (MediaFile file : reviewUploadRequest.getFileList()) {
+                MediaFileStatus status = mediaFileAccessService.getUploadStatus(file.getS3Key());
+                if (status == MediaFileStatus.UPLOADED) {
+                    uploadedFiles.add(file);
+                } else {
+                    pendingOrFailedFiles.add(file);
+                }
             }
         }
 
