@@ -88,8 +88,11 @@ jobs:
       - name: Run Docker container to get jacoco report.
         run: docker run --name myapp-container -d ${{ secrets.DOCKER_USERNAME }}/roamgram:latest
 
+      - name: Ensure HTML report directory exists
+        run: mkdir -p ./html
+
       - name: Copy JaCoCo HTML Report from Docker container
-        run: docker cp myapp-container:/app/build/reports/jacoco/test/html ./html
+        run: docker cp myapp-container:/app/build/reports/jacoco/test/html/. ./html
 
       - name: Copy JaCoCo XML Report from Docker container
         run: docker cp myapp-container:/app/build/reports/jacoco/test/jacocoTestReport.xml ./jacocoTestReport.xml
