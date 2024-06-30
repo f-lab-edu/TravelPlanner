@@ -6,7 +6,6 @@ import com.example.travelDiary.common.permissions.domain.UserResourcePermissionT
 import com.example.travelDiary.domain.model.review.Review;
 import com.example.travelDiary.domain.model.travel.Schedule;
 import com.example.travelDiary.repository.persistence.review.ReviewRepository;
-import org.hibernate.annotations.Check;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
@@ -26,12 +25,12 @@ public class ReviewAccessService {
         this.reviewRepository = reviewRepository;
     }
 
-    @CheckAccess(resourceType = Schedule.class, spelResourceId = "#reviewId", permission = "EDIT")
+    @CheckAccess(resourceType = Review.class, spelResourceId = "#reviewId", permission = "EDIT")
     public Review getReviewById(UUID reviewId) {
         return reviewRepository.findById(reviewId).orElseThrow();
     }
 
-    @CheckAccess(resourceType = Schedule.class, spelResourceId = "#scheduleId", permission = "EDIT")
+    @CheckAccess(resourceType = Schedule.class, spelResourceId = "#scheduleId", permission = "VIEW")
     public Page<Review> getAllReviewsFromSchedule(UUID ScheduleId, Integer page, Integer size) {
         Pageable pageable = PageRequest.of(page, size);
         return reviewRepository.findAllByScheduleId(ScheduleId, pageable);

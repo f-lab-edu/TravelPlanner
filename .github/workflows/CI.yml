@@ -48,7 +48,7 @@ jobs:
           echo "REDIS_HOST=${{ secrets.REDIS_HOST }}" >> $GITHUB_ENV
           echo "REDIS_PORT=${{ secrets.REDIS_PORT }}" >> $GITHUB_ENV
           echo "KEY_STORE_PASSWORD=${{ secrets.KEY_STORE_PASSWORD }}" >> $GITHUB_ENV
-          echo "FRONTEND_URL=https://roamgram-deployment-git-deployment-shiraishies-projects.vercel.app/" >> $GITHUB_ENV
+          echo "FRONTEND_URL=https:${{ secrets.FRONTEND_URL }}" >> $GITHUB_ENV
         shell: bash
 
       - name: Login to DockerHub
@@ -83,7 +83,7 @@ jobs:
             GOOGLE_CLIENT_ID=${{ secrets.GOOGLE_CLIENT_ID }}
             JWT_KEY=${{ secrets.JJWT_KEY }}
             KEY_STORE_PASSWORD=${{ secrets.KEY_STORE_PASSWORD }}
-            FRONTEND_URL="https://roamgram-deployment-git-deployment-shiraishies-projects.vercel.app/"
+            FRONTEND_URL=${{ secrets.FRONTEND_URL }}
 
       - name: Run Docker container to get jacoco report.
         run: docker run --name myapp-container -d ${{ secrets.DOCKER_USERNAME }}/roamgram:latest

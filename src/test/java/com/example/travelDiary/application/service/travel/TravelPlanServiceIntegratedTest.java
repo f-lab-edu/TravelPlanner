@@ -7,7 +7,6 @@ import com.example.travelDiary.authenticationUtils.WithMockAuthUser;
 import com.example.travelDiary.common.auth.domain.AuthUser;
 import com.example.travelDiary.common.auth.repository.AuthUserRepository;
 import com.example.travelDiary.common.auth.service.AuthUserService;
-import com.example.travelDiary.common.auth.service.AuthUserServiceImpl;
 import com.example.travelDiary.common.permissions.domain.Resource;
 import com.example.travelDiary.common.permissions.domain.ResourcePermission;
 import com.example.travelDiary.common.permissions.domain.UserResourcePermissionTypes;
@@ -158,7 +157,7 @@ public class TravelPlanServiceIntegratedTest {
     void testGetTravelPageContainingName() {
         UUID createdTravelPlanUUID = createTravelPlanUtils("Test Create Plan");
         List<TravelPlan> travelPlanList = travelPlanRepository.findAll();
-        Page<TravelPlan> result = travelPlanQueryService.getTravelPageContainingName("Test Create Plan", 0, 10, null);
+        Page<TravelPlan> result = travelPlanQueryService.getAuthorisedTravelPageContainingName("Test Create Plan", 0, 10, null);
         assertThat(result.getContent()).isNotEmpty();
         assertThat(travelPlanRepository.findById(createdTravelPlanUUID).get().getName()).isEqualTo("Test Create Plan");
     }
@@ -181,7 +180,7 @@ public class TravelPlanServiceIntegratedTest {
         createTravelPlanUtils("Test Plan1");
         createTravelPlanUtils("Test Plan2");
 
-        List<TravelPlan> result = travelPlanQueryService.getAllTravelPlan(null);
+        List<TravelPlan> result = travelPlanQueryService.getAllAuthorisedTravelPlan(null);
         assertThat(result).isNotEmpty();
         assertThat(result.size()).isEqualTo(3);
     }
@@ -196,7 +195,7 @@ public class TravelPlanServiceIntegratedTest {
 
         UUID result = travelPlanMutationService.createPlan(requestDTO);
         Page<TravelPlan> travelPlanPage = travelPlanRepository.findAllByNameContaining("New Plan", PageRequest.of(0,10));
-        Page<TravelPlan> travelPlans = travelPlanQueryService.getTravelPageContainingName("New Plan", 0, 10, null);
+        Page<TravelPlan> travelPlans = travelPlanQueryService.getAuthorisedTravelPageContainingName("New Plan", 0, 10, null);
         log.info(travelPlans.getContent().toString());
 
         assertThat(travelPlanPage).isNotNull();

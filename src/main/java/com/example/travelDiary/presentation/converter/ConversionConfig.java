@@ -8,6 +8,7 @@ import com.example.travelDiary.presentation.converter.request.travel.*;
 import com.example.travelDiary.presentation.converter.request.wallet.CurrencyConversionRequestToAggregate;
 import com.example.travelDiary.presentation.converter.request.wallet.ExpenditureRequestToAggregate;
 import com.example.travelDiary.presentation.converter.request.wallet.IncomeRequestToAggregate;
+import com.example.travelDiary.presentation.converter.response.ReviewEntityToResponse;
 import com.example.travelDiary.presentation.converter.response.ScheduleEntityToResponse;
 import com.example.travelDiary.presentation.converter.response.TravelPlanEntityToResponse;
 import org.springframework.context.annotation.Bean;
@@ -22,6 +23,16 @@ public class ConversionConfig implements WebMvcConfigurer {
     @Bean
     public TravelPlanEntityToResponse travelPlanEntityToResponse() {
         return new TravelPlanEntityToResponse();
+    }
+
+    @Bean
+    public ScheduleEntityToResponse scheduleEntityToResponse() {
+        return new ScheduleEntityToResponse();
+    }
+
+    @Bean
+    public ReviewEntityToResponse reviewEntityToResponse() {
+        return new ReviewEntityToResponse();
     }
     @Override
     public void addFormatters(FormatterRegistry registry) {
@@ -39,7 +50,9 @@ public class ConversionConfig implements WebMvcConfigurer {
         registry.addConverter(new ActivityCreateRequestToEntity());
         registry.addConverter(new RouteUpdateRequestToEntity());
         registry.addConverter(travelPlanEntityToResponse());
-        registry.addConverter(new ScheduleEntityToResponse());
+        registry.addConverter(scheduleEntityToResponse());
+        registry.addConverter(reviewEntityToResponse());
+
     }
 
 }
