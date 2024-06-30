@@ -48,13 +48,13 @@ class ScheduleQueryServiceTest {
     }
 
     @Test
-    void testGetSchedulesOnGivenDay() {
+    void testGetAllAuthorisedSchedulesOnGivenDay() {
         LocalDate date = LocalDate.now();
         PageRequest pageable = PageRequest.of(0, 10);
         Page<Schedule> schedules = new PageImpl<>(Collections.emptyList());
         when(scheduleRepository.findAllByTravelDate(any(), any(), any(), any())).thenReturn(schedules);
 
-        Page<Schedule> result = scheduleQueryService.getSchedulesOnGivenDay(date, 0, 10, Collections.emptyList());
+        Page<Schedule> result = scheduleQueryService.getAllAuthorisedSchedulesOnGivenDay(date, 0, 10, Collections.emptyList());
 
         assertEquals(schedules, result);
         verify(scheduleRepository).findAllByTravelDate(
@@ -66,25 +66,25 @@ class ScheduleQueryServiceTest {
     }
 
     @Test
-    void testGetScheduleContainingName() {
+    void testGetAllAuthorisedScheduleContainingName() {
         String name = "test";
         PageRequest pageable = PageRequest.of(0, 10);
         Page<Schedule> schedules = new PageImpl<>(Collections.emptyList());
         when(scheduleRepository.findAllByPlaceNameContaining(name, Collections.emptyList(), pageable)).thenReturn(schedules);
 
-        Page<Schedule> result = scheduleQueryService.getScheduleContainingName(name, 0, 10, Collections.emptyList());
+        Page<Schedule> result = scheduleQueryService.getAllAuthorisedScheduleContainingName(name, 0, 10, Collections.emptyList());
 
         assertEquals(schedules, result);
         verify(scheduleRepository).findAllByPlaceNameContaining(name, Collections.emptyList(), pageable);
     }
 
     @Test
-    void testGetAllSchedules() {
+    void testGetAllAuthorisedSchedulesInTravelPlan() {
         UUID travelPlanId = UUID.randomUUID();
         List<Schedule> schedules = Collections.emptyList();
         when(scheduleRepository.findAllByTravelPlanId(travelPlanId, Collections.emptyList())).thenReturn(schedules);
 
-        List<Schedule> result = scheduleQueryService.getAllSchedules(travelPlanId, Collections.emptyList());
+        List<Schedule> result = scheduleQueryService.getAllAuthorisedSchedulesInTravelPlan(travelPlanId, Collections.emptyList());
 
         assertEquals(schedules, result);
         verify(scheduleRepository).findAllByTravelPlanId(travelPlanId, Collections.emptyList());

@@ -206,7 +206,7 @@ class ScheduleServiceIntegrationTest {
         UUID travelPlanId = setScheduleSaveContext();
         Schedule schedule = testCreateSchedule(placeString, nameString, travelPlanId);
         LocalDate date = LocalDate.now();
-        Page<Schedule> schedules = scheduleQueryService.getSchedulesOnGivenDay(date, 0, 10, null);
+        Page<Schedule> schedules = scheduleQueryService.getAllAuthorisedSchedulesOnGivenDay(date, 0, 10, null);
         assertNotNull(schedules);
         assertThat(schedules.getTotalElements()).isEqualTo(1);
         assertThat(schedules.getContent().getFirst().getName()).isEqualTo(nameString);
@@ -218,7 +218,7 @@ class ScheduleServiceIntegrationTest {
     @DirtiesContext
     void testGetAllSchedules() {
         UUID travelPlanId = UUID.randomUUID();
-        List<Schedule> schedules = scheduleQueryService.getAllSchedules(travelPlanId, Collections.emptyList());
+        List<Schedule> schedules = scheduleQueryService.getAllAuthorisedSchedulesInTravelPlan(travelPlanId, Collections.emptyList());
 
         assertNotNull(schedules);
     }

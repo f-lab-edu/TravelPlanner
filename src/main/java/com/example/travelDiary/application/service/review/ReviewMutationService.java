@@ -11,6 +11,7 @@ import com.example.travelDiary.domain.model.travel.Schedule;
 import com.example.travelDiary.presentation.dto.request.review.ReviewEditAppendRequest;
 import com.example.travelDiary.presentation.dto.request.review.ReviewEditRemoveRequest;
 import com.example.travelDiary.presentation.dto.request.review.ReviewUploadRequest;
+import com.example.travelDiary.presentation.dto.response.review.ReviewResponse;
 import com.example.travelDiary.presentation.dto.response.review.ReviewUploadResponse;
 import com.example.travelDiary.repository.persistence.review.MediaFileRepository;
 import com.example.travelDiary.repository.persistence.review.ReviewRepository;
@@ -129,7 +130,7 @@ public class ReviewMutationService {
         review.setFileList(uploadedFiles);
         review = reviewRepository.save(review);
 
-        uploadResponse.setReview(review);
+        uploadResponse.setReview(conversionService.convert(review, ReviewResponse.class));
         uploadResponse.setPendingOrFailedFiles(pendingOrFailedFiles);
 
         eventPublisher.publishEvent(new ReviewCreatedEvent(scheduleId, review));

@@ -37,14 +37,14 @@ public class TravelPlanQueryService {
 
     @Transactional(readOnly = true)
     @InjectResourceIds(parameterName = "resourceIds", resourceType = "TravelPlan", permissionType = UserResourcePermissionTypes.VIEW)
-    public List<TravelPlan> getAllTravelPlan(List<UUID> resourceIds) {
+    public List<TravelPlan> getAllAuthorisedTravelPlan(List<UUID> resourceIds) {
         List<TravelPlan>result = travelPlanRepository.findAllByResourceIds(resourceIds);
         return travelPlanRepository.findAll();
     }
     // Delegate the permission handling to PermissionService
     @Transactional(readOnly = true)
     @InjectResourceIds(parameterName = "resourceIds", resourceType = "TravelPlan", permissionType = UserResourcePermissionTypes.VIEW)
-    public Page<TravelPlan> getTravelPageContainingName(String name, int pageNumber, int pageSize, List<UUID> resourceIds) {
+    public Page<TravelPlan> getAuthorisedTravelPageContainingName(String name, int pageNumber, int pageSize, List<UUID> resourceIds) {
         PageRequest pageRequest = PageRequest.of(pageNumber, pageSize);
         // Fetch travel plans by resource IDs
         Page<TravelPlan> result = travelPlanRepository.findAllByNameContainingAndResourceIds(name, resourceIds, pageRequest);

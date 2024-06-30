@@ -64,7 +64,7 @@ public class ScheduleController {
                                               @RequestParam(value="name") String name,
                                               @RequestParam(value="pageNumber") Integer pageNumber,
                                               @RequestParam(value="pageSize") Integer pageSize) {
-        Page<Schedule> schedulePages = scheduleQueryService.getScheduleContainingName(name, pageNumber, pageSize, null);
+        Page<Schedule> schedulePages = scheduleQueryService.getAllAuthorisedScheduleContainingName(name, pageNumber, pageSize, null);
         return ResponseEntity.ok(schedulePages.map(p->conversionService.convert(p,ScheduleResponse.class)));
     }
 
@@ -74,13 +74,13 @@ public class ScheduleController {
                                            @RequestParam Integer pageNumber,
                                            @RequestParam Integer pageSize) {
         log.info("search schedule by day reached");
-        Page<Schedule> schedulePages = scheduleQueryService.getSchedulesOnGivenDay(date, pageNumber, pageSize, null);
+        Page<Schedule> schedulePages = scheduleQueryService.getAllAuthorisedSchedulesOnGivenDay(date, pageNumber, pageSize, null);
         return ResponseEntity.ok(schedulePages.map(p->conversionService.convert(p,ScheduleResponse.class)));
     }
 
     @GetMapping("/search_all")
     public ResponseEntity<List<ScheduleResponse>> getSchedule(@PathVariable(value = "travelPlanId") UUID travelPlanId) {
-        List<Schedule> scheduleList = scheduleQueryService.getAllSchedules(travelPlanId, null);
+        List<Schedule> scheduleList = scheduleQueryService.getAllAuthorisedSchedulesInTravelPlan(travelPlanId, null);
         return ResponseEntity.ok(scheduleList.stream().map(p->conversionService.convert(p,ScheduleResponse.class)).toList());
     }
 

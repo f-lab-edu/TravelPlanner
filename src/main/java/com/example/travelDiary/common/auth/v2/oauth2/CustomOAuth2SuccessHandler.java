@@ -20,13 +20,13 @@ public class CustomOAuth2SuccessHandler extends SimpleUrlAuthenticationSuccessHa
     private String frontEndUrl = "http://localhost:5173";
     private final JwtProvider jwtProvider;
 
-
     @Autowired
     public CustomOAuth2SuccessHandler(JwtProvider jwtProvider) {
         this.jwtProvider = jwtProvider;
     }
 
-    public void setFrontEndUrl(@Value("${frontend.uri}")String frontEndUrl) {
+    @Value("${frontend.uri:http://localhost:5173}")
+    public void setFrontEndUrl(String frontEndUrl) {
         this.frontEndUrl = frontEndUrl;
     }
 
@@ -41,7 +41,8 @@ public class CustomOAuth2SuccessHandler extends SimpleUrlAuthenticationSuccessHa
         log.info("authentication : {}", authentication);
 
         String redirectUrl = String.format(
-                "http://localhost:5173/authSuccess?accessToken=%s&refreshToken=%s",
+                "%s/authSuccess?accessToken=%s&refreshToken=%s",
+                frontEndUrl,
                 token.getAccessToken(),
                 token.getRefreshToken()
         );

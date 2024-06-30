@@ -6,6 +6,7 @@ import com.example.travelDiary.common.permissions.aop.InjectResourceIds;
 import com.example.travelDiary.common.permissions.domain.UserResourcePermissionTypes;
 import com.example.travelDiary.domain.model.travel.Activity;
 import com.example.travelDiary.domain.model.travel.Schedule;
+import com.example.travelDiary.domain.model.travel.TravelPlan;
 import com.example.travelDiary.domain.model.wallet.aggregate.MonetaryEvent;
 import com.example.travelDiary.repository.persistence.travel.ScheduleRepository;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -36,7 +37,7 @@ public class ScheduleQueryService {
     }
 
     @InjectResourceIds(parameterName = "resourceIds", resourceType = "Schedule", permissionType = UserResourcePermissionTypes.VIEW)
-    public Page<Schedule> getSchedulesOnGivenDay (LocalDate date, Integer pageNumber, Integer pageSize, List<UUID> resourceIds) {
+    public Page<Schedule> getAllAuthorisedSchedulesOnGivenDay(LocalDate date, Integer pageNumber, Integer pageSize, List<UUID> resourceIds) {
         PageRequest pageable = PageRequest.of(pageNumber,pageSize);
         LocalDateTime start = date.atStartOfDay();
         LocalDateTime end = date.atTime(LocalTime.MAX);
@@ -44,13 +45,14 @@ public class ScheduleQueryService {
     }
 
     @InjectResourceIds(parameterName = "resourceIds", resourceType = "Schedule", permissionType = UserResourcePermissionTypes.VIEW)
-    public Page<Schedule> getScheduleContainingName(String name, Integer pageNumber, Integer pageSize, List<UUID> resourceIds) {
+    public Page<Schedule> getAllAuthorisedScheduleContainingName(String name, Integer pageNumber, Integer pageSize, List<UUID> resourceIds) {
         PageRequest pageable = PageRequest.of(pageNumber,pageSize);
         return scheduleRepository.findAllByPlaceNameContaining(name, resourceIds, pageable);
     }
 
+    @CheckAccess(resourceType = TravelPlan.class, spelResourceId = "#travelPlanId", permission = "VIEW")
     @InjectResourceIds(parameterName = "resourceIds", resourceType = "Schedule", permissionType = UserResourcePermissionTypes.VIEW)
-    public List<Schedule> getAllSchedules(UUID travelPlanId, List<UUID> resourceIds) {
+    public List<Schedule> getAllAuthorisedSchedulesInTravelPlan(UUID travelPlanId, List<UUID> resourceIds) {
         return scheduleRepository.findAllByTravelPlanId(travelPlanId, resourceIds);
     }
 

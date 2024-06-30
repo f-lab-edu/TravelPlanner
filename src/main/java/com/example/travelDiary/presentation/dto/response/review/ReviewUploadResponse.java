@@ -8,6 +8,6 @@ import java.util.List;
 
 @Data
 public class ReviewUploadResponse {
-    private Review review;
+    private ReviewResponse review;
     private List<MediaFile> pendingOrFailedFiles;
 }
