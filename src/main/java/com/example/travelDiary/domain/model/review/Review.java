@@ -1,5 +1,6 @@
 package com.example.travelDiary.domain.model.review;
 
+import com.example.travelDiary.common.permissions.domain.Resource;
 import com.example.travelDiary.domain.IdentifiableResource;
 import jakarta.persistence.*;
 import lombok.Data;
@@ -29,4 +30,9 @@ public class Review implements IdentifiableResource {
 
     @ElementCollection
     public Map<String,Long> contentLocation;
+
+    @OneToOne(fetch = FetchType.LAZY)
+    @Cascade(CascadeType.ALL)
+    @JoinColumn(name = "resource_id", referencedColumnName = "id")
+    public Resource resource;
 }
