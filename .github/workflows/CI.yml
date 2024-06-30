@@ -118,15 +118,3 @@ jobs:
         with:
           name: jacoco-xml-report
           path: jacoco-report/jacocoTestReport.xml
-
-
-      - name: Jacoco Report to PR
-        id: jacoco
-        uses: madrapps/jacoco-report@v1.6.1
-        with:
-          paths: jacoco-report/jacocoTestReport.xml
-          token: ${{ secrets.GITHUB_TOKEN }}
-          min-coverage-overall: 75
-          min-coverage-changed-files: 75
-          title: "⭐️Code Coverage"
-          update-comment: true
