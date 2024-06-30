@@ -155,7 +155,8 @@ class ScheduleServiceIntegrationTest {
 
 
     UUID setScheduleSaveContext() {
-        return travelPlanMutationService.createPlan(TravelPlanUpsertRequestDTO.builder().name("test Plan").build());
+        UUID id = travelPlanMutationService.createPlan(TravelPlanUpsertRequestDTO.builder().name("test Plan").build());
+        return id;
     }
 
     @Test
@@ -217,7 +218,7 @@ class ScheduleServiceIntegrationTest {
     @Transactional
     @DirtiesContext
     void testGetAllSchedules() {
-        UUID travelPlanId = UUID.randomUUID();
+        UUID travelPlanId = setScheduleSaveContext();
         List<Schedule> schedules = scheduleQueryService.getAllAuthorisedSchedulesInTravelPlan(travelPlanId, Collections.emptyList());
 
         assertNotNull(schedules);
