@@ -1,7 +1,7 @@
 package com.example.travelDiary.application.service.travel.review;
 
 import com.example.travelDiary.application.events.EventPublisher;
-import com.example.travelDiary.application.service.review.MediaFileAccessService;
+import com.example.travelDiary.application.service.review.MediaFileFacadeService;
 import com.example.travelDiary.application.service.review.ReviewMutationService;
 import com.example.travelDiary.domain.model.review.Review;
 import com.example.travelDiary.presentation.dto.request.review.ReviewEditAppendRequest;
@@ -35,7 +35,7 @@ public class ReviewMutationServiceTest {
     @Mock
     private EventPublisher eventPublisher;
     @Mock
-    private MediaFileAccessService mediaFileAccessService;
+    private MediaFileFacadeService mediaFileAccessService;
     @Mock
     private MediaFileRepository mediaFileRepository;
 

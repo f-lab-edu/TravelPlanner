@@ -1,6 +1,6 @@
 package com.example.travelDiary.presentation.controller.review;
 
-import com.example.travelDiary.application.service.review.MediaFileAccessService;
+import com.example.travelDiary.application.service.review.MediaFileFacadeService;
 import com.example.travelDiary.presentation.dto.request.s3.FinishUploadRequest;
 import com.example.travelDiary.presentation.dto.request.s3.PreSignedUploadInitiateRequest;
 import com.example.travelDiary.presentation.dto.request.s3.PresignedUrlAbortRequest;
@@ -18,10 +18,10 @@ import java.net.URL;
 @Slf4j
 public class MediaFileController {
 
-    private final MediaFileAccessService mediaFileAccessService;
+    private final MediaFileFacadeService mediaFileAccessService;
 
     @Autowired
-    public MediaFileController(MediaFileAccessService mediaFileAccessService) {
+    public MediaFileController(MediaFileFacadeService mediaFileAccessService) {
         this.mediaFileAccessService = mediaFileAccessService;
     }
 

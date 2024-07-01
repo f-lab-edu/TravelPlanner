@@ -1,7 +1,8 @@
 package com.example.travelDiary.application.service.travel.review;
 
 import com.example.travelDiary.application.S3.S3Service;
-import com.example.travelDiary.application.service.review.MediaFileAccessService;
+import com.example.travelDiary.application.service.review.MediaFileDataService;
+import com.example.travelDiary.application.service.review.MediaFileFacadeService;
 import com.example.travelDiary.application.service.review.MediaFileRedisService;
 import com.example.travelDiary.application.service.review.MediaFileService;
 import com.example.travelDiary.common.auth.service.AuthUserServiceImpl;
@@ -22,16 +23,17 @@ import software.amazon.awssdk.services.s3.model.DeleteObjectResponse;
 
 import java.net.MalformedURLException;
 import java.net.URI;
+import java.net.URISyntaxException;
 import java.net.URL;
-import java.util.Optional;
 import java.util.UUID;
 
-import static org.junit.jupiter.api.Assertions.*;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.*;
 
 @ExtendWith(MockitoExtension.class)
-public class MediaFileAccessServiceTest {
+public class MediaFileFacadeServiceTest {
 
     @Mock
     private S3Service s3Service;
@@ -44,8 +46,11 @@ public class MediaFileAccessServiceTest {
     @Mock
     private AuthUserServiceImpl authUserService;
 
+    @Mock
+    private MediaFileDataService mediaFileDataService;
+
     @InjectMocks
-    private MediaFileAccessService mediaFileAccessService;
+    private MediaFileFacadeService mediaFileAccessService;
 
     private PreSignedUploadInitiateRequest request;
     private UserProfile user;
@@ -64,18 +69,14 @@ public class MediaFileAccessServiceTest {
 
     @Test
     public void testUploadMediaFile() throws MalformedURLException {
-        when(authUserService.getCurrentUser()).thenReturn(user);
-
         URI uri = URI.create("http://example.com?fname=example.txt");
-        when(conversionService.convert(any(PreSignedUploadInitiateRequest.class), eq(MediaFile.class)))
-                .thenReturn(new MediaFile());
         when(s3Service.createPresignedUrlForPut(anyString(), anyString(), anyLong()))
                 .thenReturn(uri.toURL());
+        when(mediaFileDataService.saveMediaFile(any(PreSignedUploadInitiateRequest.class)))
+                .thenReturn("testKey");
 
         URL result = mediaFileAccessService.uploadMediaFile(request);
-
         assertNotNull(result);
-        verify(redisService).cacheMediaFile(anyString(), any(MediaFile.class));
     }
 
     @Test
@@ -91,51 +92,25 @@ public class MediaFileAccessServiceTest {
     @Test
     public void testDeleteMediaFile() {
         when(s3Service.deleteS3Object(anyString())).thenReturn(DeleteObjectResponse.builder().build());
+        doNothing().when(mediaFileDataService).deleteMediaMetadata(anyString());
 
         DeleteObjectResponse result = mediaFileAccessService.deleteMediaFile("testKey");
 
         assertNotNull(result);
-        verify(mediaFileService).deleteByS3Key(anyString());
+        verify(mediaFileDataService).deleteMediaMetadata(anyString());
     }
 
-    @Test
-    public void testSaveMediaFile_NewFile() {
-        when(authUserService.getCurrentUser()).thenReturn(user);
-
-        when(mediaFileService.findByOriginalFileNameAndContentType(any(), any())).thenReturn(Optional.empty());
-        when(conversionService.convert(any(), eq(MediaFile.class))).thenReturn(new MediaFile());
-
-        String key = mediaFileAccessService.saveMediaFile(request);
-
-        assertNotNull(key);
-        verify(redisService).cacheMediaFile(eq(key), any(MediaFile.class));
-    }
 
     @Test
-    public void testSaveMediaFile_ExistingFile() {
-        when(authUserService.getCurrentUser()).thenReturn(user);
-
-        MediaFile existingMediaFile = new MediaFile();
-        existingMediaFile.setS3Key("existingKey");
-        when(mediaFileService.findByOriginalFileNameAndContentType(any(), any())).thenReturn(Optional.of(existingMediaFile));
-        when(conversionService.convert(any(), eq(MediaFile.class))).thenReturn(new MediaFile());
-
-        String key = mediaFileAccessService.saveMediaFile(request);
-
-        assertEquals("existingKey", key);
-        verify(redisService).cacheMediaFile(eq(key), any(MediaFile.class));
-    }
-
-    @Test
-    public void testUploadMediaFileMultipart() {
-        when(authUserService.getCurrentUser()).thenReturn(user);
-
-        when(mediaFileService.findByOriginalFileNameAndContentType(any(), any())).thenReturn(Optional.empty());
-        when(conversionService.convert(any(), eq(MediaFile.class))).thenReturn(new MediaFile());
-        URL url = mock(URL.class);
+    public void testUploadMediaFileMultipart() throws URISyntaxException, MalformedURLException {
+        URI uri = new URI("http://example.com");  // Use a real URL instead of a mock to avoid issues
+        URL url = uri.toURL();
         when(s3Service.createMultipartUploadRequest(any(), any())).thenReturn(url);
+        when(mediaFileDataService.saveMediaFile(any(PreSignedUploadInitiateRequest.class)))
+                .thenReturn("testKey");
 
-        assertEquals(url, mediaFileAccessService.uploadMediaFileMultipart(request));
+        URL result = mediaFileAccessService.uploadMediaFileMultipart(request);
+        assertEquals(url, result);
     }
 
     @Test

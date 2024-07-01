@@ -30,14 +30,14 @@ public class ReviewMutationService {
     private final ReviewRepository reviewRepository;
     private final ConversionService conversionService;
     private final EventPublisher eventPublisher;
-    private final MediaFileAccessService mediaFileAccessService;
+    private final MediaFileFacadeService mediaFileAccessService;
     private final MediaFileRepository mediaFileRepository;
 
     @Autowired
     public ReviewMutationService(ReviewRepository reviewRepository,
                                  ConversionService conversionService,
                                  EventPublisher eventPublisher,
-                                 MediaFileAccessService mediaFileAccessService, MediaFileRepository mediaFileRepository) {
+                                 MediaFileFacadeService mediaFileAccessService, MediaFileRepository mediaFileRepository) {
         this.reviewRepository = reviewRepository;
         this.conversionService = conversionService;
         this.eventPublisher = eventPublisher;
