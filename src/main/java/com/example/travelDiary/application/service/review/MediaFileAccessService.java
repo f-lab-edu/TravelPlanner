@@ -56,6 +56,7 @@ public class MediaFileAccessService {
             key = existingMediaFile.get().getS3Key();
         } else {
             UUID mediaFileId = UUID.randomUUID();
+            mediaFile.setId(mediaFileId);
             key = generateKey(request, mediaFileId);
         }
         mediaFile.setS3Key(key);
