@@ -15,10 +15,13 @@ import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.stereotype.Service;
 import software.amazon.awssdk.services.s3.model.DeleteObjectResponse;
 
+import java.math.BigInteger;
 import java.net.URL;
 import java.net.URLConnection;
+import java.nio.charset.StandardCharsets;
+import java.security.MessageDigest;
+import java.security.NoSuchAlgorithmException;
 import java.time.Duration;
-import java.time.Instant;
 import java.util.Optional;
 import java.util.UUID;
 
@@ -49,6 +52,8 @@ public class MediaFileAccessService {
         Optional<MediaFile> existingMediaFile = mediaFileRepository
                 .findByOriginalFileNameAndContentType(request.getOriginalFileName(), guessContentTypeFromName(request));
 
+        String contentType = guessContentTypeFromName(request);
+        UUID userProfileId = authUserServiceImpl.getCurrentUser().getId();
         MediaFile mediaFile = conversionService.convert(request, MediaFile.class);
         assert mediaFile != null;
         String key;
@@ -56,12 +61,10 @@ public class MediaFileAccessService {
         if (existingMediaFile.isPresent()) {
             key = existingMediaFile.get().getS3Key();
         } else {
-            UUID mediaFileId = UUID.randomUUID();
-            mediaFile.setId(mediaFileId);
-            key = generateKey(request, mediaFileId);
+            key = generateKey(request, contentType, userProfileId);
         }
         mediaFile.setS3Key(key);
-
+        mediaFile.setContentType(contentType);
         // Cache media file in Redis with expiration
         redisTemplate.opsForValue().set(key, mediaFile, Duration.ofMinutes(CACHE_EXPIRATION_TIME));
         return key;
@@ -72,8 +75,18 @@ public class MediaFileAccessService {
         return URLConnection.guessContentTypeFromName(request.getOriginalFileName());
     }
 
-    private String generateKey(PreSignedUploadInitiateRequest request, UUID mediaFileId) {
-        String timestamp = Instant.now().toString();
+    private static String generateMD5Hash(String source) {
+        try {
+            MessageDigest md = MessageDigest.getInstance("MD5");
+            byte[] bytes = md.digest(source.getBytes(StandardCharsets.UTF_8));
+            BigInteger bigInt = new BigInteger(1, bytes);
+            return bigInt.toString(16); // Convert to hexadecimal representation
+        } catch (NoSuchAlgorithmException e) {
+            throw new IllegalStateException(e);
+        }
+    }
+
+    private String generateKey(PreSignedUploadInitiateRequest request, String contentType, UUID userProfileId) {
         // Sanitize original file name
         String sanitizedFileName = request
                 .getOriginalFileName()
@@ -81,12 +94,14 @@ public class MediaFileAccessService {
                 .toLowerCase();
 
         // Example key structure
-        return String.format("uploads/%s/%s/%s/%s-%s",
-                authUserServiceImpl.getCurrentUser().getId(),
-                request.getReviewId(),
-                mediaFileId,
-                timestamp,
-                sanitizedFileName);
+        String keyfront = String.format("uploads/%s/%s/%s/%s/%s",
+                userProfileId,
+                sanitizedFileName,
+                contentType,
+                request.getFileSize(),
+                request.getScheduleId()
+        );
+        return keyfront + "/" + generateMD5Hash(keyfront);
     }
 
     public URL getMediaFile(String s3Key) {
@@ -130,6 +145,35 @@ public class MediaFileAccessService {
         return "aborted";
     }
 
+    public MediaFile reconstructObjectFromKey(String objectKey) {
+        // Split the key based on '/'
+        String[] parts = objectKey.split("/");
+
+        // Ensure the key follows the expected structure
+        if (parts.length < 7) {
+            throw new IllegalArgumentException("Invalid key format");
+        }
+
+        // Third last part is the file size
+        String fileSize = parts[parts.length - 3];
+
+        // Second last part is the content type
+        String contentType = parts[parts.length - 4];
+
+        // Fourth last part is the sanitized file name
+        String sanitizedFileName = parts[parts.length - 5];
+
+        MediaFile mediaFile = MediaFile.builder()
+                .mediaFileStatus(MediaFileStatus.UPLOADED)
+                .originalFileName(sanitizedFileName)
+                .sizeBytes(Long.valueOf(fileSize))
+                .s3Key(objectKey)
+                .contentType(contentType)
+                .build();
+
+        return mediaFile;
+    }
+
     public void markMediaUploadFinished(String objectKey) {
         log.info("mark media upload finished {}", objectKey);
         MediaFile mediaFile = (MediaFile) redisTemplate.opsForValue().get(objectKey);
@@ -137,7 +181,9 @@ public class MediaFileAccessService {
         if (mediaFile == null) {
             mediaFile = mediaFileRepository.findByS3Key(objectKey);
             if (mediaFile == null) {
-                s3Service.deleteS3Object(objectKey);
+                MediaFile reconstructed = reconstructObjectFromKey(objectKey);
+                log.info("reconstructed mediaFile from ObjectKey {} giving entity {}", objectKey, reconstructed);
+                mediaFileRepository.save(reconstructed);
                 return;
             }
         } else {

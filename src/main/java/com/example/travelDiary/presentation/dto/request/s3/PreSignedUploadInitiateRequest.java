@@ -6,12 +6,10 @@ import java.util.UUID;
 
 @Data
 public class PreSignedUploadInitiateRequest {
+
+    private UUID scheduleId;
     public Long fileSize;
-
     public String originalFileName;
-
-    private UUID reviewId;
-
     public Long contentLocation;
 }
 

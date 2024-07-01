@@ -8,17 +8,13 @@ import org.springframework.core.convert.converter.Converter;
 public class PreSignedUploadRequestToMediaFile implements Converter<PreSignedUploadInitiateRequest, MediaFile> {
     public MediaFile convert(PreSignedUploadInitiateRequest source) {
         MediaFile mediaFile = new MediaFile();
-        if (source.getReviewId() != null) {
-            mediaFile.setReviewId(source.getReviewId());
-        }
         if (source.getFileSize() != null) {
             mediaFile.setSizeBytes(source.getFileSize());
         }
-
         if (source.getOriginalFileName() != null) {
             mediaFile.setOriginalFileName(source.getOriginalFileName());
         }
-        mediaFile.setMediaFileStatus(MediaFileStatus.UPLOADING);
+        mediaFile.setMediaFileStatus(MediaFileStatus.PENDING);
 
         return mediaFile;
     }

@@ -59,7 +59,7 @@ public class MediaFileAccessServiceTest {
         request = new PreSignedUploadInitiateRequest();
         request.setOriginalFileName("example.txt");
         request.setFileSize(1024L);
-        request.setReviewId(UUID.randomUUID());
+        request.setScheduleId(UUID.randomUUID());
     }
 
     @Test
@@ -112,20 +112,26 @@ public class MediaFileAccessServiceTest {
         when(conversionService.convert(any(), eq(MediaFile.class))).thenReturn(new MediaFile());
         String key = mediaFileAccessService.saveMediaFile(request);
         assertNotNull(key);
-        verify(mockValueOps).set(eq(key), any(MediaFile.class), eq(Duration.ofMinutes(30)));
+        verify(mockValueOps).set(eq(key), any(MediaFile.class), eq(Duration.ofMinutes(40)));
     }
 
     @Test
     void testSaveMediaFile_ExistingFile() {
+        UserProfile user = new UserProfile();
+        user.setId(UUID.randomUUID());
+        when(authUserService.getCurrentUser()).thenReturn(user);
+
         ValueOperations<String, Object> mockValueOps = Mockito.mock(ValueOperations.class);
         when(redisTemplate.opsForValue()).thenReturn(mockValueOps);
+
         MediaFile existingMediaFile = new MediaFile();
         existingMediaFile.setS3Key("existingKey");
         when(mediaFileRepository.findByOriginalFileNameAndContentType(any(), any())).thenReturn(Optional.of(existingMediaFile));
         when(conversionService.convert(any(), eq(MediaFile.class))).thenReturn(new MediaFile());
+
         String key = mediaFileAccessService.saveMediaFile(request);
         assertEquals("existingKey", key);
-        verify(mockValueOps).set(eq(key), any(MediaFile.class), eq(Duration.ofMinutes(30)));
+        verify(mockValueOps).set(eq(key), any(MediaFile.class), eq(Duration.ofMinutes(40)));
     }
 
 
@@ -148,10 +154,10 @@ public class MediaFileAccessServiceTest {
         ValueOperations<String, Object> mockValueOps = Mockito.mock(ValueOperations.class);
         when(redisTemplate.opsForValue()).thenReturn(mockValueOps);
         FinishUploadRequest finishUploadRequest = new FinishUploadRequest();
-        finishUploadRequest.setObjectKey("someKey");
+        finishUploadRequest.setObjectKey("uploads/someUser/someName/text/1024/someId/someMd5");
         when(s3Service.completeMultipartUpload(any(), any())).thenReturn(null);
         assertEquals("completed", mediaFileAccessService.uploadMediaFileMultipartComplete(finishUploadRequest));
-        verify(s3Service).deleteS3Object(finishUploadRequest.getObjectKey());
+        verify(mediaFileRepository).save(any(MediaFile.class));
     }
 
     @Test
