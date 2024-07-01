@@ -30,7 +30,7 @@ public class MediaFileAccessService {
     private final MediaFileRepository mediaFileRepository;
     private final RedisTemplate<String, Object> redisTemplate;
 
-    private static final long CACHE_EXPIRATION_TIME = 30; // cache expiration time in minutes
+    private static final long CACHE_EXPIRATION_TIME = 40; // cache expiration time in minutes
     private final AuthUserServiceImpl authUserServiceImpl;
 
     @Autowired
@@ -44,6 +44,7 @@ public class MediaFileAccessService {
 
     //make idempotent for same file...
     //check for partial update/ failed update.
+    // -- find ways to reconstruct. / recover from s3.
     public String saveMediaFile(PreSignedUploadInitiateRequest request) {
         Optional<MediaFile> existingMediaFile = mediaFileRepository
                 .findByOriginalFileNameAndContentType(request.getOriginalFileName(), guessContentTypeFromName(request));
