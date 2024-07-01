@@ -46,6 +46,8 @@ public class CustomOAuth2SuccessHandler extends SimpleUrlAuthenticationSuccessHa
                 token.getAccessToken(),
                 token.getRefreshToken()
         );
+
+        log.info("redirectUrl : {}", redirectUrl);
         // Set the token in the response header
         getRedirectStrategy().sendRedirect(request, response, redirectUrl);
     }
