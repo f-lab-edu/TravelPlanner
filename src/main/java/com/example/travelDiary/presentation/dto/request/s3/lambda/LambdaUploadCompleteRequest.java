@@ -7,4 +7,8 @@ import lombok.Data;
 public class LambdaUploadCompleteRequest {
     @JsonProperty("objectKey")
     public String objectKey;
+
+    @JsonProperty("size")
+    public String size;
+
 }

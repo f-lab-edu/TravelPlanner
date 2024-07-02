@@ -12,7 +12,6 @@ import software.amazon.awssdk.services.s3.presigner.model.*;
 
 import java.net.URL;
 import java.time.Duration;
-import java.util.ArrayList;
 import java.util.List;
 
 @Service
@@ -49,8 +48,8 @@ public class S3Service {
         PutObjectRequest putObjectRequest = PutObjectRequest.builder()
                 .bucket(bucketName)
                 .key(objectKey)
-//                .contentType(contentType)
-//                .contentLength(contentLength)
+                .contentType(contentType)
+                .contentLength(contentLength)
                 .build();
 
         PutObjectPresignRequest putObjectPresignRequest = PutObjectPresignRequest.builder()
@@ -92,24 +91,37 @@ public class S3Service {
         return presignedCreateMultipartUploadRequest.url();
     }
 
-    public CompleteMultipartUploadResponse completeMultipartUpload(String objectKey, FinishUploadRequest finishUploadRequest){
-        List<CompletedPart> completedParts = new ArrayList<>();
-        for (FinishUploadRequest.PartData partData : finishUploadRequest.getPartData()) {
-            CompletedPart part = CompletedPart
-                    .builder()
-                    .partNumber(partData.getPartNumber())
-                    .eTag(partData.getETag())
-                    .build();
-            completedParts.add(part);
-        }
+    public URL generatePresignedUrlForPart(String objectKey, String uploadId, int partNumber) {
+        UploadPartRequest uploadPartRequest = UploadPartRequest.builder()
+                .bucket(bucketName)
+                .key(objectKey)
+                .uploadId(uploadId)
+                .partNumber(partNumber)
+                .build();
 
-        CompletedMultipartUpload completedMultipartUpload = CompletedMultipartUpload
-                .builder()
+        UploadPartPresignRequest uploadPartPresignRequest = UploadPartPresignRequest.builder()
+                .signatureDuration(Duration.ofHours(1))
+                .uploadPartRequest(uploadPartRequest)
+                .build();
+
+        PresignedUploadPartRequest presignedUploadPartRequest = s3Presigner.presignUploadPart(uploadPartPresignRequest);
+
+        return presignedUploadPartRequest.url();
+    }
+
+    public CompleteMultipartUploadResponse completeMultipartUpload(String objectKey, FinishUploadRequest finishUploadRequest) {
+        List<CompletedPart> completedParts = finishUploadRequest.getPartData().stream()
+                .map(partData -> CompletedPart.builder()
+                        .partNumber(partData.getPartNumber())
+                        .eTag(partData.getETag())
+                        .build())
+                .toList();
+
+        CompletedMultipartUpload completedMultipartUpload = CompletedMultipartUpload.builder()
                 .parts(completedParts)
                 .build();
 
-        CompleteMultipartUploadRequest completeMultipartUploadRequest = CompleteMultipartUploadRequest
-                .builder()
+        CompleteMultipartUploadRequest completeMultipartUploadRequest = CompleteMultipartUploadRequest.builder()
                 .bucket(bucketName)
                 .key(objectKey)
                 .multipartUpload(completedMultipartUpload)

@@ -8,6 +8,7 @@ import com.example.travelDiary.domain.model.wallet.entity.MonetaryEventEntity;
 import com.example.travelDiary.repository.persistence.travel.ActivityRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 import java.util.UUID;
@@ -29,11 +30,13 @@ public class ActivityAccessService {
         return activityRepository.findById(id).orElseThrow();
     }
 
+    @Transactional
     public List<MonetaryEvent> getAllMonetaryEvents(UUID eventId) {
         Activity activity = activityRepository.findById(eventId).orElseThrow();
         return monetaryDomainQueryService.convertAllToAggregates(activity.getMonetaryEvents());
     }
 
+    @Transactional
     public List<MonetaryEvent> getAllMonetaryEventsInEventsByTag(UUID eventId, List<String> tagNames) {
         Activity activity = activityRepository.findById(eventId).orElseThrow();
         List<UUID> monetaryEventsId = activity.getMonetaryEvents().stream().map(MonetaryEventEntity::getId).toList();

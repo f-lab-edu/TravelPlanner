@@ -3,7 +3,6 @@ package com.example.travelDiary.presentation.dto.request.s3;
 import lombok.Data;
 
 import java.util.List;
-import java.util.UUID;
 
 @Data
 public class FinishUploadRequest {
@@ -11,10 +10,12 @@ public class FinishUploadRequest {
     public static class PartData {
         private int partNumber;
         private String eTag;
+        private Long partSize;
     }
 
     private String uploadId;
     private String objectKey;
     private List<PartData> partData;
+    private Long fileSize;
 }
 

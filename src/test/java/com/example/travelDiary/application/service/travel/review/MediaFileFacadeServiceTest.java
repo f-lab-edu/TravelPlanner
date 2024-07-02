@@ -12,6 +12,7 @@ import com.example.travelDiary.domain.model.user.UserProfile;
 import com.example.travelDiary.presentation.dto.request.s3.FinishUploadRequest;
 import com.example.travelDiary.presentation.dto.request.s3.PreSignedUploadInitiateRequest;
 import com.example.travelDiary.presentation.dto.request.s3.PresignedUrlAbortRequest;
+import com.example.travelDiary.presentation.dto.request.s3.lambda.LambdaUploadCompleteRequest;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -117,6 +118,7 @@ public class MediaFileFacadeServiceTest {
     public void testUploadMediaFileMultipartComplete() {
         FinishUploadRequest finishUploadRequest = new FinishUploadRequest();
         finishUploadRequest.setObjectKey("uploads/someUser/someName/text/1024/someId/someMd5");
+        finishUploadRequest.setFileSize(1024L);
         when(s3Service.completeMultipartUpload(any(), any())).thenReturn(null);
 
         assertEquals("completed", mediaFileAccessService.uploadMediaFileMultipartComplete(finishUploadRequest));
@@ -138,11 +140,14 @@ public class MediaFileFacadeServiceTest {
         String objectKey = "someKey";
         MediaFile mediaFile = new MediaFile();
         mediaFile.setS3Key(objectKey);
+        mediaFile.setSizeBytes(1024L);
         mediaFile.setMediaFileStatus(MediaFileStatus.PENDING);
 
         when(redisService.getMediaFile(objectKey)).thenReturn(mediaFile);
-
-        mediaFileAccessService.markMediaUploadFinished(objectKey);
+        LambdaUploadCompleteRequest request = new LambdaUploadCompleteRequest();
+        request.setObjectKey(objectKey);
+        request.setSize("1024");
+        mediaFileAccessService.markMediaUploadFinished(request);
 
         assertEquals(MediaFileStatus.UPLOADED, mediaFile.getMediaFileStatus());
         verify(mediaFileService).saveMediaFile(mediaFile);

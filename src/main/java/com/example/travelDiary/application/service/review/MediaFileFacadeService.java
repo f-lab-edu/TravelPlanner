@@ -6,10 +6,12 @@ import com.example.travelDiary.domain.model.review.MediaFileStatus;
 import com.example.travelDiary.presentation.dto.request.s3.FinishUploadRequest;
 import com.example.travelDiary.presentation.dto.request.s3.PreSignedUploadInitiateRequest;
 import com.example.travelDiary.presentation.dto.request.s3.PresignedUrlAbortRequest;
+import com.example.travelDiary.presentation.dto.request.s3.lambda.LambdaUploadCompleteRequest;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import software.amazon.awssdk.services.s3.model.CompleteMultipartUploadResponse;
 import software.amazon.awssdk.services.s3.model.DeleteObjectResponse;
 
 import java.net.URL;
@@ -23,6 +25,9 @@ public class MediaFileFacadeService {
     private final MediaFileService mediaFileService;
     private final MediaFileDataService mediaFileDataService;
     private final MediaFileRedisService redisService;
+    private final int sanitisedFileNameIdx = 2;
+    private final int contentTypeIdx = 3;
+    private final int objectKeyLength = 6;
 
     @Autowired
     public MediaFileFacadeService(S3Service s3Service,
@@ -60,10 +65,14 @@ public class MediaFileFacadeService {
 
     @Transactional
     public String uploadMediaFileMultipartComplete(FinishUploadRequest finishUploadRequest) {
-        s3Service.completeMultipartUpload(finishUploadRequest.getObjectKey(), finishUploadRequest);
-        markMediaUploadFinished(finishUploadRequest.getObjectKey());
+        CompleteMultipartUploadResponse response = s3Service.completeMultipartUpload(finishUploadRequest.getObjectKey(), finishUploadRequest);
+        LambdaUploadCompleteRequest request = new LambdaUploadCompleteRequest();
+        request.setObjectKey(finishUploadRequest.getObjectKey());
+        request.setSize(String.valueOf(finishUploadRequest.getFileSize()));
+        markMediaUploadFinished(request);
         return "completed";
     }
+
 
     @Transactional
     public String abortUpload(PresignedUrlAbortRequest request) {
@@ -73,19 +82,18 @@ public class MediaFileFacadeService {
     }
 
     @Transactional
-    public MediaFile reconstructObjectFromKey(String objectKey) {
+    public MediaFile reconstructObjectFromKey(String objectKey, Long fileSize) {
         String[] parts = objectKey.split("/");
-        if (parts.length < 7) {
+        if (parts.length < objectKeyLength) {
             throw new IllegalArgumentException("Invalid key format");
         }
-        String fileSize = parts[parts.length - 3];
-        String contentType = parts[parts.length - 4];
-        String sanitizedFileName = parts[parts.length - 5];
+        String contentType = String.valueOf(contentTypeIdx);
+        String sanitizedFileName = String.valueOf(sanitisedFileNameIdx);
 
         MediaFile mediaFile = MediaFile.builder()
                 .mediaFileStatus(MediaFileStatus.UPLOADED)
                 .originalFileName(sanitizedFileName)
-                .sizeBytes(Long.valueOf(fileSize))
+                .sizeBytes(fileSize)
                 .s3Key(objectKey)
                 .contentType(contentType)
                 .build();
@@ -94,14 +102,16 @@ public class MediaFileFacadeService {
     }
 
     @Transactional
-    public void markMediaUploadFinished(String objectKey) {
+    public void markMediaUploadFinished(LambdaUploadCompleteRequest request) {
+        String objectKey = request.getObjectKey();
+        Long fileSize = Long.valueOf(request.getSize());
         log.info("mark media upload finished {}", objectKey);
         MediaFile mediaFile = redisService.getMediaFile(objectKey);
 
         if (mediaFile == null) {
             mediaFile = mediaFileService.findByS3Key(objectKey);
             if (mediaFile == null) {
-                MediaFile reconstructed = reconstructObjectFromKey(objectKey);
+                MediaFile reconstructed = reconstructObjectFromKey(objectKey, fileSize);
                 log.info("reconstructed mediaFile from ObjectKey {} giving entity {}", objectKey, reconstructed);
                 mediaFileService.saveMediaFile(reconstructed);
                 return;

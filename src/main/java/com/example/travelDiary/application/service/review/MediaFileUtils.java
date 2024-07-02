@@ -31,11 +31,10 @@ public class MediaFileUtils {
                 .replaceAll("[^a-zA-Z0-9._-]", "_")
                 .toLowerCase();
 
-        String keyfront = String.format("uploads/%s/%s/%s/%s/%s",
+        String keyfront = String.format("uploads/%s/%s/%s/%s",
                 userProfileId,
                 sanitizedFileName,
                 contentType,
-                request.getFileSize(),
                 request.getScheduleId()
         );
         return keyfront + "/" + generateMD5Hash(keyfront);

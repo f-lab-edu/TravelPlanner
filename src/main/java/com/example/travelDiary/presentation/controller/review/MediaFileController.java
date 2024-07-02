@@ -58,7 +58,7 @@ public class MediaFileController {
     @PostMapping("/complete-upload")
     public ResponseEntity<String> completeUpload(@RequestBody LambdaUploadCompleteRequest request) {
         log.info("Received upload complete request: {}", request);
-        mediaFileAccessService.markMediaUploadFinished(request.getObjectKey());
+        mediaFileAccessService.markMediaUploadFinished(request);
         return ResponseEntity.ok("Upload completed");
     }
 
