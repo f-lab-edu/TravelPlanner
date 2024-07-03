@@ -81,6 +81,9 @@ public class AccessControlAspect {
         Class<?>[] parameterTypes = Arrays.stream(joinPoint.getArgs())
                 .map(arg -> {
                     // Convert any type of List to List.class
+                    if(arg == null) {
+                        return Object.class;
+                    }
                     if (arg instanceof List) {
                         return List.class;
                     }

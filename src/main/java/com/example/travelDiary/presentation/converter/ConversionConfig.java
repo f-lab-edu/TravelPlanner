@@ -12,13 +12,24 @@ import com.example.travelDiary.presentation.converter.response.ReviewEntityToRes
 import com.example.travelDiary.presentation.converter.response.ScheduleEntityToResponse;
 import com.example.travelDiary.presentation.converter.response.TravelPlanEntityToResponse;
 import org.springframework.context.annotation.Bean;
+import org.springframework.context.annotation.ComponentScan;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.format.FormatterRegistry;
+import org.springframework.format.support.DefaultFormattingConversionService;
+import org.springframework.format.support.FormattingConversionService;
 import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
 
 
 @Configuration
+@ComponentScan
 public class ConversionConfig implements WebMvcConfigurer {
+
+//    @Bean
+//    public FormattingConversionService conversionService() {
+//        FormattingConversionService conversionService = new DefaultFormattingConversionService();
+//        addFormatters(conversionService);
+//        return conversionService;
+//    }
 
     @Bean
     public TravelPlanEntityToResponse travelPlanEntityToResponse() {
@@ -52,7 +63,6 @@ public class ConversionConfig implements WebMvcConfigurer {
         registry.addConverter(travelPlanEntityToResponse());
         registry.addConverter(scheduleEntityToResponse());
         registry.addConverter(reviewEntityToResponse());
-
     }
 
 }

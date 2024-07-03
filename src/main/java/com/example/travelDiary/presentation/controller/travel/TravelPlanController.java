@@ -13,6 +13,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.client.RestTemplate;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
 
@@ -44,7 +45,7 @@ public class TravelPlanController {
     public Page<TravelPlanResponse> getPlansContainingName(@RequestParam(value="name") String name,
                                                    @RequestParam(value="pageNumber") Integer pageNumber,
                                                    @RequestParam(value="pageSize") int pageSize) {
-        Page<TravelPlan> pages = planQueryService.getAuthorisedTravelPageContainingName(name, pageNumber, pageSize, null);
+        Page<TravelPlan> pages = planQueryService.getAuthorisedTravelPageContainingName(name, pageNumber, pageSize, new ArrayList<>());
         return pages.map(p -> conversionService.convert(p, TravelPlanResponse.class));
     }
 
@@ -52,7 +53,7 @@ public class TravelPlanController {
     @GetMapping("/get_all")
     public ResponseEntity<List<TravelPlanResponse>> getAll() {
         log.info("get all METHOD TRIGGERED BY REACT");
-        List<TravelPlan> travelPlanList = planQueryService.getAllAuthorisedTravelPlan(null);
+        List<TravelPlan> travelPlanList = planQueryService.getAllAuthorisedTravelPlan(new ArrayList<>());
         List<TravelPlanResponse> responseList = travelPlanList.stream().map(travelPlan -> conversionService.convert(travelPlan, TravelPlanResponse.class)).toList();
         return ResponseEntity.ok(responseList);
     }

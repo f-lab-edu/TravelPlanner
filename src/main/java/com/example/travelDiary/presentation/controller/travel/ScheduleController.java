@@ -13,12 +13,14 @@ import com.example.travelDiary.presentation.dto.request.travel.schedule.Schedule
 import com.example.travelDiary.presentation.dto.response.travel.ScheduleResponse;
 import com.example.travelDiary.repository.persistence.travel.TravelPlanRepository;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.convert.ConversionService;
 import org.springframework.data.domain.Page;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.time.LocalDate;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
 
@@ -32,6 +34,7 @@ public class ScheduleController {
     private final ScheduleQueryService scheduleQueryService;
     private final ConversionService conversionService;
 
+    @Autowired
     public ScheduleController(ScheduleMutationService scheduleMutationService, TravelPlanRepository travelPlanRepository, PlaceMutationService placeMutationService, ScheduleQueryService scheduleQueryService, ConversionService conversionService) {
         this.scheduleMutationService = scheduleMutationService;
         this.travelPlanRepository = travelPlanRepository;
@@ -64,7 +67,7 @@ public class ScheduleController {
                                               @RequestParam(value="name") String name,
                                               @RequestParam(value="pageNumber") Integer pageNumber,
                                               @RequestParam(value="pageSize") Integer pageSize) {
-        Page<Schedule> schedulePages = scheduleQueryService.getAllAuthorisedScheduleContainingName(name, pageNumber, pageSize, null);
+        Page<Schedule> schedulePages = scheduleQueryService.getAllAuthorisedScheduleContainingName(name, pageNumber, pageSize, new ArrayList<>());
         return ResponseEntity.ok(schedulePages.map(p->conversionService.convert(p,ScheduleResponse.class)));
     }
 
@@ -74,13 +77,13 @@ public class ScheduleController {
                                            @RequestParam Integer pageNumber,
                                            @RequestParam Integer pageSize) {
         log.info("search schedule by day reached");
-        Page<Schedule> schedulePages = scheduleQueryService.getAllAuthorisedSchedulesOnGivenDay(date, pageNumber, pageSize, null);
+        Page<Schedule> schedulePages = scheduleQueryService.getAllAuthorisedSchedulesOnGivenDay(date, pageNumber, pageSize, new ArrayList<>());
         return ResponseEntity.ok(schedulePages.map(p->conversionService.convert(p,ScheduleResponse.class)));
     }
 
     @GetMapping("/search_all")
     public ResponseEntity<List<ScheduleResponse>> getSchedule(@PathVariable(value = "travelPlanId") UUID travelPlanId) {
-        List<Schedule> scheduleList = scheduleQueryService.getAllAuthorisedSchedulesInTravelPlan(travelPlanId, null);
+        List<Schedule> scheduleList = scheduleQueryService.getAllAuthorisedSchedulesInTravelPlan(travelPlanId, new ArrayList<>());
         return ResponseEntity.ok(scheduleList.stream().map(p->conversionService.convert(p,ScheduleResponse.class)).toList());
     }
 
