@@ -25,6 +25,7 @@ import com.example.travelDiary.presentation.dto.request.travel.schedule.Schedule
 import com.example.travelDiary.repository.persistence.location.PlaceRepository;
 import com.example.travelDiary.repository.persistence.travel.RouteRepository;
 import com.example.travelDiary.repository.persistence.travel.ScheduleRepository;
+import com.example.travelDiary.repository.persistence.travel.TravelPlanRepository;
 import com.example.travelDiary.repository.persistence.user.UserProfileRepository;
 import lombok.extern.slf4j.Slf4j;
 import org.jetbrains.annotations.NotNull;
@@ -41,16 +42,19 @@ import org.springframework.test.annotation.DirtiesContext;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.transaction.support.TransactionTemplate;
 
 import java.time.Instant;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 import java.util.UUID;
 
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.junit.jupiter.api.Assertions.*;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.mockito.Mockito.when;
 
 @ExtendWith(SpringExtension.class)
@@ -99,7 +103,10 @@ class ScheduleServiceIntegrationTest {
     private final String authUserId = "b3a0a82f-f737-46f6-9d41-c475a7cc20ec";
     private final AuthUser authUser = SecurityTestUtils.createMockAuthUser(authUserId);
     private final UserProfile user = UserProfile.builder().authUserId(UUID.fromString(authUserId)).build();
-
+    @Autowired
+    private TravelPlanRepository travelPlanRepository;
+    @Autowired
+    private TransactionTemplate transactionTemplate;
 
 
     @BeforeEach
@@ -134,6 +141,7 @@ class ScheduleServiceIntegrationTest {
                 .createTime(Instant.now())
                 .type("Schedule")
                 .resourceUUID(schedule.getId())
+                .permissions(new ArrayList<ResourcePermission>())
                 .build();
         resourceRepository.save(resource);
         resourceRepository.flush();
@@ -144,10 +152,13 @@ class ScheduleServiceIntegrationTest {
                 .userProfile(this.user)
                 .build();
         schedule.setResource(resource);
+        resource.getPermissions().add(resourcePermission);
         resourcePermissionRepository.save(resourcePermission);
         resourcePermissionRepository.flush();
         scheduleRepository.save(schedule);
         scheduleRepository.flush();
+        resourceRepository.save(resource);
+        resourceRepository.flush();
 
 
         return schedule;
@@ -155,7 +166,11 @@ class ScheduleServiceIntegrationTest {
 
 
     UUID setScheduleSaveContext() {
-        UUID id = travelPlanMutationService.createPlan(TravelPlanUpsertRequestDTO.builder().name("test Plan").build());
+        UUID id = transactionTemplate.execute(status -> {
+            UUID planId = travelPlanMutationService.createPlan(TravelPlanUpsertRequestDTO.builder().name("test Plan").build());
+            travelPlanRepository.flush();
+            return planId;
+        });
         return id;
     }
 
@@ -176,18 +191,35 @@ class ScheduleServiceIntegrationTest {
     @WithMockAuthUser(id = authUserId)
     @DirtiesContext
     void testCreateAndDeleteSchedule() {
-        UUID travelPlanId = setScheduleSaveContext();
-        Schedule schedule = new Schedule();
-        schedule.setTravelPlanId(travelPlanId);
-        Place place = new Place();
-        place.setName("Test Place");
-        placeRepository.save(place);
+        UUID travelPlanId = transactionTemplate.execute(status -> {
+            UUID travelPlanIdTx = setScheduleSaveContext();
+            Schedule schedule = new Schedule();
+            schedule.setTravelPlanId(travelPlanIdTx);
+            return travelPlanIdTx;
+        });
+
+        Place place = transactionTemplate.execute(status -> {
+            Place placetx = new Place();
+            placetx.setName("Test Place");
+            placeRepository.save(placetx);
+
+            return placetx;
+        });
+
         ScheduleInsertRequest request = new ScheduleInsertRequest();
         request.setPreviousScheduleId(null);
         request.setName("Test Schedule");
         request.setPlace(place);
 
-        UUID createdScheduleId = scheduleMutationService.createSchedule(travelPlanId, request);
+
+        UUID createdScheduleId = transactionTemplate.execute(status -> {
+            UUID createdScheduleIdtx = scheduleMutationService.createSchedule(travelPlanId, request);
+            scheduleRepository.flush();
+            return createdScheduleIdtx;
+        });
+
+        List<Schedule> findAll = scheduleRepository.findAll();
+
         Schedule createdSchedule = scheduleQueryService.getSchedule(createdScheduleId);
         assertNotNull(createdSchedule);
         assertThat(createdSchedule.getName()).isEqualTo("Test Schedule");

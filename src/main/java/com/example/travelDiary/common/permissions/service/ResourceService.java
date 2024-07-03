@@ -2,8 +2,6 @@ package com.example.travelDiary.common.permissions.service;
 
 import com.example.travelDiary.common.auth.service.AuthUserService;
 import com.example.travelDiary.common.permissions.domain.Resource;
-import com.example.travelDiary.common.permissions.domain.ResourcePermission;
-import com.example.travelDiary.common.permissions.domain.UserResourcePermissionTypes;
 import com.example.travelDiary.common.permissions.domain.exception.ResourceNotFoundException;
 import com.example.travelDiary.common.permissions.repository.ResourcePermissionRepository;
 import com.example.travelDiary.common.permissions.repository.ResourceRepository;
@@ -11,10 +9,10 @@ import com.example.travelDiary.domain.IdentifiableResource;
 import com.example.travelDiary.domain.model.user.UserProfile;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.time.Instant;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
 
@@ -23,15 +21,17 @@ public class ResourceService {
     private final ResourceRepository resourceRepository;
     private final ResourcePermissionRepository resourcePermissionRepository;
     private final AuthUserService authUserService;
+    private final ResourcePermissionService resourcePermissionService;
 
 
     @Autowired
     public ResourceService(ResourceRepository resourceRepository,
-                           ResourcePermissionRepository resourcePermissionRepository, AuthUserService authUserService
-    ) {
+                           ResourcePermissionRepository resourcePermissionRepository, AuthUserService authUserService,
+                           ResourcePermissionService resourcePermissionService) {
         this.resourceRepository = resourceRepository;
         this.resourcePermissionRepository = resourcePermissionRepository;
         this.authUserService = authUserService;
+        this.resourcePermissionService = resourcePermissionService;
     }
 
     public Resource getResourceById(UUID resourceId) {
@@ -49,12 +49,12 @@ public class ResourceService {
                 .resourceUUID(resourceUUID)
                 .type(type)
                 .createTime(Instant.now())
+                .permissions(new ArrayList<>())
                 .build();
         resource = resourceRepository.save(resource);
 
         // Assign OWNER permission to the creator
-        assignOwnerPermission(resource, owner);
-
+        resourcePermissionService.assignOwnerPermission(resource, owner);
         return resource;
     }
 
@@ -65,21 +65,12 @@ public class ResourceService {
         resourceRepository.deleteAllById(resourceId);
     }
 
-    private void assignOwnerPermission(Resource resource, UserProfile owner) {
-        ResourcePermission permission = ResourcePermission.builder()
-                .userProfile(owner)
-                .resource(resource)
-                .permissions(UserResourcePermissionTypes.OWNER)
-                .build();
-        String string = permission.toString();
-        resourcePermissionRepository.save(permission);
-        ResourcePermission tempPerm = resourcePermissionRepository.findById(permission.getId()).orElseThrow();
-    }
-
     @Transactional
     public void delinkPermissions(List<UUID> resourceIds) {
-        List<Resource> resources = resourceRepository.findAll();
         List<Resource> resourceId = resourceRepository.findAllByResourceUUIDIn(resourceIds);
+        // it should be noted that the deletion of the resourcePermissions technically occur via the deletion of the Resources,
+        // but the find then delete method is explicitly used to ensure safeguard against the complex transactional environments,
+        // and that the implementation as of current may be modified in the future for greater gains in efficiency by reducing database calls.
         resourcePermissionRepository.deleteAllByResourceIn(resourceId);
         resourcePermissionRepository.flush();
     }

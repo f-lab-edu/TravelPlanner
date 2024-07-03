@@ -1,6 +1,7 @@
 package com.example.travelDiary.application.service.travel;
 
 import com.example.travelDiary.TestConfig;
+import com.example.travelDiary.application.service.travel.schedule.ScheduleMutationService;
 import com.example.travelDiary.application.service.travel.schedule.ScheduleQueryService;
 import com.example.travelDiary.authenticationUtils.SecurityTestUtils;
 import com.example.travelDiary.authenticationUtils.WithMockAuthUser;
@@ -12,14 +13,15 @@ import com.example.travelDiary.common.permissions.domain.ResourcePermission;
 import com.example.travelDiary.common.permissions.domain.UserResourcePermissionTypes;
 import com.example.travelDiary.common.permissions.repository.ResourcePermissionRepository;
 import com.example.travelDiary.common.permissions.repository.ResourceRepository;
+import com.example.travelDiary.common.permissions.service.AccessControlService;
 import com.example.travelDiary.common.permissions.service.ResourcePermissionService;
 import com.example.travelDiary.common.permissions.service.ResourceService;
 import com.example.travelDiary.domain.model.travel.TravelPlan;
 import com.example.travelDiary.domain.model.user.UserProfile;
 import com.example.travelDiary.domain.model.wallet.aggregate.MonetaryEvent;
 import com.example.travelDiary.presentation.dto.request.travel.TravelPlanUpsertRequestDTO;
+import com.example.travelDiary.repository.persistence.travel.ScheduleRepository;
 import com.example.travelDiary.repository.persistence.travel.TravelPlanRepository;
-import com.example.travelDiary.common.permissions.service.AccessControlService;
 import com.example.travelDiary.repository.persistence.user.UserProfileRepository;
 import jakarta.persistence.EntityManager;
 import lombok.extern.slf4j.Slf4j;
@@ -35,14 +37,18 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.test.annotation.DirtiesContext;
 import org.springframework.test.context.ActiveProfiles;
-import org.springframework.transaction.annotation.Propagation;
+import org.springframework.transaction.PlatformTransactionManager;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.transaction.support.TransactionTemplate;
 
 import java.time.Instant;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.List;
+import java.util.UUID;
 
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.mockito.Mockito.*;
+import static org.mockito.Mockito.when;
 
 @Slf4j
 @SpringBootTest
@@ -92,63 +98,73 @@ public class TravelPlanServiceIntegratedTest {
     @Autowired
     private EntityManager testEntityManager;
 
+    @Autowired
+    private ScheduleMutationService scheduleMutationService;
+    @Autowired
+    private ScheduleRepository scheduleRepository;
+    @Autowired
+    private TransactionTemplate transactionTemplate;
+    @Autowired
+    private PlatformTransactionManager transactionManager;
+
 
     private final String authUserId = "b3a0a82f-f737-46f6-9d41-c475a7cc20ec";
     private final AuthUser authUser = SecurityTestUtils.createMockAuthUser(authUserId);
-    private final UserProfile user = UserProfile.builder().authUserId(UUID.fromString(authUserId)).build();
+    private UserProfile user = UserProfile.builder().authUserId(UUID.fromString(authUserId)).build();
 
     private UUID travelPlanId;
 
+
     @BeforeEach
-    @Transactional
     void setUp() {
         MockitoAnnotations.openMocks(this);
-        travelPlanRepository.deleteAll();
-        userProfileRepository.deleteAll();
-        resourcePermissionRepository.deleteAll();
-        resourceRepository.deleteAll();
-        userProfileRepository.save(this.user);
-        userProfileRepository.flush();
+        transactionTemplate.execute(status -> {
+            travelPlanRepository.deleteAll();
+            userProfileRepository.deleteAll();
+            resourcePermissionRepository.deleteAll();
+            resourceRepository.deleteAll();
+            return null;
+        });
+        this.user = transactionTemplate.execute(status -> userProfileRepository.saveAndFlush(this.user));
         this.travelPlanId = createTravelPlanUtils("Travel Plan");
         when(authUserService.getCurrentAuthenticatedUser()).thenReturn(authUser);
         when(authUserService.getCurrentUser()).thenReturn(this.user);
-
     }
 
-    @Transactional(propagation = Propagation.REQUIRES_NEW)
     public UUID createTravelPlanUtils(String travelPlanName) {
-        TravelPlan travelPlan = new TravelPlan();
-        travelPlan.setName(travelPlanName);
-        travelPlanRepository.save(travelPlan);
-        UUID createPlanTravelPlanId = travelPlan.getId();
+        return transactionTemplate.execute(status -> {
+            TravelPlan travelPlan = new TravelPlan();
+            travelPlan.setName(travelPlanName);
+            travelPlanRepository.saveAndFlush(travelPlan);
+            UUID createPlanTravelPlanId = travelPlan.getId();
 
+            Resource resource = new Resource();
+            resource.setResourceUUID(createPlanTravelPlanId);
+            resource.setVisibility("private");
+            resource.setType("TravelPlan");
+            resource.setCreateTime(Instant.now());
+            resource.setPermissions(new ArrayList<>());
+            resourceRepository.saveAndFlush(resource);
 
-        Resource resource = new Resource();
-        resource.setResourceUUID(createPlanTravelPlanId);
-        resource.setVisibility("private");
-        resource.setType("TravelPlan");
-        resource.setCreateTime(Instant.now());
-        resourceRepository.save(resource);
-        resourceRepository.flush();
-        resourceRepository.findById(resource.getId());
-//        when(this.resourceRepository.findByResourceUUIDAndType(eq(createPlanTravelPlanId), anyString())).thenReturn(Optional.of(resource));
+            ResourcePermission resourcePermission = new ResourcePermission();
+            resourcePermission.setResource(resource);
+            resourcePermission.setPermissions(UserResourcePermissionTypes.OWNER);
+            resourcePermission.setUserProfile(this.user);
+            resourcePermissionRepository.saveAndFlush(resourcePermission);
 
-        ResourcePermission resourcePermission = new ResourcePermission();
-        resourcePermission.setResource(resource);
-        resourcePermission.setPermissions(UserResourcePermissionTypes.OWNER);
-        resourcePermission.setUserProfile(this.user);
-        resourcePermissionRepository.save(resourcePermission);
-        resourcePermissionRepository.flush();
-//        when(this.resourcePermissionRepository.findByUserAndResource(any(UserProfile.class), eq(resource))).thenReturn(Optional.of(resourcePermission));
+            travelPlan.setResource(resource);
+            travelPlanRepository.saveAndFlush(travelPlan);
 
-        travelPlan.setResource(resource);
-        travelPlanRepository.save(travelPlan);
+            resource.getPermissions().add(resourcePermission);
+            resourceRepository.saveAndFlush(resource);
 
-        testEntityManager.flush();
-        testEntityManager.clear();
+            testEntityManager.flush();
+            testEntityManager.clear();
 
-        return createPlanTravelPlanId;
+            return createPlanTravelPlanId;
+        });
     }
+
 
     @Test
     @WithMockAuthUser(id = authUserId)
@@ -194,7 +210,7 @@ public class TravelPlanServiceIntegratedTest {
         requestDTO.setName("New Plan");
 
         UUID result = travelPlanMutationService.createPlan(requestDTO);
-        Page<TravelPlan> travelPlanPage = travelPlanRepository.findAllByNameContaining("New Plan", PageRequest.of(0,10));
+        Page<TravelPlan> travelPlanPage = travelPlanRepository.findAllByNameContaining("New Plan", PageRequest.of(0, 10));
         Page<TravelPlan> travelPlans = travelPlanQueryService.getAuthorisedTravelPageContainingName("New Plan", 0, 10, null);
         log.info(travelPlans.getContent().toString());
 
@@ -205,6 +221,8 @@ public class TravelPlanServiceIntegratedTest {
         assertThat(travelPlans.getContent().get(0).getName()).isEqualTo("New Plan");
 
     }
+
+
 
     @Test
     @WithMockAuthUser(id = authUserId)
@@ -218,7 +236,7 @@ public class TravelPlanServiceIntegratedTest {
         //mid-check
         assertThat(travelPlanRepository.findById(createdID)).isNotEmpty();
 
-        List<UUID> result = travelPlanMutationService.deletePlan(request);
+        List<UUID> result = travelPlanMutationService.deleteMultipleTravelPlans(request);
         assertThat(result).containsExactly(createdID);
 
         assertThat(travelPlanRepository.findById(createdID)).isEmpty();
@@ -243,7 +261,7 @@ public class TravelPlanServiceIntegratedTest {
 
         List<Resource> resources = resourceRepository.findAll();
 
-        List<UUID> result = travelPlanMutationService.deletePlan(request);
+        List<UUID> result = travelPlanMutationService.deleteMultipleTravelPlans(request);
         assertThat(result).containsExactly(createdID2, createdID3);
 
         assertThat(travelPlanRepository.findById(createdID2)).isEmpty();
@@ -265,7 +283,7 @@ public class TravelPlanServiceIntegratedTest {
 
         TravelPlan result = travelPlanMutationService.modifyPlanMetadata(requestDTO);
 
-        Page<TravelPlan> repositoryResult = travelPlanRepository.findAllByNameContaining("Updated", PageRequest.of(1,10));
+        Page<TravelPlan> repositoryResult = travelPlanRepository.findAllByNameContaining("Updated", PageRequest.of(1, 10));
         assertThat(result.getName()).isEqualTo("Updated Name");
         assertThat(repositoryResult.getTotalElements()).isEqualTo(1);
     }
@@ -283,7 +301,7 @@ public class TravelPlanServiceIntegratedTest {
     }
 
 
-//    Todo
+    //    Todo
     @WithMockAuthUser(id = authUserId)
     @Transactional
     @DirtiesContext

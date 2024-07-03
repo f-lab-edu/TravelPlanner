@@ -1,12 +1,10 @@
 package com.example.travelDiary.common.permissions.domain;
 
 import jakarta.persistence.*;
-import lombok.AllArgsConstructor;
-import lombok.Builder;
-import lombok.Data;
-import lombok.NoArgsConstructor;
+import lombok.*;
 
 import java.time.Instant;
+import java.util.List;
 import java.util.UUID;
 
 
@@ -15,6 +13,7 @@ import java.util.UUID;
 @Builder
 @AllArgsConstructor
 @NoArgsConstructor
+@ToString(exclude = {"permissions"})
 public class Resource {
     @Id
     @GeneratedValue(strategy = GenerationType.UUID)
@@ -28,4 +27,7 @@ public class Resource {
     private String type;
 
     private Instant createTime;
+
+    @OneToMany(mappedBy = "resource", cascade = CascadeType.ALL, orphanRemoval = true, fetch = FetchType.LAZY)
+    private List<ResourcePermission> permissions;
 }

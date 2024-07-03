@@ -9,6 +9,7 @@ import com.example.travelDiary.common.permissions.repository.ResourcePermissionR
 import com.example.travelDiary.common.permissions.repository.ResourceRepository;
 import com.example.travelDiary.domain.IdentifiableResource;
 import com.example.travelDiary.domain.model.user.UserProfile;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.access.AccessDeniedException;
 import org.springframework.stereotype.Service;
@@ -19,6 +20,7 @@ import java.util.UUID;
 
 
 @Service
+@Slf4j
 public class AccessControlService {
 
     private final ResourceRepository resourceRepository;
@@ -36,6 +38,8 @@ public class AccessControlService {
         try {
             UserResourcePermissionTypes requiredPermission = UserResourcePermissionTypes.valueOf(permission.toUpperCase());
 
+            List<Resource> resourceLS = resourceRepository.findAll();
+            log.info("resourceOpt , {}", resourceLS);
             Optional<Resource> resourceOpt = resourceRepository.findByResourceUUIDAndType(resourceId, resourceType.getSimpleName());
 //                .orElseThrow(() -> new ResourceNotFoundException("Resource not found"));
             if (resourceOpt.isEmpty()) {

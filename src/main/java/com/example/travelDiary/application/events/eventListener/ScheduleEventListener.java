@@ -1,9 +1,9 @@
 package com.example.travelDiary.application.events.eventListener;
 
-import com.example.travelDiary.application.events.travel.ScheduleCreatedEvent;
-import com.example.travelDiary.application.events.travel.ScheduleDeletedEvent;
-import com.example.travelDiary.application.events.travel.SchedulePreDeletedEvent;
-import com.example.travelDiary.application.events.travel.ScheduleUpdatedEvent;
+import com.example.travelDiary.application.events.schedule.ScheduleCreatedEvent;
+import com.example.travelDiary.application.events.schedule.ScheduleDeletedEvent;
+import com.example.travelDiary.application.events.schedule.SchedulePreDeletedEvent;
+import com.example.travelDiary.application.events.schedule.ScheduleUpdatedEvent;
 import com.example.travelDiary.application.service.location.PlaceMutationService;
 import com.example.travelDiary.common.permissions.domain.Resource;
 import com.example.travelDiary.common.permissions.service.ResourceService;
@@ -44,11 +44,11 @@ public class ScheduleEventListener {
         this.resourceService = resourceService;
     }
 
-    @TransactionalEventListener(phase = TransactionPhase.AFTER_COMMIT)
     @Transactional(propagation = Propagation.REQUIRES_NEW)
+    @TransactionalEventListener(phase = TransactionPhase.AFTER_COMMIT)
     public void handleScheduleCreatedEvent(ScheduleCreatedEvent event) {
         Schedule schedule = event.getSchedule();
-        schedule = scheduleRepository.findById(schedule.getId()).orElseThrow();
+//        schedule = scheduleRepository.findById(schedule.getId()).orElseThrow();
 
         TravelPlan travelPlan = travelPlanRepository.findById(event.getTravelPlanId())
                 .orElseThrow(()-> new IllegalArgumentException("schedule is not under any valid travelPlan"));
@@ -60,8 +60,10 @@ public class ScheduleEventListener {
             log.info("error resulted : {}", schedule.getPlace());
         }
 
-        Place place = placeMutationService.createPlace(event.getPlace());
-        schedule.setPlace(place);
+        if(event.getPlace() != null) {
+            Place place = placeMutationService.createPlace(event.getPlace());
+            schedule.setPlace(place);
+        }
 
         Resource resource = resourceService.createResource(schedule, "private");
         schedule.setResource(resource);

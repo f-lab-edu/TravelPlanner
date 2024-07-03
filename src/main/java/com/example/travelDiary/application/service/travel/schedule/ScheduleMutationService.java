@@ -1,10 +1,10 @@
 package com.example.travelDiary.application.service.travel.schedule;
 
 import com.example.travelDiary.application.events.EventPublisher;
-import com.example.travelDiary.application.events.travel.ScheduleCreatedEvent;
-import com.example.travelDiary.application.events.travel.ScheduleDeletedEvent;
-import com.example.travelDiary.application.events.travel.SchedulePreDeletedEvent;
-import com.example.travelDiary.application.events.travel.ScheduleUpdatedEvent;
+import com.example.travelDiary.application.events.schedule.ScheduleCreatedEvent;
+import com.example.travelDiary.application.events.schedule.ScheduleDeletedEvent;
+import com.example.travelDiary.application.events.schedule.SchedulePreDeletedEvent;
+import com.example.travelDiary.application.events.schedule.ScheduleUpdatedEvent;
 import com.example.travelDiary.application.service.location.PlaceMutationService;
 import com.example.travelDiary.application.service.travel.RouteAccessService;
 import com.example.travelDiary.common.permissions.aop.CheckAccess;
@@ -13,11 +13,11 @@ import com.example.travelDiary.domain.model.review.Review;
 import com.example.travelDiary.domain.model.travel.Route;
 import com.example.travelDiary.domain.model.travel.Schedule;
 import com.example.travelDiary.domain.model.travel.TravelPlan;
-import com.example.travelDiary.repository.persistence.travel.ScheduleRepository;
-import com.example.travelDiary.presentation.dto.request.travel.location.PlaceUpdateRequest;
 import com.example.travelDiary.presentation.dto.request.travel.RouteUpdateRequest;
+import com.example.travelDiary.presentation.dto.request.travel.location.PlaceUpdateRequest;
 import com.example.travelDiary.presentation.dto.request.travel.schedule.ScheduleInsertRequest;
 import com.example.travelDiary.presentation.dto.request.travel.schedule.ScheduleMetadataUpdateRequest;
+import com.example.travelDiary.repository.persistence.travel.ScheduleRepository;
 import jakarta.persistence.EntityNotFoundException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.convert.ConversionService;

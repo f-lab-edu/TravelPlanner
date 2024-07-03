@@ -1,4 +1,4 @@
-package com.example.travelDiary.application.events.travel;
+package com.example.travelDiary.application.events.schedule;
 
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;

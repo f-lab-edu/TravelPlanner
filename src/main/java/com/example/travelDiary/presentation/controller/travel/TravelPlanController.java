@@ -66,7 +66,7 @@ public class TravelPlanController {
     @DeleteMapping("/delete_travel_plan")
     public List<UUID> deleteTravelPlan(@RequestBody List<UUID> request) {
         log.info("delete METHOD TRIGGERED BY REACT");
-        return planAccessService.deletePlan(request);
+        return planAccessService.deleteMultipleTravelPlans(request);
     }
 
     @PatchMapping("/modify_travel_plan")

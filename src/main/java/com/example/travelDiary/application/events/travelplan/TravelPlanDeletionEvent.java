@@ -1,4 +1,4 @@
-package com.example.travelDiary.application.events.resource;
+package com.example.travelDiary.application.events.travelplan;
 
 import lombok.Data;
 
@@ -6,6 +6,6 @@ import java.util.List;
 import java.util.UUID;
 
 @Data
-public class ResourceDeletionEvent {
+public class TravelPlanDeletionEvent {
     private final List<UUID> resourceIds;
 }

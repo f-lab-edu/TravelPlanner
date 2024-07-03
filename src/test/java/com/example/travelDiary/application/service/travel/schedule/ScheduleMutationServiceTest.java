@@ -4,10 +4,10 @@ import static org.mockito.Mockito.*;
 import static org.junit.jupiter.api.Assertions.*;
 
 import com.example.travelDiary.application.events.EventPublisher;
-import com.example.travelDiary.application.events.travel.ScheduleCreatedEvent;
-import com.example.travelDiary.application.events.travel.ScheduleDeletedEvent;
-import com.example.travelDiary.application.events.travel.SchedulePreDeletedEvent;
-import com.example.travelDiary.application.events.travel.ScheduleUpdatedEvent;
+import com.example.travelDiary.application.events.schedule.ScheduleCreatedEvent;
+import com.example.travelDiary.application.events.schedule.ScheduleDeletedEvent;
+import com.example.travelDiary.application.events.schedule.SchedulePreDeletedEvent;
+import com.example.travelDiary.application.events.schedule.ScheduleUpdatedEvent;
 import com.example.travelDiary.application.service.location.PlaceMutationService;
 import com.example.travelDiary.application.service.travel.RouteAccessService;
 import com.example.travelDiary.domain.model.location.Place;

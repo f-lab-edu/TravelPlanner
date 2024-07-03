@@ -58,7 +58,7 @@ public class Schedule implements IdentifiableResource {
     @Cascade(CascadeType.ALL)
     public List<Activity> activities;
 
-    @OneToOne(fetch = FetchType.LAZY)
+    @OneToOne(fetch = FetchType.LAZY, orphanRemoval = true)
     @Cascade(CascadeType.ALL)
     @JoinColumn(name = "resource_id", referencedColumnName = "id")
     private Resource resource;

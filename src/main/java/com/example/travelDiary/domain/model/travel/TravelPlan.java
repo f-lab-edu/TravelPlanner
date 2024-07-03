@@ -37,7 +37,7 @@ public class TravelPlan implements IdentifiableResource {
     @Cascade(CascadeType.ALL)
     public List<Schedule> ScheduleList;
 
-    @OneToOne(fetch = FetchType.LAZY)
+    @OneToOne(fetch = FetchType.LAZY, orphanRemoval = true)
     @Cascade(CascadeType.ALL)
     @JoinColumn(name = "resource_id", referencedColumnName = "id")
     private Resource resource;

@@ -1,14 +1,16 @@
 package com.example.travelDiary.application.service.travel;
 
 import com.example.travelDiary.application.events.EventPublisher;
-import com.example.travelDiary.application.events.resource.ResourceDeletionEvent;
+import com.example.travelDiary.application.events.travelplan.TravelPlanDeletionEvent;
 import com.example.travelDiary.application.service.travel.schedule.ScheduleMutationService;
 import com.example.travelDiary.common.permissions.aop.CheckAccess;
 import com.example.travelDiary.common.permissions.domain.Resource;
 import com.example.travelDiary.common.permissions.service.ResourceService;
+import com.example.travelDiary.domain.model.travel.Schedule;
 import com.example.travelDiary.domain.model.travel.TravelPlan;
-import com.example.travelDiary.repository.persistence.travel.TravelPlanRepository;
 import com.example.travelDiary.presentation.dto.request.travel.TravelPlanUpsertRequestDTO;
+import com.example.travelDiary.repository.persistence.travel.TravelPlanRepository;
+import jakarta.persistence.EntityNotFoundException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.convert.ConversionService;
 import org.springframework.stereotype.Service;
@@ -51,14 +53,28 @@ public class TravelPlanMutationService {
     }
 
     @Transactional
-    @CheckAccess(resourceType = TravelPlan.class, spelResourceId = "#request", permission = "EDIT", isList = true)
-    public List<UUID> deletePlan(List<UUID> request) {
-        // First, delete permissions in a separate transaction
-        eventPublisher.publishEvent(new ResourceDeletionEvent(request));
-        // Delete travel plans
-        travelPlanRepository.deleteAllById(request);
+    @CheckAccess(resourceType = TravelPlan.class, spelResourceId = "#travelPlanId", permission = "EDIT")
+    public void deleteTravelPlan(UUID travelPlanId) {
+        TravelPlan travelPlan = travelPlanRepository.findById(travelPlanId)
+                .orElseThrow(() -> new EntityNotFoundException("TravelPlan not found"));
 
-        return request;
+        // Trigger deletion of related schedules
+        for (Schedule schedule : travelPlan.getScheduleList()) {
+            scheduleMutationService.deleteSchedule(travelPlanId, schedule.getId());
+        }
+        // First, delete permissions in a separate transaction
+        eventPublisher.publishEvent(new TravelPlanDeletionEvent(List.of(travelPlanId)));
+        // Finally, delete the travel plan itself
+        travelPlanRepository.delete(travelPlan);
+    }
+
+    @Transactional
+    public List<UUID> deleteMultipleTravelPlans(List<UUID> travelPlanIds) {
+        for (UUID travelPlanId : travelPlanIds) {
+            // Call the deleteTravelPlan method to ensure proper deletion
+            deleteTravelPlan(travelPlanId);
+        }
+        return travelPlanIds;
     }
 
     @Transactional
