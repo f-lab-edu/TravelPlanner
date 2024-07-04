@@ -106,6 +106,7 @@ public class MediaFileFacadeService {
         String objectKey = request.getObjectKey();
         Long fileSize = Long.valueOf(request.getSize());
         log.info("mark media upload finished {}", objectKey);
+        log.info("media file size: {}", fileSize);
         MediaFile mediaFile = redisService.getMediaFile(objectKey);
 
         if (mediaFile == null) {
