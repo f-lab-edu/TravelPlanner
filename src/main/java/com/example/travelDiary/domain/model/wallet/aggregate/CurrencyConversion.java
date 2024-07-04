@@ -2,6 +2,7 @@ package com.example.travelDiary.domain.model.wallet.aggregate;
 
 import com.example.travelDiary.domain.IdentifiableResource;
 import com.example.travelDiary.domain.model.wallet.Amount;
+import com.fasterxml.jackson.annotation.JsonTypeName;
 import io.jsonwebtoken.Identifiable;
 import lombok.*;
 
@@ -11,6 +12,7 @@ import java.util.Currency;
 import java.util.UUID;
 
 
+@JsonTypeName("currency_conversion")
 @Data
 @Builder
 @AllArgsConstructor

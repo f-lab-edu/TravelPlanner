@@ -1,13 +1,14 @@
 package com.example.travelDiary.domain.model.wallet.aggregate;
 
-import com.example.travelDiary.domain.IdentifiableResource;
 import com.example.travelDiary.domain.model.wallet.Amount;
+import com.fasterxml.jackson.annotation.JsonTypeName;
 import lombok.*;
 
 import java.time.Instant;
 import java.util.Currency;
 import java.util.UUID;
 
+@JsonTypeName("expenditure")
 @Data
 @NoArgsConstructor
 @AllArgsConstructor

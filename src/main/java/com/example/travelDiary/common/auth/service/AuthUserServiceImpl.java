@@ -11,6 +11,7 @@ import com.example.travelDiary.common.auth.domain.ApplicationPermits;
 import com.example.travelDiary.common.auth.v2.jwt.JwtProvider;
 import com.example.travelDiary.domain.model.user.UserProfile;
 import com.example.travelDiary.repository.persistence.user.UserProfileRepository;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.data.redis.core.RedisTemplate;
@@ -22,6 +23,7 @@ import org.springframework.stereotype.Service;
 import java.time.Duration;
 import java.time.Instant;
 
+@Slf4j
 @Service
 public class AuthUserServiceImpl implements AuthUserService {
     @Value("${frontend.uri}")
@@ -64,6 +66,9 @@ public class AuthUserServiceImpl implements AuthUserService {
         if (authUserRepository.findByUsername(registrationRequest.getUsername()).isPresent()) {
             throw new RuntimeException("User with same Username already exists");
         }
+        if (authUserRepository.findByEmail(registrationRequest.getEmail()).isPresent()) {
+            throw new RuntimeException("Duplicate accounts with same email already exists");
+        }
         String token = jwtProvider.generateEmailToken(registrationRequest);
         AuthUser user = AuthUser.builder()
                 .username(registrationRequest.getUsername())
@@ -82,7 +87,10 @@ public class AuthUserServiceImpl implements AuthUserService {
     }
 
     public AuthUser confirmUserRegistration(String token) {
+        Object object = authUserRedisTemplate.opsForValue().get(token);
+        log.info("redisTemplateReturns, {}", object);
         AuthUser user = (AuthUser) authUserRedisTemplate.opsForValue().get(token);
+        authUserRedisTemplate.delete(token);
         if (user == null) {
             throw new IllegalStateException("Invalid token or Expired Login Entry");
         }

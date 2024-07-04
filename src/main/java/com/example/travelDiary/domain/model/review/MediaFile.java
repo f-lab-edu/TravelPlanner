@@ -23,7 +23,7 @@ public class MediaFile implements IdentifiableResource {
     @GeneratedValue(strategy = GenerationType.UUID)
     private UUID id;
 
-    public UUID reviewId;
+    public UUID review;
 
     public Long sizeBytes;
 

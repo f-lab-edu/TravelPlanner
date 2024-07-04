@@ -7,6 +7,8 @@ spring:
     properties:
       mail:
         smtp:
+          debug: true
+          connectiontimeout: 10000
           auth: true
           starttls:
             enable: true

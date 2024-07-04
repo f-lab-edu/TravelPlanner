@@ -10,4 +10,6 @@ public interface AuthUserRepository  extends JpaRepository<AuthUser, UUID> {
     Optional<AuthUser> findByUsername(String username);
 
     Optional<AuthUser> findByProviderId(String authUserId);
+
+    Optional<Object> findByEmail(String email);
 }
