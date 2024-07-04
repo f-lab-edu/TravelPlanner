@@ -6,7 +6,7 @@ import com.example.travelDiary.domain.model.user.UserProfile;
 
 public interface AuthUserService {
 
-    public AuthUser register(RegistrationRequest registrationRequest);
+    AuthUser register(RegistrationRequest registrationRequest);
 
     void logout(String token);
 
@@ -15,4 +15,6 @@ public interface AuthUserService {
     UserProfile getCurrentUser();
 
     UserProfile toUser(AuthUser authUser);
+
+    AuthUser confirmUserRegistration(String token);
 }

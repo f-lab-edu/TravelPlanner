@@ -46,7 +46,7 @@ public class AppUserAuthenticationController {
 
     @PostMapping("/confirm")
     public ResponseEntity<?> confirmEmail(@RequestParam("token") String token) {
-        authUserService.confirmUser(token);
+        authUserService.confirmUserRegistration(token);
         return ResponseEntity.ok("Account successfully confirmed.");
     }
 

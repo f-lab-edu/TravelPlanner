@@ -81,7 +81,7 @@ public class AuthUserServiceImpl implements AuthUserService {
         return user;
     }
 
-    public AuthUser confirmUser(String token) {
+    public AuthUser confirmUserRegistration(String token) {
         AuthUser user = (AuthUser) authUserRedisTemplate.opsForValue().get(token);
         if (user == null) {
             throw new IllegalStateException("Invalid token or Expired Login Entry");
