@@ -1,4 +1,18 @@
 spring:
+  mail:
+    host: smtp.gmail.com
+    port: 587
+    username: roamgram.noreply@gmail.com
+    password: NUS1004^^
+    properties:
+      mail:
+        smtp:
+          auth: true
+          starttls:
+            enable: true
+            required: true
+    default-encoding: UTF-8
+    protocol: smtp
 
   jpa:
     hibernate:
@@ -19,6 +33,9 @@ spring:
     redis:
       host: localhost
       port: 6380
+
+
+
 
 frontend:
   uri: https://roamgram-deployment.vercel.app/

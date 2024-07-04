@@ -41,7 +41,13 @@ public class AppUserAuthenticationController {
     public ResponseEntity<String> signup(@RequestBody RegistrationRequest registrationRequest) {
         log.info("register user : {}", registrationRequest.getUsername());
         authUserService.register(registrationRequest);
-        return ResponseEntity.ok("success");
+        return ResponseEntity.ok("please check the email for confirmation");
+    }
+
+    @PostMapping("/confirm")
+    public ResponseEntity<?> confirmEmail(@RequestParam("token") String token) {
+        authUserService.confirmUser(token);
+        return ResponseEntity.ok("Account successfully confirmed.");
     }
 
     @Tag(name = "secure")

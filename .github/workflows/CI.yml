@@ -49,6 +49,8 @@ jobs:
           echo "REDIS_PORT=${{ secrets.REDIS_PORT }}" >> $GITHUB_ENV
           echo "KEY_STORE_PASSWORD=${{ secrets.KEY_STORE_PASSWORD }}" >> $GITHUB_ENV
           echo "FRONTEND_URL=${{ secrets.FRONTEND_URL }}" >> $GITHUB_ENV
+          echo "EMAILSENDER_EMAIL=${{ secrets.EMAILSENDER_EMAIL }}" >> $GITHUB_ENV
+          echo "EMAILSENDER_PASSWORD=${{ secrets.EMAILSENDER_PASSWORD }}" >> $GITHUB_ENV
         shell: bash
 
       - name: Login to DockerHub
@@ -84,6 +86,8 @@ jobs:
             JWT_KEY=${{ secrets.JJWT_KEY }}
             KEY_STORE_PASSWORD=${{ secrets.KEY_STORE_PASSWORD }}
             FRONTEND_URL=${{ secrets.FRONTEND_URL }}
+            EMAILSENDER_EMAIL=${{ secrets.EMAILSENDER_EMAIL }}
+            EMAILSENDER_PASSWORD=${{ secrets.EMAILSENDER_PASSWORD }}
 
       - name: Run Docker container to get jacoco report.
         run: docker run --name myapp-container -d ${{ secrets.DOCKER_USERNAME }}/roamgram:latest

@@ -34,9 +34,9 @@ public class AuthUser {
     private Instant createdAt;
 
     private String provider;
+
     private String providerId;
 
     @Enumerated(EnumType.STRING)
     private ApplicationPermits applicationPermits;
-
 }

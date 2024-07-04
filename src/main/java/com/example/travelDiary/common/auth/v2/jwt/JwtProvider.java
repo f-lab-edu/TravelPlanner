@@ -4,6 +4,7 @@ import com.example.travelDiary.common.auth.domain.AuthUser;
 import com.example.travelDiary.common.auth.domain.PrincipalDetails;
 import com.example.travelDiary.common.auth.domain.ApplicationPermits;
 import com.example.travelDiary.common.auth.dto.JwtToken;
+import com.example.travelDiary.common.auth.dto.RegistrationRequest;
 import com.example.travelDiary.common.auth.service.PrincipalService;
 import io.jsonwebtoken.*;
 import io.jsonwebtoken.io.Decoders;
@@ -166,5 +167,16 @@ public class JwtProvider {
                 .getPayload();
         Date expiration = claims.getExpiration();
         return expiration.getTime();
+    }
+
+    public String generateEmailToken(RegistrationRequest registrationRequest) {
+        Instant now = Instant.now();
+        Instant accessTokenExpiresIn = now.plusMillis(ACCESS_EXPIRATION_TIME);
+        String emailToken = Jwts.builder()
+                .subject(registrationRequest.getUsername())
+                .expiration(Date.from(accessTokenExpiresIn))
+                .signWith(KEY, Jwts.SIG.HS512)
+                .compact();
+        return emailToken;
     }
 }

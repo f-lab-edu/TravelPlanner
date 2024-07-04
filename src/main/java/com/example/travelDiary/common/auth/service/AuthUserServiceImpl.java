@@ -12,15 +12,21 @@ import com.example.travelDiary.common.auth.v2.jwt.JwtProvider;
 import com.example.travelDiary.domain.model.user.UserProfile;
 import com.example.travelDiary.repository.persistence.user.UserProfileRepository;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
+import java.time.Duration;
 import java.time.Instant;
 
 @Service
 public class AuthUserServiceImpl implements AuthUserService {
+    @Value("${frontend.uri}")
+    private String frontendURI;
+    private static long REDIS_EXPIRATION_TIME = 30;
 
     private final AuthUserRepository authUserRepository;
     private final PasswordEncoder passwordEncoder;
@@ -30,9 +36,18 @@ public class AuthUserServiceImpl implements AuthUserService {
     private final ApplicationPermits USER = ApplicationPermits.USER;
     private final EventPublisher eventPublisher;
     private final UserProfileRepository userProfileRepository;
+    private final RedisTemplate<String, Object> authUserRedisTemplate;
+    private final RegistrationEmailSenderService emailSenderService;
 
     @Autowired
-    public AuthUserServiceImpl(AuthUserRepository userRepository, PasswordEncoder passwordEncoder, TokenBlacklistService tokenBlacklistService, JwtProvider jwtProvider, EventPublisher eventPublisher, UserProfileRepository userProfileRepository) {
+    public AuthUserServiceImpl(AuthUserRepository userRepository,
+                               PasswordEncoder passwordEncoder,
+                               TokenBlacklistService tokenBlacklistService,
+                               JwtProvider jwtProvider,
+                               EventPublisher eventPublisher,
+                               UserProfileRepository userProfileRepository,
+                               RedisTemplate<String, Object> authUserRedisTemplate,
+                               RegistrationEmailSenderService emailSenderService) {
 
         this.authUserRepository = userRepository;
         this.passwordEncoder = passwordEncoder;
@@ -40,6 +55,8 @@ public class AuthUserServiceImpl implements AuthUserService {
         this.jwtProvider = jwtProvider;
         this.eventPublisher = eventPublisher;
         this.userProfileRepository = userProfileRepository;
+        this.authUserRedisTemplate = authUserRedisTemplate;
+        this.emailSenderService = emailSenderService;
     }
 
     @Override
@@ -47,7 +64,7 @@ public class AuthUserServiceImpl implements AuthUserService {
         if (authUserRepository.findByUsername(registrationRequest.getUsername()).isPresent()) {
             throw new RuntimeException("User with same Username already exists");
         }
-
+        String token = jwtProvider.generateEmailToken(registrationRequest);
         AuthUser user = AuthUser.builder()
                 .username(registrationRequest.getUsername())
                 .saltedPassword(passwordEncoder.encode(registrationRequest.getPassword()))
@@ -57,6 +74,18 @@ public class AuthUserServiceImpl implements AuthUserService {
                 .createdAt(Instant.now())
                 .provider(PROVIDER)
                 .build();
+
+        authUserRedisTemplate.opsForValue().set(token, user, Duration.ofMinutes(REDIS_EXPIRATION_TIME));
+        String redirectURL = frontendURI + "/loginSuccess?confirmationToken=" + token;
+        emailSenderService.sendEmail(registrationRequest.getEmail(), registrationRequest.getUsername(), redirectURL);
+        return user;
+    }
+
+    public AuthUser confirmUser(String token) {
+        AuthUser user = (AuthUser) authUserRedisTemplate.opsForValue().get(token);
+        if (user == null) {
+            throw new IllegalStateException("Invalid token or Expired Login Entry");
+        }
 
         AuthUser registeredUser = authUserRepository.save(user);
         user.setProviderId(String.valueOf(registeredUser.getId()));

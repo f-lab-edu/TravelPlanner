@@ -22,12 +22,19 @@ public class UserProfileEventListener {
     @EventListener
     public void userCreatedEvent(UserCreationEvent event) {
         AuthUser authUser = event.getAuthUser();
-        UserProfile userProfile = UserProfile
-                .builder()
-                .userProfileName(authUser.getUsername())
-                .userDescription("new User")
-                .authUserId(authUser.getId())
-                .build();
-        userProfileRepository.save(userProfile);
+        log.info("Received UserCreationEvent for user: {}", authUser.getUsername());
+        if(userProfileRepository.findByAuthUserId(authUser.getId()).isEmpty()) {
+            UserProfile userProfile = UserProfile
+                    .builder()
+                    .userProfileName(authUser.getUsername())
+                    .userDescription("new User")
+                    .authUserId(authUser.getId())
+                    .build();
+            userProfileRepository.save(userProfile);
+            log.info("UserProfile created for user: {}", authUser.getUsername());
+        }
+        else {
+            log.info("UserProfile already exists for user: {}", authUser.getUsername());
+        }
     }
 }

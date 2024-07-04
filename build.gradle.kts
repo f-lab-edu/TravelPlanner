@@ -58,6 +58,7 @@ dependencies {
     testAnnotationProcessor("org.projectlombok:lombok")
     testCompileOnly("org.projectlombok:lombok")
     testImplementation("org.springframework.security:spring-security-test")
+    implementation("org.springframework.boot:spring-boot-starter-mail:3.3.1")
     implementation(kotlin("stdlib-jdk8"))
 }
 
