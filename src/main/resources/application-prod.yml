@@ -1,21 +1,4 @@
 spring:
-  mail:
-    host: smtp.gmail.com
-    port: 587
-    username: ${EMAILSENDER_EMAIL}
-    password: ${EMAILSENDER_PASSWORD}
-    properties:
-      mail:
-        smtp:
-          debug: true
-          connectiontimeout: 10000
-          auth: true
-          starttls:
-            enable: true
-            required=true:
-    default-encoding: UTF-8
-    protocol: smtp
-
   jpa:
     hibernate:
       ddl-auto: update
