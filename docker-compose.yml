@@ -26,6 +26,8 @@ services:
       JWT_KEY: ${JWT_KEY}
       KEY_STORE_PASSWORD: ${KEY_STORE_PASSWORD}
       FRONTEND_URL: ${FRONTEND_URL}
+      EMAILSENDER_EMAIL: ${EMAILSENDER_EMAIL}
+      EMAILSENDER_PASSWORD: ${EMAILSENDER_PASSWORD}
     volumes:
       - h2-data:/app/h2-data
     networks:
