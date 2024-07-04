@@ -51,8 +51,8 @@ jobs:
           echo "POSTGRES_PASSWORD=${{ secrets.POSTGRES_PASSWORD }}" >> $GITHUB_ENV
           echo "POSTGRES_URL=${{ secrets.POSTGRES_URL }}" >> $GITHUB_ENV
           echo "POSTGRES_DB_NAME=${{ secrets.POSTGRES_DB_NAME }}" >> $GITHUB_ENV
-          echo "REDIS_HOST=${{ secrets.REDIS_HOST }}" >> $GITHUB_ENV
-          echo "REDIS_PORT=${{ secrets.REDIS_PORT }}" >> $GITHUB_ENV
+          echo "REDIS_HOST=localhost" >> $GITHUB_ENV
+          echo "REDIS_PORT=6379" >> $GITHUB_ENV
           echo "KEY_STORE_PASSWORD=${{ secrets.KEY_STORE_PASSWORD }}" >> $GITHUB_ENV
           echo "FRONTEND_URL=${{ secrets.FRONTEND_URL }}" >> $GITHUB_ENV
           echo "EMAILSENDER_EMAIL=${{ secrets.EMAILSENDER_EMAIL }}" >> $GITHUB_ENV
