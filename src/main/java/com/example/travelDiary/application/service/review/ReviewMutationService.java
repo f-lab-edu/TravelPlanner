@@ -15,6 +15,7 @@ import com.example.travelDiary.presentation.dto.response.review.ReviewResponse;
 import com.example.travelDiary.presentation.dto.response.review.ReviewUploadResponse;
 import com.example.travelDiary.repository.persistence.review.MediaFileRepository;
 import com.example.travelDiary.repository.persistence.review.ReviewRepository;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.convert.ConversionService;
 import org.springframework.stereotype.Service;
@@ -25,6 +26,7 @@ import java.util.List;
 import java.util.UUID;
 
 @Service
+@Slf4j
 public class ReviewMutationService {
 
     private final ReviewRepository reviewRepository;
@@ -107,10 +109,12 @@ public class ReviewMutationService {
         ReviewUploadResponse uploadResponse = new ReviewUploadResponse();
         if(reviewUploadRequest.getFileLocation() != null || reviewUploadRequest.getFileList() != null) {
             if(reviewUploadRequest.getFileLocation() == null || reviewUploadRequest.getFileList() == null) {
+                log.info("fileLocation is {}, fileList is {}", reviewUploadRequest.getFileLocation(), reviewUploadRequest.getFileList());
                 throw new IllegalStateException("non-matching file location and file list sizes");
             }
 
             if (reviewUploadRequest.getFileLocation().size() != reviewUploadRequest.getFileList().size()) {
+                log.info("size of fileLocation is {}, size of fileList is {}", reviewUploadRequest.getFileLocation().size(), reviewUploadRequest.getFileList().size());
                 throw new IllegalStateException("non-matching file location and file list sizes");
             }
 

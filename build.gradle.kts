@@ -59,6 +59,10 @@ dependencies {
     testCompileOnly("org.projectlombok:lombok")
     testImplementation("org.springframework.security:spring-security-test")
     implementation("org.springframework.boot:spring-boot-starter-mail:3.3.1")
+    implementation("org.springframework.boot:spring-boot-starter-logging")
+    implementation("org.slf4j:slf4j-api")
+    implementation("ch.qos.logback:logback-classic")
+    implementation("net.logstash.logback:logstash-logback-encoder:7.0.1")
     implementation(kotlin("stdlib-jdk8"))
 }
 
