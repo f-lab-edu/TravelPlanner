@@ -11,26 +11,34 @@ services:
       - discovery.type=single-node
       - bootstrap.memory_lock=true
       - "ES_JAVA_OPTS=-Xms512m -Xmx512m"
+      - xpack.security.enabled=false  # Optional: Disable security for testing purposes
     ulimits:
       memlock:
         soft: -1
         hard: -1
     volumes:
       - esdata:/usr/share/elasticsearch/data
-      - ./elasticsearch/elasticsearch.yml:/usr/share/elasticsearch/config/elasticsearch.yml
     ports:
       - "9200:9200"
       - "9300:9300"
+    networks:
+      my-network:
+        aliases:
+          - elasticsearch
 
   logstash:
     image: docker.elastic.co/logstash/logstash:8.14.2
     container_name: logstash
     platform: linux/arm64
     volumes:
-      - ./logstash/logstash.conf:/usr/share/logstash/pipeline/logstash.conf
+      - ./pipeline/logstash.conf:/usr/share/logstash/pipeline/logstash.conf
     ports:
       - "5044:5044"
       - "9600:9600"
+    depends_on:
+      - elasticsearch
+    networks:
+      - my-network
 
   kibana:
     image: docker.elastic.co/kibana/kibana:8.14.2
@@ -38,9 +46,17 @@ services:
     platform: linux/arm64
     environment:
       ELASTICSEARCH_URL: http://elasticsearch:9200
+    depends_on:
+      - elasticsearch
     ports:
       - "5601:5601"
+    networks:
+      - my-network
 
 volumes:
   esdata:
     driver: local
+
+networks:
+  my-network:
+    driver: bridge

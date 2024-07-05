@@ -12,3 +12,6 @@ spring:
     include: prodsecrets
 
 # Common configuration here
+logging:
+  file:
+    path: /var/log/roamgram
