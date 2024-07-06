@@ -81,7 +81,7 @@ public class AuthUserServiceImpl implements AuthUserService {
                 .build();
 
         authUserRedisTemplate.opsForValue().set(token, user, Duration.ofMinutes(REDIS_EXPIRATION_TIME));
-        String redirectURL = frontendURI + "/loginSuccess?confirmationToken=" + token;
+        String redirectURL = frontendURI + "loginSuccess?confirmationToken=" + token;
         emailSenderService.sendEmail(registrationRequest.getEmail(), registrationRequest.getUsername(), redirectURL);
         return user;
     }

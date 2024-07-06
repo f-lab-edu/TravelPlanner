@@ -59,7 +59,6 @@ public class S3Service {
 
         PresignedPutObjectRequest presignedPutObjectRequest = s3Presigner.presignPutObject(putObjectPresignRequest);
 
-
         return presignedPutObjectRequest.url();
     }
 
