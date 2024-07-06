@@ -10,7 +10,6 @@ services:
     ports:
       - "8080:8080"
       - "443:443"
-      - "5044:5044"  # Expose Logstash port
     environment:
       POSTGRES_USERNAME: ${POSTGRES_USERNAME}
       POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
@@ -36,6 +35,8 @@ services:
     depends_on:
       - postgres
       - redis
+    command: >
+      sh -c "java -jar /app/app.jar | nc host.docker.internal 5044"
 
   postgres:
     image: postgres:16

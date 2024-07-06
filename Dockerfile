@@ -47,6 +47,9 @@ ENV EMAILSENDER_PASSWORD=${EMAILSENDER_PASSWORD}
 # To ensure build compatibility with Windows based commit -> CRLF convert to LF
 RUN apt-get update && apt-get install -y dos2unix
 
+# Install netcat
+RUN apt-get update && apt-get install -y netcat
+
 # Ensure correct permissions and line endings for gradlew script
 RUN dos2unix gradlew && chmod +x gradlew
 
