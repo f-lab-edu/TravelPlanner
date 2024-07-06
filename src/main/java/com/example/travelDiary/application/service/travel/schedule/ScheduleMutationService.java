@@ -166,6 +166,7 @@ public class ScheduleMutationService {
     public void linkReview(UUID scheduleId, Review review) {
         Schedule schedule = scheduleRepository.findById(scheduleId).orElseThrow(() -> new EntityNotFoundException("Schedule not found"));
         schedule.setReview(review);
+        scheduleRepository.save(schedule);
     }
 
     @Transactional

@@ -6,6 +6,7 @@ import com.example.travelDiary.application.service.travel.schedule.ScheduleMutat
 import com.example.travelDiary.common.permissions.domain.Resource;
 import com.example.travelDiary.common.permissions.service.ResourceService;
 import com.example.travelDiary.domain.model.review.Review;
+import com.example.travelDiary.repository.persistence.review.ReviewRepository;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.event.EventListener;
@@ -24,11 +25,13 @@ public class ReviewEventListener {
 
     private final ScheduleMutationService scheduleMutationService;
     private final ResourceService resourceService;
+    private final ReviewRepository reviewRepository;
 
     @Autowired
-    public ReviewEventListener(ScheduleMutationService scheduleMutationService, ResourceService resourceService) {
+    public ReviewEventListener(ScheduleMutationService scheduleMutationService, ResourceService resourceService, ReviewRepository reviewRepository) {
         this.scheduleMutationService = scheduleMutationService;
         this.resourceService = resourceService;
+        this.reviewRepository = reviewRepository;
     }
 
     @TransactionalEventListener(phase = TransactionPhase.AFTER_COMMIT)
@@ -38,6 +41,8 @@ public class ReviewEventListener {
         UUID scheduleId = event.getScheduleId();
         Resource resource = resourceService.createResource(review, "private");
         scheduleMutationService.linkReview(scheduleId, review);
+        review.setResource(resource);
+        reviewRepository.save(review);
     }
 
     @EventListener
