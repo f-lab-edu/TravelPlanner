@@ -48,6 +48,9 @@ ENV EMAILSENDER_PASSWORD=${EMAILSENDER_PASSWORD}
 # Install required packages in a single RUN command to ensure compatibility
 RUN apt-get update && apt-get install -y dos2unix netcat
 
+# Verify installation of dos2unix and netcat
+RUN which dos2unix && dos2unix --version
+RUN which nc && nc --version
 
 # Ensure correct permissions and line endings for gradlew script
 RUN dos2unix gradlew && chmod +x gradlew
