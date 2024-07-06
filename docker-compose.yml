@@ -36,7 +36,6 @@ services:
     depends_on:
       - postgres
       - redis
-    network_mode: "host"  # Add this line to use the host network
 
   postgres:
     image: postgres:16
