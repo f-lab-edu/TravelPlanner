@@ -107,14 +107,11 @@ public class ReviewMutationService {
         List<MediaFile> uploadedFiles = new ArrayList<>();
         List<MediaFile> pendingOrFailedFiles = new ArrayList<>();
         ReviewUploadResponse uploadResponse = new ReviewUploadResponse();
-        if(reviewUploadRequest.getFileLocation() != null || reviewUploadRequest.getFileList() != null) {
-            if(reviewUploadRequest.getFileLocation() == null || reviewUploadRequest.getFileList() == null) {
-                log.info("fileLocation is {}, fileList is {}", reviewUploadRequest.getFileLocation(), reviewUploadRequest.getFileList());
-                throw new IllegalStateException("non-matching file location and file list sizes");
-            }
-
+        if (reviewUploadRequest.getFileLocation() != null && reviewUploadRequest.getFileList() != null) {
             if (reviewUploadRequest.getFileLocation().size() != reviewUploadRequest.getFileList().size()) {
-                log.info("size of fileLocation is {}, size of fileList is {}", reviewUploadRequest.getFileLocation().size(), reviewUploadRequest.getFileList().size());
+                log.info("size of fileLocation is {}, size of fileList is {}",
+                        reviewUploadRequest.getFileLocation().size(),
+                        reviewUploadRequest.getFileList().size());
                 throw new IllegalStateException("non-matching file location and file list sizes");
             }
 
@@ -126,6 +123,11 @@ public class ReviewMutationService {
                     pendingOrFailedFiles.add(file);
                 }
             }
+        } else if (reviewUploadRequest.getFileLocation() != null || reviewUploadRequest.getFileList() != null) {
+            log.info("fileLocation is {}, fileList is {}", reviewUploadRequest.getFileLocation(), reviewUploadRequest.getFileList());
+            throw new IllegalStateException("non-matching file location and file list sizes");
+        } else {
+            log.info("both null fileLocation and fileList");
         }
 
         Review review = conversionService.convert(reviewUploadRequest, Review.class);
