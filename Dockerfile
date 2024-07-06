@@ -44,11 +44,10 @@ ENV FRONTEND_URL=${FRONTEND_URL}
 ENV EMAILSENDER_EMAIL=${EMAILSENDER_EMAIL}
 ENV EMAILSENDER_PASSWORD=${EMAILSENDER_PASSWORD}
 
-# To ensure build compatibility with Windows based commit -> CRLF convert to LF
-RUN apt-get update && apt-get install -y dos2unix
+# To ensure build compatibility with Windows based commit -> CRLF convert to LF and get netcat
+# Install required packages in a single RUN command to ensure compatibility
+RUN apt-get update && apt-get install -y dos2unix netcat
 
-# Install netcat
-RUN apt-get update && apt-get install -y netcat
 
 # Ensure correct permissions and line endings for gradlew script
 RUN dos2unix gradlew && chmod +x gradlew
