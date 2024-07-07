@@ -50,7 +50,7 @@ RUN apt-get update && apt-get install -y dos2unix netcat
 
 # Verify installation of dos2unix and netcat
 RUN which dos2unix && dos2unix --version
-RUN which nc && nc --version
+RUN which nc && nc -h
 
 # Ensure correct permissions and line endings for gradlew script
 RUN dos2unix gradlew && chmod +x gradlew
