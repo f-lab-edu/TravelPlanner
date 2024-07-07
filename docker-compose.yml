@@ -70,3 +70,4 @@ networks:
 volumes:
   h2-data:
   postgres_data:
+  spring-boot-logs:
