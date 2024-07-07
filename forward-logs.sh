@@ -1,7 +1,7 @@
 #!/bin/bash
 
-# Define the path to the log file in the container
-LOG_FILE="/var/log/spring-boot/spring-boot.log"
+# Define the path to the log file in the mounted volume
+LOG_FILE="/var/lib/docker/volumes/travelplanner_spring-boot-logs/_data/roamgram.log"
 
 # Define the destination (host and port) where the log should be forwarded
 DESTINATION="localhost:5044"
