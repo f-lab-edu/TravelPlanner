@@ -1,29 +1,35 @@
 #!/bin/bash
 
-# Define the path to the log file in the mounted volume
 LOG_FILE="/var/lib/docker/volumes/travelplanner_spring-boot-logs/_data/roamgram.log"
-
-# Define the destination (host and port) where the log should be forwarded
 DESTINATION="localhost:5044"
+TIMESTAMP_FILE="/tmp/roamgram_last_timestamp"
+TEMP_FILE=$(mktemp)
 
-# Define a temporary file to store logs before sending
-TEMP_FILE="/tmp/temp_roamgram.log"
+# Copy the log file to a temporary location
+cp "$LOG_FILE" "$TEMP_FILE"
 
-# Check if the log file exists
-if [ -f "$LOG_FILE" ]; then
-  # Move the log content to a temporary file and clear the original log file
-  mv "$LOG_FILE" "$TEMP_FILE"
-  : > "$LOG_FILE"
-
-  # Check if the temporary file is not empty
-  if [ -s "$TEMP_FILE" ]; then
-    # Send the logs to the destination
-    cat "$TEMP_FILE" | nc -q0 $(echo $DESTINATION | tr ':' ' ')
-
-    # Remove the temporary file after sending
-    rm "$TEMP_FILE"
-  fi
+# Get the last timestamp
+if [ -f "$TIMESTAMP_FILE" ]; then
+    LAST_TIMESTAMP=$(cat "$TIMESTAMP_FILE")
 else
-  echo "Log file not found: $LOG_FILE"
-  exit 1
+    LAST_TIMESTAMP=""
 fi
+
+# Extract new log entries
+if [ -n "$LAST_TIMESTAMP" ]; then
+    NEW_LOGS=$(awk -v last_timestamp="$LAST_TIMESTAMP" '$0 > last_timestamp {print $0}' "$TEMP_FILE")
+else
+    NEW_LOGS=$(cat "$TEMP_FILE")
+fi
+
+# Send new log entries
+if [ -n "$NEW_LOGS" ]; then
+    echo "$NEW_LOGS" | nc -q0 $(echo $DESTINATION | tr ':' ' ')
+fi
+
+# Update the last timestamp
+LAST_TIMESTAMP=$(tail -n 1 "$TEMP_FILE" | awk '{print $1, $2}')
+echo "$LAST_TIMESTAMP" > "$TIMESTAMP_FILE"
+
+# Clean up
+rm "$TEMP_FILE"

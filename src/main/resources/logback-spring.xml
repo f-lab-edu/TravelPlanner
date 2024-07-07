@@ -5,11 +5,29 @@
         </encoder>
     </appender>
 
-    <appender name="FILE" class="ch.qos.logback.core.FileAppender">
+    <appender name="ROLLING_FILE" class="ch.qos.logback.core.rolling.RollingFileAppender">
+        <!-- Define the path to the log file -->
         <file>/var/log/spring-boot/roamgram.log</file>
+
+        <!-- Define the rolling policy -->
+        <rollingPolicy class="ch.qos.logback.core.rolling.TimeBasedRollingPolicy">
+            <!-- Roll the log file every day -->
+            <fileNamePattern>/var/log/spring-boot/roamgram.%d{yyyy-MM-dd}.log</fileNamePattern>
+            <!-- Keep 7 days worth of log files -->
+            <maxHistory>3</maxHistory>
+        </rollingPolicy>
+
+        <!-- Define the triggering policy to roll based on file size -->
+        <triggeringPolicy class="ch.qos.logback.core.rolling.SizeBasedTriggeringPolicy">
+            <maxFileSize>100MB</maxFileSize>
+        </triggeringPolicy>
+
+        <!-- Add a threshold filter to only log INFO and above -->
         <filter class="ch.qos.logback.classic.filter.ThresholdFilter">
             <level>INFO</level>
         </filter>
+
+        <!-- Use the JSON encoder with custom fields -->
         <encoder class="net.logstash.logback.encoder.LoggingEventCompositeJsonEncoder">
             <providers>
                 <timestamp>
@@ -31,6 +49,6 @@
 
     <root level="info">
         <appender-ref ref="CONSOLE" />
-        <appender-ref ref="FILE" />
+        <appender-ref ref="ROLLING_FILE" />
     </root>
 </configuration>
