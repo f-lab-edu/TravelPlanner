@@ -103,6 +103,7 @@ public class MediaFileFacadeService {
 
     @Transactional
     public void markMediaUploadFinished(LambdaUploadCompleteRequest request) {
+        log.info("mark media upload finished with request {}", request);
         String objectKey = request.getObjectKey();
         Long fileSize = Long.valueOf(request.getSize());
         log.info("mark media upload finished {}", objectKey);
