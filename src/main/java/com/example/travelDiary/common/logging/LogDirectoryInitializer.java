@@ -10,8 +10,7 @@ public class LogDirectoryInitializer {
 
     @PostConstruct
     public void init() {
-        String userHome = System.getProperty("user.home");
-        File logDirectory = new File(userHome + "/logs/roamgram");
+        File logDirectory = new File("/var/log/spring-boot");
         if (!logDirectory.exists()) {
             boolean dirsCreated = logDirectory.mkdirs();
             if (!dirsCreated) {
