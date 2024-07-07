@@ -17,19 +17,22 @@ fi
 
 # Extract new log entries
 if [ -n "$LAST_TIMESTAMP" ]; then
-    NEW_LOGS=$(awk -v last_timestamp="$LAST_TIMESTAMP" '$0 > last_timestamp {print $0}' "$TEMP_FILE")
+    NEW_LOGS=$(awk -v last_timestamp="$LAST_TIMESTAMP" '{
+        log_timestamp = $1" "$2  # Assuming the timestamp is in the first two fields
+        if (log_timestamp > last_timestamp) print $0
+    }' "$TEMP_FILE")
 else
     NEW_LOGS=$(cat "$TEMP_FILE")
 fi
 
-# Send new log entries
+# Send new log entries if any
 if [ -n "$NEW_LOGS" ]; then
     echo "$NEW_LOGS" | nc -q0 $(echo $DESTINATION | tr ':' ' ')
-fi
 
-# Update the last timestamp
-LAST_TIMESTAMP=$(tail -n 1 "$TEMP_FILE" | awk '{print $1, $2}')
-echo "$LAST_TIMESTAMP" > "$TIMESTAMP_FILE"
+    # Update the last timestamp only if new logs were sent
+    LAST_TIMESTAMP=$(tail -n 1 "$TEMP_FILE" | awk '{print $1" "$2}')
+    echo "$LAST_TIMESTAMP" > "$TIMESTAMP_FILE"
+fi
 
 # Clean up
 rm "$TEMP_FILE"
