@@ -5,6 +5,11 @@ DESTINATION="localhost:5044"
 TIMESTAMP_FILE="/tmp/roamgram_last_timestamp"
 TEMP_FILE=$(mktemp)
 
+# Function to extract timestamp from a log entry
+extract_timestamp() {
+    echo "$1" | sed -n 's/.*"timestamp":"\([^"]*\)".*/\1/p'
+}
+
 # Copy the log file to a temporary location
 cp "$LOG_FILE" "$TEMP_FILE"
 
@@ -16,21 +21,23 @@ else
 fi
 
 # Extract new log entries
-if [ -n "$LAST_TIMESTAMP" ]; then
-    NEW_LOGS=$(awk -v last_timestamp="$LAST_TIMESTAMP" '{
-        log_timestamp = $1" "$2  # Assuming the timestamp is in the first two fields
-        if (log_timestamp > last_timestamp) print $0
-    }' "$TEMP_FILE")
-else
-    NEW_LOGS=$(cat "$TEMP_FILE")
-fi
+NEW_LOGS=""
+while IFS= read -r log_entry; do
+    LOG_TIMESTAMP=$(extract_timestamp "$log_entry")
+    if [[ -z "$LOG_TIMESTAMP" ]]; then
+        continue
+    fi
+    if [[ -z "$LAST_TIMESTAMP" || "$LOG_TIMESTAMP" > "$LAST_TIMESTAMP" ]]; then
+        NEW_LOGS="$NEW_LOGS$log_entry"$'\n'
+    fi
+done < "$TEMP_FILE"
 
 # Send new log entries if any
 if [ -n "$NEW_LOGS" ]; then
     echo "$NEW_LOGS" | nc -q0 $(echo $DESTINATION | tr ':' ' ')
 
     # Update the last timestamp only if new logs were sent
-    LAST_TIMESTAMP=$(tail -n 1 "$TEMP_FILE" | awk '{print $1" "$2}')
+    LAST_TIMESTAMP=$(extract_timestamp "$(tail -n 1 <<< "$NEW_LOGS")")
     echo "$LAST_TIMESTAMP" > "$TIMESTAMP_FILE"
 fi
 
