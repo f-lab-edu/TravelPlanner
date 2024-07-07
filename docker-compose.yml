@@ -32,7 +32,7 @@ services:
     volumes:
       - h2-data:/app/h2-data
       - spring-boot-logs:/var/log/spring-boot
-      - ./forward_logs.sh:/usr/local/bin/forward_logs.sh
+      - ./forward-logs.sh:/usr/local/bin/forward-"logs.sh
     networks:
       - my-network
     depends_on:
