@@ -7,57 +7,57 @@
 
     <springProfile name="prod">
         <appender name="LOGSTASH" class="net.logstash.logback.appender.LogstashTcpSocketAppender">
-            <destination>localhost:5044</destination>
-            <encoder class="net.logstash.logback.encoder.LogstashEncoder" />
+            <destination>host.docker.internal:5044</destination>
+            <encoder class="net.logstash.logback.encoder.LogstashEncoder"/>
         </appender>
-    <appender name="ROLLING_FILE" class="ch.qos.logback.core.rolling.RollingFileAppender">
-        <!-- Define the path to the log file -->
-        <file>/var/log/spring-boot/roamgram.log</file>
+        <appender name="ROLLING_FILE" class="ch.qos.logback.core.rolling.RollingFileAppender">
+            <!-- Define the path to the log file -->
+            <file>/var/log/spring-boot/roamgram.log</file>
 
-        <!-- Define the rolling policy -->
-        <rollingPolicy class="ch.qos.logback.core.rolling.TimeBasedRollingPolicy">
-            <!-- Roll the log file every day -->
-            <fileNamePattern>/var/log/spring-boot/roamgram.%d{yyyy-MM-dd}.log</fileNamePattern>
-            <!-- Keep 7 days worth of log files -->
-            <maxHistory>3</maxHistory>
-        </rollingPolicy>
+            <!-- Define the rolling policy -->
+            <rollingPolicy class="ch.qos.logback.core.rolling.TimeBasedRollingPolicy">
+                <!-- Roll the log file every day -->
+                <fileNamePattern>/var/log/spring-boot/roamgram.%d{yyyy-MM-dd}.log</fileNamePattern>
+                <!-- Keep 7 days worth of log files -->
+                <maxHistory>3</maxHistory>
+            </rollingPolicy>
 
-        <!-- Define the triggering policy to roll based on file size -->
-        <triggeringPolicy class="ch.qos.logback.core.rolling.SizeBasedTriggeringPolicy">
-            <maxFileSize>100MB</maxFileSize>
-        </triggeringPolicy>
+            <!-- Define the triggering policy to roll based on file size -->
+            <triggeringPolicy class="ch.qos.logback.core.rolling.SizeBasedTriggeringPolicy">
+                <maxFileSize>100MB</maxFileSize>
+            </triggeringPolicy>
 
-        <!-- Add a threshold filter to only log INFO and above -->
-        <filter class="ch.qos.logback.classic.filter.ThresholdFilter">
-            <level>INFO</level>
-        </filter>
+            <!-- Add a threshold filter to only log INFO and above -->
+            <filter class="ch.qos.logback.classic.filter.ThresholdFilter">
+                <level>INFO</level>
+            </filter>
 
-        <!-- Use the JSON encoder with custom fields -->
-        <encoder class="net.logstash.logback.encoder.LoggingEventCompositeJsonEncoder">
-            <providers>
-                <timestamp>
-                    <fieldName>timestamp</fieldName>
-                </timestamp>
-                <pattern>
+            <!-- Use the JSON encoder with custom fields -->
+            <encoder class="net.logstash.logback.encoder.LoggingEventCompositeJsonEncoder">
+                <providers>
+                    <timestamp>
+                        <fieldName>timestamp</fieldName>
+                    </timestamp>
                     <pattern>
-                        {
-                        "level": "%level",
-                        "logger": "%logger",
-                        "thread": "%thread",
-                        "message": "%message"
-                        }
+                        <pattern>
+                            {
+                            "level": "%level",
+                            "logger": "%logger",
+                            "thread": "%thread",
+                            "message": "%message"
+                            }
+                        </pattern>
                     </pattern>
-                </pattern>
-            </providers>
-        </encoder>
-    </appender>
+                </providers>
+            </encoder>
+        </appender>
     </springProfile>
 
     <root level="info">
-        <appender-ref ref="CONSOLE" />
+        <appender-ref ref="CONSOLE"/>
         <springProfile name="prod">
-            <appender-ref ref="ROLLING_FILE" />
-            <appender-ref ref="LOGSTASH" />
+            <appender-ref ref="ROLLING_FILE"/>
+            <appender-ref ref="LOGSTASH"/>
         </springProfile>
     </root>
 </configuration>
