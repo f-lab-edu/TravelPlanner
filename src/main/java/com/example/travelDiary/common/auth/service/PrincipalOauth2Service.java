@@ -1,5 +1,7 @@
 package com.example.travelDiary.common.auth.service;
 
+import com.example.travelDiary.application.events.EventPublisher;
+import com.example.travelDiary.application.events.authuser.UserCreationEvent;
 import com.example.travelDiary.common.auth.domain.AuthUser;
 import com.example.travelDiary.common.auth.domain.PrincipalDetails;
 import com.example.travelDiary.common.auth.domain.ApplicationPermits;
@@ -24,11 +26,13 @@ public class PrincipalOauth2Service extends DefaultOAuth2UserService {
 
     private final PasswordEncoder passwordEncoder;
     private final AuthUserRepository authUserRepository;
+    private final EventPublisher eventPublisher;
 
     @Autowired
-    public PrincipalOauth2Service(PasswordEncoder bCryptPasswordEncoder, AuthUserRepository authUserRepository) {
+    public PrincipalOauth2Service(PasswordEncoder bCryptPasswordEncoder, AuthUserRepository authUserRepository, EventPublisher eventPublisher) {
         this.passwordEncoder = bCryptPasswordEncoder;
         this.authUserRepository = authUserRepository;
+        this.eventPublisher = eventPublisher;
     }
 
     //구글로 부터 받은 userRequest 데이터에 대한 후처리되는 함수
@@ -78,7 +82,9 @@ public class PrincipalOauth2Service extends DefaultOAuth2UserService {
                     .createdAt(Instant.now())
                     .build();
 
-            return authUserRepository.save(newUser);
+            newUser = authUserRepository.save(newUser);
+            eventPublisher.publishEvent(new UserCreationEvent(newUser));
+            return newUser;
         });
 
         return new PrincipalDetails(userEntity, oAuth2User.getAttributes());

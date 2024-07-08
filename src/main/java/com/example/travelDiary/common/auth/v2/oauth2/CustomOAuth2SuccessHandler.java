@@ -2,6 +2,8 @@ package com.example.travelDiary.common.auth.v2.oauth2;
 
 import com.example.travelDiary.common.auth.domain.PrincipalDetails;
 import com.example.travelDiary.common.auth.dto.JwtToken;
+import com.example.travelDiary.common.auth.repository.AuthUserRepository;
+import com.example.travelDiary.common.auth.service.AuthUserService;
 import com.example.travelDiary.common.auth.v2.jwt.JwtProvider;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
