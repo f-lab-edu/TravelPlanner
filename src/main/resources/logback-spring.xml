@@ -5,6 +5,11 @@
         </encoder>
     </appender>
 
+    <springProfile name="prod">
+        <appender name="LOGSTASH" class="net.logstash.logback.appender.LogstashTcpSocketAppender">
+            <destination>localhost:5044</destination>
+            <encoder class="net.logstash.logback.encoder.LogstashEncoder" />
+        </appender>
     <appender name="ROLLING_FILE" class="ch.qos.logback.core.rolling.RollingFileAppender">
         <!-- Define the path to the log file -->
         <file>/var/log/spring-boot/roamgram.log</file>
@@ -46,9 +51,13 @@
             </providers>
         </encoder>
     </appender>
+    </springProfile>
 
     <root level="info">
         <appender-ref ref="CONSOLE" />
-        <appender-ref ref="ROLLING_FILE" />
+        <springProfile name="prod">
+            <appender-ref ref="ROLLING_FILE" />
+            <appender-ref ref="LOGSTASH" />
+        </springProfile>
     </root>
 </configuration>

@@ -115,6 +115,7 @@ public class AuthUserServiceImpl implements AuthUserService {
         }
         if (authentication.getPrincipal() instanceof PrincipalDetails) {
             AuthUser currentUser = ((PrincipalDetails) authentication.getPrincipal()).getUser();
+            log.info("currentUser is {}", currentUser);
             AuthUser managedUser = authUserRepository.findById(currentUser.getId())
                     .orElseThrow(() -> new IllegalStateException("Authenticated user not found"));
 

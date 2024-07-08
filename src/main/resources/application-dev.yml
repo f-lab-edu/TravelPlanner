@@ -23,5 +23,5 @@ spring:
 
 
 frontend:
-  uri: https://roamgram-deployment.vercel.app/
+  uri: http://localhost:5173
 
