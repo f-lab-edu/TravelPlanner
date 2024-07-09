@@ -25,6 +25,7 @@ public class Review implements IdentifiableResource {
     public List<MediaFile> fileList;
 
     @Lob
+    @Column(columnDefinition = "TEXT")
     public String userDescription;
 
     public Double rating;
