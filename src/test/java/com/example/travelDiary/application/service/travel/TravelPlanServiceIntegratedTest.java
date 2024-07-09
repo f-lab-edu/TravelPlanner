@@ -165,6 +165,43 @@ public class TravelPlanServiceIntegratedTest {
         });
     }
 
+    public UUID createTravelPlanUtilsDiffUser(String travelPlanName) {
+        return transactionTemplate.execute(status -> {
+            UserProfile diffUser = UserProfile.builder().authUserId(UUID.randomUUID()).build();
+            userProfileRepository.saveAndFlush(diffUser);
+
+            TravelPlan travelPlan = new TravelPlan();
+            travelPlan.setName(travelPlanName);
+            travelPlanRepository.saveAndFlush(travelPlan);
+            UUID createPlanTravelPlanId = travelPlan.getId();
+
+            Resource resource = new Resource();
+            resource.setResourceUUID(createPlanTravelPlanId);
+            resource.setVisibility("private");
+            resource.setType("TravelPlan");
+            resource.setCreateTime(Instant.now());
+            resource.setPermissions(new ArrayList<>());
+            resourceRepository.saveAndFlush(resource);
+
+            ResourcePermission resourcePermission = new ResourcePermission();
+            resourcePermission.setResource(resource);
+            resourcePermission.setPermissions(UserResourcePermissionTypes.OWNER);
+            resourcePermission.setUserProfile(diffUser);
+            resourcePermissionRepository.saveAndFlush(resourcePermission);
+
+            travelPlan.setResource(resource);
+            travelPlanRepository.saveAndFlush(travelPlan);
+
+            resource.getPermissions().add(resourcePermission);
+            resourceRepository.saveAndFlush(resource);
+
+            testEntityManager.flush();
+            testEntityManager.clear();
+
+            return createPlanTravelPlanId;
+        });
+    }
+
 
     @Test
     @WithMockAuthUser(id = authUserId)
@@ -198,6 +235,21 @@ public class TravelPlanServiceIntegratedTest {
 
         List<TravelPlan> result = travelPlanQueryService.getAllAuthorisedTravelPlan(null);
         assertThat(result).isNotEmpty();
+        assertThat(result.size()).isEqualTo(3);
+    }
+
+    @Test
+    @WithMockAuthUser(id = authUserId)
+    @Transactional
+    @DirtiesContext
+    void testGetAllTravelPlanAccessControl() {
+        createTravelPlanUtils("Test Plan1");
+        createTravelPlanUtils("Test Plan2");
+        createTravelPlanUtilsDiffUser("Test Plan3");
+
+        List<TravelPlan> result = travelPlanQueryService.getAllAuthorisedTravelPlan(null);
+        assertThat(result).isNotEmpty();
+        //3 because one was created by the beforeEach
         assertThat(result.size()).isEqualTo(3);
     }
 

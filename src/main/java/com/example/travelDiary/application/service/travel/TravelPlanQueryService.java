@@ -41,8 +41,9 @@ public class TravelPlanQueryService {
     @InjectResourceIds(parameterName = "resourceIds", resourceType = "TravelPlan", permissionType = UserResourcePermissionTypes.VIEW)
     public List<TravelPlan> getAllAuthorisedTravelPlan(List<UUID> resourceIds) {
         log.info("resourceIds: {}", resourceIds);
-        List<TravelPlan>result = travelPlanRepository.findAllByResourceIds(resourceIds);
-        return travelPlanRepository.findAll();
+        List<TravelPlan> result = travelPlanRepository.findAllByResourceIds(resourceIds);
+        log.info("travelPlanAuthorizedGet result : {}", result);
+        return result;
     }
     // Delegate the permission handling to PermissionService
     @Transactional(readOnly = true)

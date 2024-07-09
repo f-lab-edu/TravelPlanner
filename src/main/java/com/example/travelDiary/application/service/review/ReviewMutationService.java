@@ -21,9 +21,7 @@ import org.springframework.core.convert.ConversionService;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.util.ArrayList;
-import java.util.List;
-import java.util.UUID;
+import java.util.*;
 
 @Service
 @Slf4j
@@ -49,24 +47,36 @@ public class ReviewMutationService {
 
     @Transactional
     @CheckAccess(resourceType = Review.class, spelResourceId = "#reviewEditAppendRequest.reviewId", permission = "EDIT")
-    public Review editReviewEditAppendFiles(ReviewEditAppendRequest reviewEditAppendRequest) {
+    public Review editReviewAppendFiles(ReviewEditAppendRequest reviewEditAppendRequest) {
         UUID reviewId = reviewEditAppendRequest.getReviewId();
-        Review review = reviewRepository.findById(reviewId).orElseThrow(() -> new IllegalArgumentException("Review not found"));
+        Review review = reviewRepository.findById(reviewId)
+                .orElseThrow(() -> new IllegalArgumentException("Review not found"));
+
         updateNonNullReviewMetaData(reviewEditAppendRequest, review);
-        if(reviewEditAppendRequest.getFileLocation() == null) {
+
+        if (reviewEditAppendRequest.getFileLocation() == null) {
             return reviewRepository.save(review);
         }
 
-        for(String mediaFileId : reviewEditAppendRequest.getFileLocation().keySet()) {
-            if(review.getContentLocation().get(mediaFileId) == null) {
+        if (review.getContentLocation() == null) {
+            review.setContentLocation(new HashMap<>());
+        }
+        if (review.getFileList() == null) {
+            review.setFileList(new ArrayList<>());
+        }
+
+        for (Map.Entry<String, Long> entry : reviewEditAppendRequest.getFileLocation().entrySet()) {
+            String mediaFileId = entry.getKey();
+            Long fileLocation = entry.getValue();
+
+            if (!review.getContentLocation().containsKey(mediaFileId)) {
                 MediaFile mediaFile = mediaFileRepository.findByS3Key(mediaFileId);
-                if(mediaFile == null) {
+                if (mediaFile == null) {
                     throw new IllegalArgumentException("Addition of Media file that has not been saved");
                 }
-                review.getContentLocation().put(mediaFileId, reviewEditAppendRequest.getFileLocation().get(mediaFileId));
                 review.getFileList().add(mediaFile);
             }
-            review.getContentLocation().put(mediaFileId, reviewEditAppendRequest.getFileLocation().get(mediaFileId));
+            review.getContentLocation().put(mediaFileId, fileLocation);
         }
 
         return reviewRepository.save(review);

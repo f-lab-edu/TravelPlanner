@@ -66,7 +66,7 @@ public class ReviewController {
     public ResponseEntity<ReviewResponse> editReviewAppendFiles(@PathVariable UUID travelPlanId,
                                                         @PathVariable UUID scheduleId,
                                                         @RequestBody ReviewEditAppendRequest reviewEditAppendRequest) {
-        Review updatedReview = reviewMutationService.editReviewEditAppendFiles(reviewEditAppendRequest);
+        Review updatedReview = reviewMutationService.editReviewAppendFiles(reviewEditAppendRequest);
         return ResponseEntity.ok(conversionService.convert(updatedReview, ReviewResponse.class));
     }
 

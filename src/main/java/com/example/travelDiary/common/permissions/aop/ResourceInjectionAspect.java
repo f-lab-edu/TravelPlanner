@@ -18,6 +18,7 @@ import java.util.UUID;
 @Aspect
 @Component
 public class ResourceInjectionAspect {
+    private final UUID SENTINELUUIDVALUE = UUID.fromString("00000000-0000-0000-0000-000000000000");
     private final ResourcePermissionService resourcePermissionService;
 
     @Autowired
@@ -31,7 +32,9 @@ public class ResourceInjectionAspect {
         UserResourcePermissionTypes permissionType = injectResourceIds.permissionType();
         String resourceType = injectResourceIds.resourceType();
         List<UUID> resourceIds = resourcePermissionService.getResourceIdsByUserPermissionAndType(permissionType, resourceType);
-
+        if(resourceIds.isEmpty()){
+            resourceIds.add(SENTINELUUIDVALUE);
+        }
         Object[] args = joinPoint.getArgs();
         String[] parameterNames = getParameterNames(method);
 

@@ -24,6 +24,7 @@ public class Review implements IdentifiableResource {
     @Cascade(CascadeType.ALL)
     public List<MediaFile> fileList;
 
+    @Lob
     public String userDescription;
 
     public Double rating;
