@@ -7,6 +7,7 @@ import com.example.travelDiary.common.permissions.domain.UserResourcePermissionT
 import com.example.travelDiary.common.permissions.repository.ResourcePermissionRepository;
 import com.example.travelDiary.common.permissions.repository.ResourceRepository;
 import com.example.travelDiary.domain.model.user.UserProfile;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -15,6 +16,7 @@ import java.util.List;
 import java.util.UUID;
 
 @Service
+@Slf4j
 public class ResourcePermissionService {
 
     private final ResourcePermissionRepository resourcePermissionRepository;
@@ -49,6 +51,7 @@ public class ResourcePermissionService {
 
     public List<UUID> getResourceIdsByUserPermissionAndType(UserResourcePermissionTypes permission, String type) {
         UserProfile userProfile = authUserService.getCurrentUser();
+        log.info("at ResourcePermissionService#getResourceIdsByUserPermissionAndType, UserProfile {}", userProfile);
         return resourcePermissionRepository.findResourceIdsByUserProfileAndPermissionAndType(userProfile, permission.getLevel(), type);
     }
 }

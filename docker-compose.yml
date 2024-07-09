@@ -10,6 +10,8 @@ services:
     ports:
       - "8080:8080"
       - "443:443"
+    extra_hosts:
+      - "host.docker.internal:host-gateway"
     environment:
       POSTGRES_USERNAME: ${POSTGRES_USERNAME}
       POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}

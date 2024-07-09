@@ -3,6 +3,7 @@ package com.example.travelDiary.application.service.travel.review;
 import com.example.travelDiary.application.events.EventPublisher;
 import com.example.travelDiary.application.service.review.MediaFileFacadeService;
 import com.example.travelDiary.application.service.review.ReviewMutationService;
+import com.example.travelDiary.domain.model.review.MediaFile;
 import com.example.travelDiary.domain.model.review.Review;
 import com.example.travelDiary.presentation.dto.request.review.ReviewEditAppendRequest;
 import com.example.travelDiary.presentation.dto.request.review.ReviewEditRemoveRequest;
@@ -18,9 +19,11 @@ import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.core.convert.ConversionService;
 
+import java.util.ArrayList;
 import java.util.Optional;
 import java.util.UUID;
 
+import static org.assertj.core.api.AssertionsForClassTypes.assertThat;
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.*;
@@ -63,6 +66,42 @@ public class ReviewMutationServiceTest {
 
         Review result = reviewMutationService.editReviewEditAppendFiles(reviewEditAppendRequest);
         assertNotNull(result);
+        verify(reviewRepository).save(any(Review.class));
+    }
+
+    @Test
+    public void testEditReviewEditAppendFilesMetaData() {
+        UUID reviewId = UUID.randomUUID();
+        reviewEditAppendRequest.setReviewId(reviewId);
+        reviewEditAppendRequest.setRating(4.0);
+        Review review = new Review();
+        when(reviewRepository.findById(reviewId)).thenReturn(Optional.of(review));
+        when(reviewRepository.save(any(Review.class))).thenReturn(review);
+
+        Review result = reviewMutationService.editReviewEditAppendFiles(reviewEditAppendRequest);
+        assertNotNull(result);
+        assertThat(review.getRating()).isEqualTo(4.0);
+        verify(reviewRepository).save(any(Review.class));
+    }
+
+    @Test
+    public void testEditReviewEditAppendFileEditFiles() {
+        UUID reviewId = UUID.randomUUID();
+        reviewEditAppendRequest.setReviewId(reviewId);
+        reviewEditAppendRequest.setRating(4.0);
+        ArrayList<MediaFile> mediaFiles = new ArrayList<>();
+        mediaFiles.add(MediaFile.builder().originalFileName("terimakasih.txt").build());
+        mediaFiles.add(MediaFile.builder().id("bahasamelayu").build());
+        reviewEditAppendRequest.setFileList(mediaFiles);
+
+        reviewEditAppendRequest.setFileLocation();
+        Review review = new Review();
+        when(reviewRepository.findById(reviewId)).thenReturn(Optional.of(review));
+        when(reviewRepository.save(any(Review.class))).thenReturn(review);
+
+        Review result = reviewMutationService.editReviewEditAppendFiles(reviewEditAppendRequest);
+        assertNotNull(result);
+        assertThat(review.getRating()).isEqualTo(4.0);
         verify(reviewRepository).save(any(Review.class));
     }
 

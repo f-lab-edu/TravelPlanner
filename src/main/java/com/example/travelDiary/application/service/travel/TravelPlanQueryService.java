@@ -7,6 +7,7 @@ import com.example.travelDiary.common.permissions.domain.UserResourcePermissionT
 import com.example.travelDiary.domain.model.travel.TravelPlan;
 import com.example.travelDiary.domain.model.wallet.aggregate.MonetaryEvent;
 import com.example.travelDiary.repository.persistence.travel.TravelPlanRepository;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
@@ -18,6 +19,7 @@ import java.util.List;
 import java.util.UUID;
 
 @Service
+@Slf4j
 public class TravelPlanQueryService {
 
     private final ScheduleQueryService scheduleQueryService;
@@ -38,6 +40,7 @@ public class TravelPlanQueryService {
     @Transactional(readOnly = true)
     @InjectResourceIds(parameterName = "resourceIds", resourceType = "TravelPlan", permissionType = UserResourcePermissionTypes.VIEW)
     public List<TravelPlan> getAllAuthorisedTravelPlan(List<UUID> resourceIds) {
+        log.info("resourceIds: {}", resourceIds);
         List<TravelPlan>result = travelPlanRepository.findAllByResourceIds(resourceIds);
         return travelPlanRepository.findAll();
     }
