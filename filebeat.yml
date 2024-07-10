@@ -1,0 +1,13 @@
+filebeat.inputs:
+  - type: tcp
+    enabled: true
+    host: "0.0.0.0:5044"
+    max_message_size: 10MiB
+    ssl:
+      enabled: false
+      # Uncomment and set the certificate and key paths if using SSL
+      # certificate: "/path/to/cert.pem"
+      # key: "/path/to/key.pem"
+
+output.logstash:
+  hosts: ["172.17.0.1:5044"]

@@ -33,7 +33,6 @@ services:
     volumes:
       - h2-data:/app/h2-data
       - spring-boot-logs:/var/log/spring-boot
-      - ./forward-logs.sh:/usr/local/bin/forward-"logs.sh
     networks:
       - my-network
     depends_on:
@@ -63,6 +62,31 @@ services:
       - "6379:6379"
     expose:
       - "6379"
+      -
+  filebeat:
+    image: docker.elastic.co/beats/filebeat:8.14.2
+    container_name: filebeat
+#       Need to override user so we can access the log files, and docker.sock
+    user: root
+    volumes:
+      - ./filebeat.yml:/usr/share/filebeat/filebeat.yml:ro  # Mount local filebeat.yml
+      - /var/run/docker.sock:/var/run/docker.sock
+      # This is needed for filebeat to load container log path as specified in filebeat.yml
+      - /var/lib/docker/containers/:/var/lib/docker/containers/:ro
+
+      # # This is needed for filebeat to load jenkins build log path as specified in filebeat.yml
+      # - /var/lib/docker/volumes/jenkins_home/_data/jobs/:/var/lib/docker/volumes/jenkins_home/_data/jobs/:ro
+
+      # This is needed for filebeat to load logs for system and auth modules
+      - /var/log/:/var/log/:ro
+      # This is needed for filebeat to load logs for auditd module. you might have to install audit system
+      # on ubuntu first (sudo apt-get install -y auditd audispd-plugins)
+      - /var/log/audit/:/var/log/audit/:ro
+    depends_on:
+      - spring-boot-app
+    networks:
+      - my-network
+
 
 networks:
   my-network:

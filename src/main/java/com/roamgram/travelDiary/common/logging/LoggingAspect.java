@@ -1,6 +1,8 @@
 package com.roamgram.travelDiary.common.logging;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.roamgram.travelDiary.common.logging.domain.LogInfo;
+import com.roamgram.travelDiary.common.logging.domain.RequestApiInfo;
 import lombok.RequiredArgsConstructor;
 import org.aspectj.lang.ProceedingJoinPoint;
 import org.aspectj.lang.annotation.Around;
@@ -10,6 +12,10 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Component;
 
+import java.io.PrintWriter;
+import java.io.StringWriter;
+import java.util.Map;
+
 
 @Aspect
 @Component
@@ -18,16 +24,17 @@ public class LoggingAspect {
 
     private static final Logger logger = LoggerFactory.getLogger(LoggingAspect.class);
     private final ObjectMapper objectMapper;
+    private final RequestApiExtractorService requestApiExtractorService;
 
     // 모든 컨트롤러 && NotLogging 어노테이션 미설정 시 로그 수집
-    @Pointcut("within(*..*Controller) && !@annotation(com.project.sample.aop.NotLogging)")
+    @Pointcut("within(*..*Controller) && !@annotation(com.roamgram.travelDiary.common.logging.NotLogging)")
     public void onRequest() {}
 
     @Around("onRequest()")
     public Object requestLogging(ProceedingJoinPoint joinPoint) throws Throwable {
 
         // API 요청 정보
-        final RequestApiInfo apiInfo = new RequestApiInfo(joinPoint, joinPoint.getTarget().getClass(), objectMapper);
+        final RequestApiInfo apiInfo = requestApiExtractorService.generateRequestApiInfo(joinPoint, joinPoint.getTarget().getClass(), objectMapper);
 
         // 로그 정보
         final LogInfo logInfo = new LogInfo(
@@ -65,5 +72,4 @@ public class LoggingAspect {
             throw e;
         }
     }
-
 }

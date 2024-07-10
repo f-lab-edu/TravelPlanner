@@ -1,70 +1,71 @@
 <configuration>
-
-
+    <!-- Include Spring Boot default configurations for console logging -->
     <include resource="org/springframework/boot/logging/logback/defaults.xml"/>
-    <include resource="org/springframework/boot/logging/logback/console-appender.xml" />
+    <include resource="org/springframework/boot/logging/logback/console-appender.xml"/>
+
+    <!-- Define properties for log file paths and names -->
+    <property name="LOG_PATH" value="$logging.file.path"/>
+    <property name="LOG_FILE_NAME" value="api"/>
+    <property name="ERR_LOG_FILE_NAME" value="api-error"/>
+
+    <!-- Root logger configuration for console output -->
     <root level="INFO">
-        <appender-ref ref="CONSOLE" />
+        <appender-ref ref="CONSOLE"/>
     </root>
+    <!-- Logger for Spring web with DEBUG level -->
     <logger name="org.springframework.web" level="DEBUG"/>
 
+    <appender name="FILEBEAT" class="net.logstash.logback.appender.LogstashTcpSocketAppender">
+        <destination>filebeat:5044</destination>
+        <encoder class="net.logstash.logback.encoder.LogstashEncoder"/>
+    </appender>
+
+    <!-- API 로깅 -->
+    <appender name="ApiLogFile" class="ch.qos.logback.core.rolling.RollingFileAppender">
+        <filter class="ch.qos.logback.classic.filter.LevelFilter">
+            <level>INFO</level>
+            <onMatch>ACCEPT</onMatch>
+            <onMismatch>DENY</onMismatch>
+        </filter>
+        <file>${LOG_PATH}/${LOG_FILE_NAME}.log</file>
+        <encoder class="ch.qos.logback.classic.encoder.PatternLayoutEncoder">
+            <pattern>%msg%n</pattern>
+        </encoder>
+        <!-- 하루에 한번 압축 후 보관, 최대 3일, 100MB까지 보관 -->
+        <rollingPolicy class="ch.qos.logback.core.rolling.TimeBasedRollingPolicy">
+            <fileNamePattern>${LOG_PATH}/${LOG_FILE_NAME}.%d{yyyy-MM-dd}.gz</fileNamePattern>
+            <maxHistory>3</maxHistory>
+            <totalSizeCap>100MB</totalSizeCap>
+        </rollingPolicy>
+    </appender>
+
+    <!-- 오류 로깅 -->
+    <appender name="ErrorLogFile" class="ch.qos.logback.core.rolling.RollingFileAppender">
+        <filter class="ch.qos.logback.classic.filter.LevelFilter">
+            <level>ERROR</level>
+            <onMatch>ACCEPT</onMatch>
+            <onMismatch>DENY</onMismatch>
+        </filter>
+        <file>${LOG_PATH}/${ERR_LOG_FILE_NAME}.log</file>
+        <encoder class="ch.qos.logback.classic.encoder.PatternLayoutEncoder">
+            <pattern>%msg%n</pattern>
+        </encoder>
+        <!-- 하루에 한번 압축 후 보관, 최대 3일, 100MB까지 보관 -->
+        <rollingPolicy class="ch.qos.logback.core.rolling.TimeBasedRollingPolicy">
+            <fileNamePattern>${LOG_PATH}/${ERR_LOG_FILE_NAME}.%d{yyyy-MM-dd}.gz</fileNamePattern>
+            <maxHistory>3</maxHistory>
+            <totalSizeCap>100MB</totalSizeCap>
+        </rollingPolicy>
+    </appender>
+
+<!--prod 환경에서만 파일 저장된 로그 가져오기-->
     <springProfile name="prod">
-        <appender name="LOGSTASH" class="net.logstash.logback.appender.LogstashTcpSocketAppender">
-            <destination>172.17.0.1:5044</destination>
-            <encoder class="net.logstash.logback.encoder.LogstashEncoder"/>
-        </appender>
-        <appender name="ROLLING_FILE" class="ch.qos.logback.core.rolling.RollingFileAppender">
-            <!-- Define the path to the log file -->
-            <file>/var/log/spring-boot/roamgram.log</file>
+        <logger name="com.roamgram.traveldiary.logging.loggingAspect" level="INFO">
+            <appender-ref ref="ApiLogFile" />
+            <appender-ref ref="ErrorLogFile" />
+        </logger>
 
-            <!-- Define the rolling policy -->
-            <rollingPolicy class="ch.qos.logback.core.rolling.TimeBasedRollingPolicy">
-                <!-- Roll the log file every day -->
-                <fileNamePattern>/var/log/spring-boot/roamgram.%d{yyyy-MM-dd}.log</fileNamePattern>
-                <!-- Keep 7 days worth of log files -->
-                <maxHistory>3</maxHistory>
-            </rollingPolicy>
-
-            <!-- Define the triggering policy to roll based on file size -->
-            <triggeringPolicy class="ch.qos.logback.core.rolling.SizeBasedTriggeringPolicy">
-                <maxFileSize>100MB</maxFileSize>
-            </triggeringPolicy>
-
-            <!-- Add a threshold filter to only log INFO and above -->
-            <filter class="ch.qos.logback.classic.filter.ThresholdFilter">
-                <level>INFO</level>
-            </filter>
-
-            <!-- Use the JSON encoder with custom fields -->
-            <encoder class="net.logstash.logback.encoder.LoggingEventCompositeJsonEncoder">
-                <providers>
-                    <timestamp>
-                        <fieldName>timestamp</fieldName>
-                    </timestamp>
-                    <pattern>
-                        <pattern>
-                            {
-                            "level": "%level",
-                            "logger": "%logger",
-                            "thread": "%thread",
-                            "message": "%message"
-                            }
-                        </pattern>
-                    </pattern>
-                </providers>
-            </encoder>
-        </appender>
+        <appender-ref ref="LOGSTASH"/>
     </springProfile>
 
-    <root level="info">
-        <appender-ref ref="CONSOLE"/>
-        <springProfile name="prod">
-            <appender-ref ref="ROLLING_FILE"/>
-            <appender-ref ref="LOGSTASH"/>
-        </springProfile>
-    </root>
-
-    <!-- Example of specific logger levels -->
-    <logger name="org.springframework" level="INFO"/>
-    <logger name="org.hibernate" level="ERROR"/>
 </configuration>
