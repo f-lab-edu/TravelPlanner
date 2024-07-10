@@ -62,7 +62,7 @@ services:
       - "6379:6379"
     expose:
       - "6379"
-      -
+
   filebeat:
     image: docker.elastic.co/beats/filebeat:8.14.2
     container_name: filebeat
