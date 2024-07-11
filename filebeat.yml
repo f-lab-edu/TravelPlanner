@@ -3,6 +3,7 @@ filebeat.inputs:
     enabled: true
     host: "0.0.0.0:5044"
     max_message_size: 10MiB
+    encoding: utf-8  # Ensure UTF-8 encoding
     ssl:
       enabled: false
       # Uncomment and set the certificate and key paths if using SSL
