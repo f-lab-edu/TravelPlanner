@@ -15,8 +15,8 @@ public class ReviewEntityToResponse implements Converter<Review, ReviewResponse>
         dto.setRating(source.getRating());
         dto.setContentLocation(source.getContentLocation());
         dto.setFileList(source.getFileList());
-        dto.setUserDescription(dto.getUserDescription());
-        dto.setScheduleId(dto.getScheduleId());
+        dto.setUserDescription(source.getUserDescription());
+        dto.setScheduleId(source.getScheduleId());
 
         return dto;
     }

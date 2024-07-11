@@ -22,13 +22,6 @@ import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
 @ComponentScan
 public class ConversionConfig implements WebMvcConfigurer {
 
-//    @Bean
-//    public FormattingConversionService conversionService() {
-//        FormattingConversionService conversionService = new DefaultFormattingConversionService();
-//        addFormatters(conversionService);
-//        return conversionService;
-//    }
-
     @Bean
     public TravelPlanEntityToResponse travelPlanEntityToResponse() {
         return new TravelPlanEntityToResponse();
@@ -38,7 +31,6 @@ public class ConversionConfig implements WebMvcConfigurer {
     public ScheduleEntityToResponse scheduleEntityToResponse() {
         return new ScheduleEntityToResponse();
     }
-
     @Bean
     public ReviewEntityToResponse reviewEntityToResponse() {
         return new ReviewEntityToResponse();

@@ -39,6 +39,7 @@ public class ReviewController {
                                             @PathVariable UUID scheduleId,
                                             @RequestParam UUID reviewId) {
         Review review = reviewAccessService.getReviewById(reviewId);
+        ReviewResponse reviewResponse = conversionService.convert(review, ReviewResponse.class);
         return ResponseEntity.ok(conversionService.convert(review, ReviewResponse.class));
     }
 
