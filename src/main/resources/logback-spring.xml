@@ -1,3 +1,4 @@
+
 <configuration>
     <!-- Include Spring Boot default configurations for console logging -->
     <include resource="org/springframework/boot/logging/logback/defaults.xml"/>
@@ -18,9 +19,7 @@
 
     <appender name="FILEBEAT" class="net.logstash.logback.appender.LogstashTcpSocketAppender">
         <destination>filebeat:5044</destination>
-        <encoder class="net.logstash.logback.encoder.LogstashEncoder">
-            <charset>UTF-8</charset>
-        </encoder>
+        <encoder class="net.logstash.logback.encoder.LogstashEncoder"/>
     </appender>
 
     <!-- API Logging -->
@@ -67,7 +66,6 @@
     <springProfile name="prod">
         <!-- Redirect console logs to FILEBEAT -->
         <root level="INFO">
-            <appender-ref ref="CONSOLE"/>
             <appender-ref ref="FILEBEAT"/>
         </root>
 
