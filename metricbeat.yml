@@ -1,0 +1,15 @@
+metricbeat.modules:
+  - module: http
+    period: 60s
+    hosts: [ "https://localhost:443" ]
+    path: "/actuator/metrics"
+    ssl.verification_mode: none  # Change to 'full' if you are using a valid certificate
+    # ssl.certificate_authorities: ["path/to/ca.crt"]  # Uncomment if using custom CA
+    # ssl.certificate: "path/to/client.crt"  # Uncomment if client certificates are required
+    # ssl.key: "path/to/client.key"  # Uncomment if client certificates are required
+    namespace: "springboot.actuator"
+    data_stream:
+      namespace: default
+
+output.logstash:
+  hosts: [ "172.17.0.1:5044" ]  # Use the IP address or hostname of the Logstash server

@@ -18,7 +18,9 @@
 
     <appender name="FILEBEAT" class="net.logstash.logback.appender.LogstashTcpSocketAppender">
         <destination>filebeat:5044</destination>
-        <encoder class="net.logstash.logback.encoder.LogstashEncoder"/>
+        <encoder class="net.logstash.logback.encoder.LogstashEncoder">
+            <charset>UTF-8</charset>
+        </encoder>
     </appender>
 
     <!-- API Logging -->
@@ -31,6 +33,7 @@
         <file>${LOG_PATH}/${LOG_FILE_NAME}.log</file>
         <encoder class="ch.qos.logback.classic.encoder.PatternLayoutEncoder">
             <pattern>%msg%n</pattern>
+            <charset>UTF-8</charset>
         </encoder>
         <!-- Rolling policy -->
         <rollingPolicy class="ch.qos.logback.core.rolling.TimeBasedRollingPolicy">
@@ -50,6 +53,7 @@
         <file>${LOG_PATH}/${ERR_LOG_FILE_NAME}.log</file>
         <encoder class="ch.qos.logback.classic.encoder.PatternLayoutEncoder">
             <pattern>%msg%n</pattern>
+            <charset>UTF-8</charset>
         </encoder>
         <!-- Rolling policy -->
         <rollingPolicy class="ch.qos.logback.core.rolling.TimeBasedRollingPolicy">
