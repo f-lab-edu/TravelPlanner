@@ -59,14 +59,20 @@
     </appender>
 
 <!--prod 환경에서만 파일 저장된 로그 가져오기-->
+    !-- Production Profile Configuration -->
     <springProfile name="prod">
+        <!-- Redirect console logs to FILEBEAT -->
+        <root level="INFO">
+            <appender-ref ref="CONSOLE"/>
+            <appender-ref ref="FILEBEAT"/>
+        </root>
+
+        <!-- Attach file appenders only in prod -->
         <logger name="com.roamgram.traveldiary.logging.loggingAspect" level="INFO">
-            <appender-ref ref="ApiLogFile" />
-            <appender-ref ref="ErrorLogFile" />
+            <appender-ref ref="ApiLogFile"/>
+            <appender-ref ref="ErrorLogFile"/>
             <appender-ref ref="FILEBEAT"/>
         </logger>
-
-        <appender-ref ref="LOGSTASH"/>
     </springProfile>
 
 </configuration>
