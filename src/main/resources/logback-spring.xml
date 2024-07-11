@@ -12,6 +12,7 @@
     <root level="INFO">
         <appender-ref ref="CONSOLE"/>
     </root>
+
     <!-- Logger for Spring web with DEBUG level -->
     <logger name="org.springframework.web" level="DEBUG"/>
 
@@ -20,7 +21,7 @@
         <encoder class="net.logstash.logback.encoder.LogstashEncoder"/>
     </appender>
 
-    <!-- API 로깅 -->
+    <!-- API Logging -->
     <appender name="ApiLogFile" class="ch.qos.logback.core.rolling.RollingFileAppender">
         <filter class="ch.qos.logback.classic.filter.LevelFilter">
             <level>INFO</level>
@@ -31,7 +32,7 @@
         <encoder class="ch.qos.logback.classic.encoder.PatternLayoutEncoder">
             <pattern>%msg%n</pattern>
         </encoder>
-        <!-- 하루에 한번 압축 후 보관, 최대 3일, 100MB까지 보관 -->
+        <!-- Rolling policy -->
         <rollingPolicy class="ch.qos.logback.core.rolling.TimeBasedRollingPolicy">
             <fileNamePattern>${LOG_PATH}/${LOG_FILE_NAME}.%d{yyyy-MM-dd}.gz</fileNamePattern>
             <maxHistory>3</maxHistory>
@@ -39,7 +40,7 @@
         </rollingPolicy>
     </appender>
 
-    <!-- 오류 로깅 -->
+    <!-- Error Logging -->
     <appender name="ErrorLogFile" class="ch.qos.logback.core.rolling.RollingFileAppender">
         <filter class="ch.qos.logback.classic.filter.LevelFilter">
             <level>ERROR</level>
@@ -50,7 +51,7 @@
         <encoder class="ch.qos.logback.classic.encoder.PatternLayoutEncoder">
             <pattern>%msg%n</pattern>
         </encoder>
-        <!-- 하루에 한번 압축 후 보관, 최대 3일, 100MB까지 보관 -->
+        <!-- Rolling policy -->
         <rollingPolicy class="ch.qos.logback.core.rolling.TimeBasedRollingPolicy">
             <fileNamePattern>${LOG_PATH}/${ERR_LOG_FILE_NAME}.%d{yyyy-MM-dd}.gz</fileNamePattern>
             <maxHistory>3</maxHistory>
@@ -58,8 +59,7 @@
         </rollingPolicy>
     </appender>
 
-<!--prod 환경에서만 파일 저장된 로그 가져오기-->
-    !-- Production Profile Configuration -->
+    <!-- Production Profile Configuration -->
     <springProfile name="prod">
         <!-- Redirect console logs to FILEBEAT -->
         <root level="INFO">
@@ -68,7 +68,7 @@
         </root>
 
         <!-- Attach file appenders only in prod -->
-        <logger name="com.roamgram.traveldiary.logging.loggingAspect" level="INFO">
+        <logger name="com.roamgram.travelDiary.common.logging.LoggingAspect" level="INFO">
             <appender-ref ref="ApiLogFile"/>
             <appender-ref ref="ErrorLogFile"/>
             <appender-ref ref="FILEBEAT"/>
