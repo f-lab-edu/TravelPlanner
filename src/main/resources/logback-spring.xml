@@ -32,8 +32,8 @@
         </filter>
         <file>${LOG_PATH}/${LOG_FILE_NAME}.log</file>
         <encoder class="ch.qos.logback.classic.encoder.PatternLayoutEncoder">
-            <pattern>%msg%n</pattern>
             <charset>UTF-8</charset>
+            <pattern>%msg%n</pattern>
         </encoder>
         <!-- Rolling policy -->
         <rollingPolicy class="ch.qos.logback.core.rolling.TimeBasedRollingPolicy">
@@ -52,8 +52,8 @@
         </filter>
         <file>${LOG_PATH}/${ERR_LOG_FILE_NAME}.log</file>
         <encoder class="ch.qos.logback.classic.encoder.PatternLayoutEncoder">
-            <pattern>%msg%n</pattern>
             <charset>UTF-8</charset>
+            <pattern>%msg%n</pattern>
         </encoder>
         <!-- Rolling policy -->
         <rollingPolicy class="ch.qos.logback.core.rolling.TimeBasedRollingPolicy">
@@ -75,7 +75,6 @@
         <logger name="com.roamgram.travelDiary.common.logging.LoggingAspect" level="INFO">
             <appender-ref ref="ApiLogFile"/>
             <appender-ref ref="ErrorLogFile"/>
-            <appender-ref ref="FILEBEAT"/>
         </logger>
     </springProfile>
 
