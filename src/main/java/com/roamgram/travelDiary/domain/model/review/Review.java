@@ -24,7 +24,6 @@ public class Review implements IdentifiableResource {
     @Cascade(CascadeType.ALL)
     public List<MediaFile> fileList;
 
-    @Lob
     @Column(columnDefinition = "TEXT")
     public String userDescription;
 
