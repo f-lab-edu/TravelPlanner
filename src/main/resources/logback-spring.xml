@@ -4,7 +4,7 @@
     <include resource="org/springframework/boot/logging/logback/console-appender.xml"/>
 
     <!-- Define properties for log file paths and names -->
-    <property name="LOG_PATH" value="$logging.file.path"/>
+    <springProperty scope="context" name="LOG_PATH" source="logging.file.path"/>
     <property name="LOG_FILE_NAME" value="api"/>
     <property name="ERR_LOG_FILE_NAME" value="api-error"/>
 
@@ -63,6 +63,7 @@
         <logger name="com.roamgram.traveldiary.logging.loggingAspect" level="INFO">
             <appender-ref ref="ApiLogFile" />
             <appender-ref ref="ErrorLogFile" />
+            <appender-ref ref="FILEBEAT"/>
         </logger>
 
         <appender-ref ref="LOGSTASH"/>
