@@ -1,6 +1,3 @@
-logging.level: debug
-logging.selectors: ["*"]
-
 filebeat.inputs:
   - type: tcp
     enabled: true
@@ -12,5 +9,5 @@ filebeat.inputs:
       # certificate: "/path/to/cert.pem"
       # key: "/path/to/key.pem"
 
-output.logstash:
-  hosts: ["172.17.0.1:5044"]
+output.console:
+#  hosts: ["172.17.0.1:5044"]
