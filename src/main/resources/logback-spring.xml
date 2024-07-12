@@ -8,7 +8,7 @@
     <property name="MAIN_LOG_FILE_NAME" value="roamgram"/>
     <property name="LOG_FILE_NAME" value="api"/>
     <property name="ERR_LOG_FILE_NAME" value="api-error"/>
-    <property name="MAIN_LOG_ROLLING_PATTERN" value="%d{yyyy-MM-dd HH:mm:ss.SSS}  %logger{5} - %msg %n"/>
+    <property name="MAIN_LOG_ROLLING_PATTERN" value="%d %p %C{1.} [%t] %m%n"/>
 
 
     <!--    Appender Declaration    -->
@@ -24,8 +24,7 @@
         <appender name="MainLogFile" class="ch.qos.logback.core.rolling.RollingFileAppender">
             <file>${LOG_PATH}/${MAIN_LOG_FILE_NAME}.log</file>
             <encoder class="ch.qos.logback.classic.encoder.PatternLayoutEncoder">
-                <charset>UTF-8</charset>
-                <pattern>${MAIN_LOG_ROLLING_PATTERN}</pattern>
+                <Pattern>${MAIN_LOG_ROLLING_PATTERN}</Pattern>
             </encoder>
             <!-- Rolling policy -->
             <rollingPolicy class="ch.qos.logback.core.rolling.TimeBasedRollingPolicy">
@@ -86,7 +85,7 @@
     <springProfile name="prod">
         <root level="INFO">
             <appender-ref ref="CONSOLE"/>
-<!--            <appender-ref ref="MainLogFile"/>-->
+            <appender-ref ref="MainLogFile"/>
             <appender-ref ref="FILEBEAT"/>
         </root>
     </springProfile>
@@ -104,9 +103,9 @@
         <logger name="com.roamgram.travelDiary" level = "INFO">
             <appender-ref ref="MainLogFile"/>
         </logger>
+
     </springProfile>
 
-    <!-- Logger for Spring web with DEBUG level -->
-    <logger name="org.springframework.web" level="DEBUG"/>
+
 
 </configuration>
