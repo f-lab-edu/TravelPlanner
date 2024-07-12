@@ -86,7 +86,7 @@
     <springProfile name="prod">
         <root level="INFO">
             <appender-ref ref="CONSOLE"/>
-            <appender-ref ref="MainLogFile"/>
+<!--            <appender-ref ref="MainLogFile"/>-->
             <appender-ref ref="FILEBEAT"/>
         </root>
     </springProfile>
@@ -99,6 +99,10 @@
         <logger name="com.roamgram.travelDiary.common.logging.LoggingAspect" level="INFO">
             <appender-ref ref="ApiLogFile"/>
             <appender-ref ref="ErrorLogFile"/>
+        </logger>
+
+        <logger name="com.roamgram.travelDiary" level = "INFO">
+            <appender-ref ref="MainLogFile"/>
         </logger>
     </springProfile>
 
