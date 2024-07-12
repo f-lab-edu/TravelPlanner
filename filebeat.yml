@@ -10,8 +10,9 @@ filebeat.inputs:
       # certificate: "/path/to/cert.pem"
       # key: "/path/to/key.pem"
 
-#output.logstash:
-#  hosts: ["172.17.0.1:5044"]
-
-output.console:
+output:
+  logstash:
+    hosts: ["172.17.0.1:5044"]
+  console:
+    pretty: true
 
