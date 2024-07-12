@@ -31,9 +31,9 @@ public class ReviewAccessService {
     }
 
     @CheckAccess(resourceType = Schedule.class, spelResourceId = "#scheduleId", permission = "VIEW")
-    public Page<Review> getAllReviewsFromSchedule(UUID ScheduleId, Integer page, Integer size) {
+    public Page<Review> getAllReviewsFromSchedule(UUID scheduleId, Integer page, Integer size) {
         Pageable pageable = PageRequest.of(page, size);
-        return reviewRepository.findAllByScheduleId(ScheduleId, pageable);
+        return reviewRepository.findAllByScheduleId(scheduleId, pageable);
     }
 
     @InjectResourceIds(parameterName = "resourceIds", resourceType = "Review", permissionType = UserResourcePermissionTypes.VIEW)
