@@ -1,7 +1,7 @@
 filebeat.inputs:
   - type: tcp
     enabled: true
-    host: "localhost:5044"
+    host: "0.0.0.0:5044"
     max_message_size: 10MiB
     ssl:
       enabled: false
