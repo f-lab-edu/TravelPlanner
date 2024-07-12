@@ -1,5 +1,6 @@
 filebeat.inputs:
   - type: log
+    id: main-log # API 로그
     enabled: true
     paths:
       - /var/lib/docker/volumes/travelplanner_spring-boot-logs/_data/roamgram.log
