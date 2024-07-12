@@ -1,3 +1,6 @@
+logging.level: debug
+logging.selectors: ["*"]
+
 filebeat.inputs:
   - type: tcp
     enabled: true
