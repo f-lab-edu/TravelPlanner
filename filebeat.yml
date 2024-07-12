@@ -1,14 +1,14 @@
 filebeat.inputs:
-
-  - type: tcp
+  - type: log
     enabled: true
-    host: "0.0.0.0:5044"
-    max_message_size: 100MiB
-    ssl:
-      enabled: false
-      # Uncomment and set the certificate and key paths if using SSL
-      # certificate: "/path/to/cert.pem"
-      # key: "/path/to/key.pem"
+    paths:
+        - /var/lib/docker/volumes/travelplanner_spring-boot-logs/_data/*.log
+    multiline:
+      pattern: '^\['
+      negate: true
+      match: after
+    close_removed: true
+    close_renamed: true
 
 output:
   logstash:
