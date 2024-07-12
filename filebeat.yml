@@ -3,7 +3,7 @@ filebeat.inputs:
   - type: tcp
     enabled: true
     host: "0.0.0.0:5044"
-    max_message_size: 10MiB
+    max_message_size: 100MiB
     ssl:
       enabled: false
       # Uncomment and set the certificate and key paths if using SSL
