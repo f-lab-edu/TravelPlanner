@@ -2,13 +2,65 @@ filebeat.inputs:
   - type: log
     enabled: true
     paths:
-        - /var/lib/docker/volumes/travelplanner_spring-boot-logs/_data/*.log
+      - /var/lib/docker/volumes/travelplanner_spring-boot-logs/_data/roamgram.log
     multiline:
       pattern: '^\['
       negate: true
       match: after
     close_removed: true
     close_renamed: true
+
+  - type: log
+    enabled: true
+      # Unique ID among all inputs, an ID is required.
+    id: api-log # API 로그
+    paths:
+      - /var/lib/docker/volumes/travelplanner_spring-boot-logs/_data/api.log
+    fields:
+      index_name: "api-log" # 인덱스명
+
+      # 디코딩된 JSON은 출력 문서의 "json" 키 아래에 배치
+      json.keys_under_root: true
+
+      # keys_under_root 설정이 활성화되면 디코딩된 JSON 개체의 값이 충돌 시 Filebeat가 일반적으로 추가하는 필드를 덮어쓰기
+      json.overwrite_keys: true
+
+      # SON 언마샬링 오류가 발생하거나 a message_key가 구성에 정의되어 있지만 사용할 수 없는 경우 "error.message" 및 "error.type: json" 키를 추가
+      json.add_error_key: true
+
+      # 이 설정이 활성화되면 Filebeat는 디코딩된 JSON에서 재귀적으로 키를 제거하고 계층적 객체 구조로 확장
+      # 예) {"a.b.c": 123}는 {"a":{"b":{"c":123}}}
+      json.expand_keys: true
+
+  - type: log
+    # Unique ID among all inputs, an ID is required.
+    id: api-error-log # 에러 로그
+    enabled: true
+    paths:
+    - /var/lib/docker/volumes/travelplanner_spring-boot-logs/_data/api-error.log
+    fields:
+      index_name: "api-error-log" # 인덱스명
+      # 디코딩된 JSON은 출력 문서의 "json" 키 아래에 배치
+    json.keys_under_root: true
+
+      # keys_under_root 설정이 활성화되면 디코딩된 JSON 개체의 값이 충돌 시 Filebeat가 일반적으로 추가하는 필드를 덮어쓰기
+    json.overwrite_keys: true
+
+      # SON 언마샬링 오류가 발생하거나 a message_key가 구성에 정의되어 있지만 사용할 수 없는 경우 "error.message" 및 "error.type: json" 키를 추가
+    json.add_error_key: true
+      # 이 설정이 활성화되면 Filebeat는 디코딩된 JSON에서 재귀적으로 키를 제거하고 계층적 객체 구조로 확장
+      # 예) {"a.b.c": 123}는 {"a":{"b":{"c":123}}}
+    json.expand_keys: true
+
+  - type: tcp
+    enabled: true
+    host: "0.0.0.0:5044"
+    max_message_size: 10MiB
+    ssl:
+      enabled: false
+      # Uncomment and set the certificate and key paths if using SSL
+      # certificate: "/path/to/cert.pem"
+      # key: "/path/to/key.pem"
 
 output:
   logstash:

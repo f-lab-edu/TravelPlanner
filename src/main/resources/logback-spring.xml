@@ -8,81 +8,88 @@
     <property name="MAIN_LOG_FILE_NAME" value="roamgram"/>
     <property name="LOG_FILE_NAME" value="api"/>
     <property name="ERR_LOG_FILE_NAME" value="api-error"/>
-    <property name="MAIN_LOG_ROLLING_PATTERN" value="%d{yyyy-MM-dd HH:mm:ss.SSS}  %logger{5} - %msg %n" />
+    <property name="MAIN_LOG_ROLLING_PATTERN" value="%d{yyyy-MM-dd HH:mm:ss.SSS}  %logger{5} - %msg %n"/>
 
 
     <!--    Appender Declaration    -->
 
     <!--    FILEBEAT SEND    -->
-    <appender name="FILEBEAT" class="net.logstash.logback.appender.LogstashTcpSocketAppender">
-        <destination>filebeat:5044</destination>
-        <encoder class="net.logstash.logback.encoder.LogstashEncoder"/>
-    </appender>
+    <springProfile name="prod">
+        <appender name="FILEBEAT" class="net.logstash.logback.appender.LogstashTcpSocketAppender">
+            <destination>filebeat:5044</destination>
+            <encoder class="net.logstash.logback.encoder.LogstashEncoder"/>
+        </appender>
 
-    <!-- API Logging -->
-    <appender name="MainLogFile" class="ch.qos.logback.core.rolling.RollingFileAppender">
-        <file>${LOG_PATH}/${MAIN_LOG_FILE_NAME}.log</file>
-        <encoder class="ch.qos.logback.classic.encoder.PatternLayoutEncoder">
-            <charset>UTF-8</charset>
-            <pattern>${MAIN_LOG_ROLLING_PATTERN}</pattern>
-        </encoder>
-        <!-- Rolling policy -->
-        <rollingPolicy class="ch.qos.logback.core.rolling.TimeBasedRollingPolicy">
-            <fileNamePattern>${LOG_PATH}/${LOG_FILE_NAME}.%d{yyyy-MM-dd}.gz</fileNamePattern>
-            <maxHistory>3</maxHistory>
-            <totalSizeCap>100MB</totalSizeCap>
-        </rollingPolicy>
-    </appender>
+        <!-- API Logging -->
+        <appender name="MainLogFile" class="ch.qos.logback.core.rolling.RollingFileAppender">
+            <file>${LOG_PATH}/${MAIN_LOG_FILE_NAME}.log</file>
+            <encoder class="ch.qos.logback.classic.encoder.PatternLayoutEncoder">
+                <charset>UTF-8</charset>
+                <pattern>${MAIN_LOG_ROLLING_PATTERN}</pattern>
+            </encoder>
+            <!-- Rolling policy -->
+            <rollingPolicy class="ch.qos.logback.core.rolling.TimeBasedRollingPolicy">
+                <fileNamePattern>${LOG_PATH}/${MAIN_LOG_FILE_NAME}.%d{yyyy-MM-dd}.gz</fileNamePattern>
+                <maxHistory>3</maxHistory>
+                <totalSizeCap>100MB</totalSizeCap>
+            </rollingPolicy>
+        </appender>
 
 
-    <!-- API Logging -->
-    <appender name="ApiLogFile" class="ch.qos.logback.core.rolling.RollingFileAppender">
-        <filter class="ch.qos.logback.classic.filter.LevelFilter">
-            <level>INFO</level>
-            <onMatch>ACCEPT</onMatch>
-            <onMismatch>DENY</onMismatch>
-        </filter>
-        <file>${LOG_PATH}/${LOG_FILE_NAME}.log</file>
-        <encoder class="ch.qos.logback.classic.encoder.PatternLayoutEncoder">
-            <charset>UTF-8</charset>
-            <pattern>%msg%n</pattern>
-        </encoder>
-        <!-- Rolling policy -->
-        <rollingPolicy class="ch.qos.logback.core.rolling.TimeBasedRollingPolicy">
-            <fileNamePattern>${LOG_PATH}/${LOG_FILE_NAME}.%d{yyyy-MM-dd}.gz</fileNamePattern>
-            <maxHistory>3</maxHistory>
-            <totalSizeCap>100MB</totalSizeCap>
-        </rollingPolicy>
-    </appender>
+        <!-- API Logging -->
+        <appender name="ApiLogFile" class="ch.qos.logback.core.rolling.RollingFileAppender">
+            <filter class="ch.qos.logback.classic.filter.LevelFilter">
+                <level>INFO</level>
+                <onMatch>ACCEPT</onMatch>
+                <onMismatch>DENY</onMismatch>
+            </filter>
+            <file>${LOG_PATH}/${LOG_FILE_NAME}.log</file>
+            <encoder class="ch.qos.logback.classic.encoder.PatternLayoutEncoder">
+                <charset>UTF-8</charset>
+                <pattern>%msg%n</pattern>
+            </encoder>
+            <!-- Rolling policy -->
+            <rollingPolicy class="ch.qos.logback.core.rolling.TimeBasedRollingPolicy">
+                <fileNamePattern>${LOG_PATH}/${LOG_FILE_NAME}.%d{yyyy-MM-dd}.gz</fileNamePattern>
+                <maxHistory>3</maxHistory>
+                <totalSizeCap>100MB</totalSizeCap>
+            </rollingPolicy>
+        </appender>
 
-    <!-- Error Logging -->
-    <appender name="ErrorLogFile" class="ch.qos.logback.core.rolling.RollingFileAppender">
-        <filter class="ch.qos.logback.classic.filter.LevelFilter">
-            <level>ERROR</level>
-            <onMatch>ACCEPT</onMatch>
-            <onMismatch>DENY</onMismatch>
-        </filter>
-        <file>${LOG_PATH}/${ERR_LOG_FILE_NAME}.log</file>
-        <encoder class="ch.qos.logback.classic.encoder.PatternLayoutEncoder">
-            <charset>UTF-8</charset>
-            <pattern>%msg%n</pattern>
-        </encoder>
-        <!-- Rolling policy -->
-        <rollingPolicy class="ch.qos.logback.core.rolling.TimeBasedRollingPolicy">
-            <fileNamePattern>${LOG_PATH}/${ERR_LOG_FILE_NAME}.%d{yyyy-MM-dd}.gz</fileNamePattern>
-            <maxHistory>3</maxHistory>
-            <totalSizeCap>100MB</totalSizeCap>
-        </rollingPolicy>
-    </appender>
+        <!-- Error Logging -->
+        <appender name="ErrorLogFile" class="ch.qos.logback.core.rolling.RollingFileAppender">
+            <filter class="ch.qos.logback.classic.filter.LevelFilter">
+                <level>ERROR</level>
+                <onMatch>ACCEPT</onMatch>
+                <onMismatch>DENY</onMismatch>
+            </filter>
+            <file>${LOG_PATH}/${ERR_LOG_FILE_NAME}.log</file>
+            <encoder class="ch.qos.logback.classic.encoder.PatternLayoutEncoder">
+                <charset>UTF-8</charset>
+                <pattern>%msg%n</pattern>
+            </encoder>
+            <!-- Rolling policy -->
+            <rollingPolicy class="ch.qos.logback.core.rolling.TimeBasedRollingPolicy">
+                <fileNamePattern>${LOG_PATH}/${ERR_LOG_FILE_NAME}.%d{yyyy-MM-dd}.gz</fileNamePattern>
+                <maxHistory>3</maxHistory>
+                <totalSizeCap>100MB</totalSizeCap>
+            </rollingPolicy>
+        </appender>
+    </springProfile>
 
-    <!-- Root logger configuration for console output -->
-    <root level="INFO">
-        <appender-ref ref="CONSOLE"/>
-        <!-- Production Profile Configuration -->
-        <springProfile name="prod">
+    <springProfile name="dev">
+        <root level="INFO">
+            <appender-ref ref="CONSOLE"/>
+        </root>
+    </springProfile>
+
+    <springProfile name="prod">
+        <root level="INFO">
+            <appender-ref ref="CONSOLE"/>
             <appender-ref ref="MainLogFile"/>
-        </springProfile>
-    </root>
+            <appender-ref ref="FILEBEAT"/>
+        </root>
+    </springProfile>
 
 
     <!-- Additional logging config-->
