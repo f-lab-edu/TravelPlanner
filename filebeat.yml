@@ -13,6 +13,4 @@ filebeat.inputs:
 output:
   logstash:
     hosts: ["172.17.0.1:5044"]
-  console:
-    pretty: true
 
