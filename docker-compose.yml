@@ -67,6 +67,7 @@ services:
     image: docker.elastic.co/beats/filebeat:8.14.2
     container_name: filebeat
 #       Need to override user so we can access the log files, and docker.sock
+    command: ["--strict.perms=false"]
     user: root
     volumes:
       - ./filebeat.yml:/usr/share/filebeat/filebeat.yml:ro  # Mount local filebeat.yml
