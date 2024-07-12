@@ -5,6 +5,7 @@
 
     <!-- Define properties for log file paths and names -->
     <springProperty scope="context" name="LOG_PATH" source="logging.file.path"/>
+    <property name="MAIN_LOG_FILE_NAME" value="roamgram"/>
     <property name="LOG_FILE_NAME" value="api"/>
     <property name="ERR_LOG_FILE_NAME" value="api-error"/>
 
@@ -14,6 +15,23 @@
     <appender name="FILEBEAT" class="net.logstash.logback.appender.LogstashTcpSocketAppender">
         <destination>filebeat:5044</destination>
         <encoder class="net.logstash.logback.encoder.LogstashEncoder"/>
+    </appender>
+
+    <!-- main Logging -->
+    <appender name="MainLogFile" class="ch.qos.logback.core.rolling.RollingFileAppender">
+        <file>${LOG_PATH}/${MAIN_LOG_FILE_NAME}.log</file>
+        <encoder class="ch.qos.logback.classic.encoder.PatternLayoutEncoder">
+            <charset>UTF-8</charset>
+            <encoder>
+                <pattern>%d{yyyy-MM-dd HH:mm:ss} - %msg%n</pattern>
+            </encoder>
+        </encoder>
+        <!-- Rolling policy -->
+        <rollingPolicy class="ch.qos.logback.core.rolling.TimeBasedRollingPolicy">
+            <fileNamePattern>${LOG_PATH}/${LOG_FILE_NAME}.%d{yyyy-MM-dd}.gz</fileNamePattern>
+            <maxHistory>3</maxHistory>
+            <totalSizeCap>100MB</totalSizeCap>
+        </rollingPolicy>
     </appender>
 
     <!-- API Logging -->
@@ -63,6 +81,7 @@
         <springProfile name="prod">
             <!-- Redirect console logs to FILEBEAT -->
             <appender-ref ref="FILEBEAT"/>
+            <appender-ref ref="MainLogFile"/>
         </springProfile>
     </root>
 
@@ -70,7 +89,6 @@
     <!-- Additional logging config-->
     <!-- Production Profile Configuration -->
     <springProfile name="prod">
-
         <!-- Attach file appenders only in prod -->
         <logger name="com.roamgram.travelDiary.common.logging.LoggingAspect" level="INFO">
             <appender-ref ref="ApiLogFile"/>
