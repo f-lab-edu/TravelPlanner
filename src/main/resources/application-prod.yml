@@ -20,3 +20,9 @@ spring:
 
 frontend:
   uri: ${FRONTEND_URL}
+
+# Common configuration here
+logging:
+  config: classpath:logback-spring.xml
+  file:
+    path: /var/log/spring-boot
