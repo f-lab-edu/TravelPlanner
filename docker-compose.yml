@@ -47,10 +47,10 @@ services:
       POSTGRES_USER: ${POSTGRES_USERNAME}
       POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
     labels:
-      co.elastic.logs/enabled: "true"
-      co.elastic.logs/module: "postgresql"
-      co.elastic.logs/fileset.stdout: "log"
-      co.elastic.logs/fileset.stderr: "log"
+      co.elastic.logs/enabled: true
+      co.elastic.logs/module: postgresql
+      co.elastic.logs/fileset.stdout: access
+      co.elastic.logs/fileset.stderr: error
     ports:
       - "5432:5432"
     networks:
@@ -62,10 +62,10 @@ services:
     image: "redis:alpine"
     container_name: redis
     labels:
-      co.elastic.logs/enabled: "true"
-      co.elastic.logs/module: "redis"
-      co.elastic.logs/fileset.stdout: "log"
-      co.elastic.logs/fileset.stderr: "log"
+      co.elastic.logs/enabled: true
+      co.elastic.logs/module: redis
+      co.elastic.logs/fileset.stdout: access
+      co.elastic.logs/fileset.stderr: error
     networks:
       - my-network
     ports:
