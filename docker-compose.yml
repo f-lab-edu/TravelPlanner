@@ -48,7 +48,7 @@ services:
       POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
     labels:
       co.elastic.logs/enabled: "true"
-      co.elastic.logs/module: "redis"
+      co.elastic.logs/module: "postgresql"
       co.elastic.logs/fileset.stdout: "log"
       co.elastic.logs/fileset.stderr: "log"
     ports:
@@ -63,7 +63,7 @@ services:
     container_name: redis
     labels:
       co.elastic.logs/enabled: "true"
-      co.elastic.logs/module: "postgresql"
+      co.elastic.logs/module: "redis"
       co.elastic.logs/fileset.stdout: "log"
       co.elastic.logs/fileset.stderr: "log"
     networks:

@@ -1,3 +1,4 @@
+logging.level: debug
 filebeat.inputs:
   - type: log
     id: roamgram-log
