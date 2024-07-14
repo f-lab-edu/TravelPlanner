@@ -16,6 +16,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.ArrayList;
 import java.util.UUID;
 
 @RestController
@@ -43,7 +44,7 @@ public class ReviewController {
         return ResponseEntity.ok(conversionService.convert(review, ReviewResponse.class));
     }
 
-    @GetMapping("/review/all")
+    @GetMapping("/review/schedule-all")
     public ResponseEntity<Page<ReviewResponse>> getAllReviewFromSchedule(@PathVariable UUID travelPlanId,
                                                                          @PathVariable UUID scheduleId,
                                                                          @RequestParam Integer page,
@@ -52,6 +53,29 @@ public class ReviewController {
                 .map(review -> conversionService.convert(review, ReviewResponse.class));
         return ResponseEntity.ok(reviews);
     }
+
+    @GetMapping("/review/public-all")
+    public ResponseEntity<Page<ReviewResponse>> getReview(@PathVariable UUID travelPlanId,
+                                                    @PathVariable UUID scheduleId,
+                                                    @RequestParam Integer page,
+                                                    @RequestParam Integer size) {
+        Page<ReviewResponse> reviews = reviewAccessService.getAllPublicReviews(new ArrayList<>(), page, size)
+                .map(review -> conversionService.convert(review, ReviewResponse.class));
+        return ResponseEntity.ok(reviews);
+    }
+
+    @GetMapping("/review/public-google-maps-id")
+    public ResponseEntity<Page<ReviewResponse>> getReview(@PathVariable UUID travelPlanId,
+                                                          @PathVariable UUID scheduleId,
+                                                          @RequestParam Integer page,
+                                                          @RequestParam Integer size,
+                                                          @RequestParam String googleMapsId) {
+        Page<ReviewResponse> reviews = reviewAccessService.getAllPublicReviewsFromGoogleMapsId(new ArrayList<>(), googleMapsId, page, size)
+                .map(review -> conversionService.convert(review, ReviewResponse.class));
+        return ResponseEntity.ok(reviews);
+    }
+
+
 
     @PutMapping("/review/upload")
     public ResponseEntity<ReviewUploadResponse> uploadReview(@PathVariable UUID travelPlanId,
