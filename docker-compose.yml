@@ -93,6 +93,8 @@ services:
       - /var/log/audit/:/var/log/audit/:ro
     depends_on:
       - spring-boot-app
+      - redis
+      - postgres
     networks:
       - my-network
 
