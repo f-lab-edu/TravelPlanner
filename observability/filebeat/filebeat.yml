@@ -88,6 +88,15 @@ filebeat.modules:
       # - CentOS does not need us to install the audit system, it ships as standard. If you are using Ubuntu, though,
       # this is probably something you would want to install. (sudo apt-get install -y auditd audispd-plugins)
       enabled: true
+  - module: redis
+    log:
+      enabled: true
+      var.paths: [ "/var/lib/docker/containers/*/*.log" ]
+
+  - module: postgresql
+    log:
+      enabled: true
+      var.paths: [ "/var/lib/docker/containers/*/*.log" ]
 
 output:
   logstash:
