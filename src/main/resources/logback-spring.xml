@@ -8,8 +8,7 @@
     <property name="MAIN_LOG_FILE_NAME" value="roamgram"/>
     <property name="LOG_FILE_NAME" value="api"/>
     <property name="ERR_LOG_FILE_NAME" value="api-error"/>
-    <property name="MAIN_LOG_ROLLING_PATTERN" value="%d %p %C{1.} [%t] %m%n"/>
-
+    <property name="MAIN_LOG_ROLLING_PATTERN" value="%date{ISO8601} %5p ${PID} --- [%thread] [%c{1.}] %M - %msg%n"/>
 
     <!--    Appender Declaration    -->
 
