@@ -49,8 +49,8 @@ services:
     labels:
       co.elastic.logs/enabled: true
       co.elastic.logs/module: postgresql
-      co.elastic.logs/fileset.stdout: access
-      co.elastic.logs/fileset.stderr: error
+      co.elastic.logs/fileset.stdout: log
+      co.elastic.logs/fileset.stderr: log
     ports:
       - "5432:5432"
     networks:
@@ -65,8 +65,8 @@ services:
     labels:
       co.elastic.logs/enabled: true
       co.elastic.logs/module: redis
-      co.elastic.logs/fileset.stdout: access
-      co.elastic.logs/fileset.stderr: error
+      co.elastic.logs/fileset.stdout: log
+      co.elastic.logs/fileset.stderr: log
     networks:
       - my-network
     ports:
@@ -101,21 +101,23 @@ services:
     networks:
       - my-network
 
-#  metricbeat:
-#    image: docker.elastic.co/beats/metricbeat:8.14.2
-#    container_name: metricbeat
-#    user: root
-#    volumes:
-#      - ./metricbeat.yml:/usr/share/metricbeat/metricbeat.yml:ro
-#      - /var/run/docker.sock:/var/run/docker.sock
-#      - /sys/fs/cgroup:/hostfs/sys/fs/cgroup:ro
-#      - /proc:/hostfs/proc:ro
-#      - /:/hostfs:ro
-#      - /var/log/metricbeat:/var/log/metricbeat
-#    depends_on:
-#      - spring-boot-app
-#    networks:
-#      - my-network
+  metricbeat:
+    image: docker.elastic.co/beats/metricbeat:8.14.2
+    container_name: metricbeat
+    user: root
+    volumes:
+      - ./observability/metricbeat/metricbeat.yml:/usr/share/metricbeat/metricbeat.yml:ro
+      - /var/run/docker.sock:/var/run/docker.sock
+      - /sys/fs/cgroup:/hostfs/sys/fs/cgroup:ro
+      - /proc:/hostfs/proc:ro
+      - /:/hostfs:ro
+      - /var/log/metricbeat:/var/log/metricbeat
+    # disable strict permission checks
+    command: [ "--strict.perms=false", "-system.hostfs=/hostfs" ]
+    depends_on:
+      - spring-boot-app
+    networks:
+      - my-network
 
 
 networks:
