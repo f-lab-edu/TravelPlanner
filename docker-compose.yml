@@ -74,10 +74,8 @@ services:
       - /var/run/docker.sock:/var/run/docker.sock
       # This is needed for filebeat to load container log path as specified in filebeat.yml
       - /var/lib/docker/containers/:/var/lib/docker/containers/:ro
-
-      # # This is needed for filebeat to load jenkins build log path as specified in filebeat.yml
-      # - /var/lib/docker/volumes/jenkins_home/_data/jobs/:/var/lib/docker/volumes/jenkins_home/_data/jobs/:ro
-
+      # This is needed for filebeat to load spring boot app log path as specified in filebeat.yml
+      - /var/lib/docker/volumes/spring-boot-app/_data/:/usr/share/filebeat/logs/:ro
       # This is needed for filebeat to load logs for system and auth modules
       - /var/log/:/var/log/:ro
       # This is needed for filebeat to load logs for auditd module. you might have to install audit system

@@ -20,7 +20,7 @@
             <encoder class="net.logstash.logback.encoder.LogstashEncoder"/>
         </appender>
 
-        <!-- API Logging -->
+        <!-- main Logging -->
         <appender name="MainLogFile" class="ch.qos.logback.core.rolling.RollingFileAppender">
             <file>${LOG_PATH}/${MAIN_LOG_FILE_NAME}.log</file>
             <encoder class="ch.qos.logback.classic.encoder.PatternLayoutEncoder">
