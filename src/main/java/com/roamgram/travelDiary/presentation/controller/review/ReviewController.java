@@ -75,8 +75,6 @@ public class ReviewController {
         return ResponseEntity.ok(reviews);
     }
 
-
-
     @PutMapping("/review/upload")
     public ResponseEntity<ReviewUploadResponse> uploadReview(@PathVariable UUID travelPlanId,
                                                              @PathVariable UUID scheduleId,
