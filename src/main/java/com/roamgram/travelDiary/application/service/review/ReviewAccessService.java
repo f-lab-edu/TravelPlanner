@@ -28,6 +28,7 @@ public class ReviewAccessService {
         this.reviewRepository = reviewRepository;
     }
 
+    @Transactional
     @CheckAccess(resourceType = Review.class, spelResourceId = "#reviewId", permission = "EDIT")
     public Review getReviewById(UUID reviewId) {
         return reviewRepository.findById(reviewId).orElseThrow();
