@@ -69,8 +69,11 @@ filebeat.autodiscover:
   providers:
     - type: docker
       # https://www.elastic.co/guide/en/beats/filebeat/current/configuration-autodiscover-hints.html
-      # This URL alos contains instructions on multi-line logs
+      # This URL also contains instructions on multi-line logs
       hints.enabled: true
+
+processors:
+  - add_docker_metadata: ~
 
 filebeat.modules:
   - module: system

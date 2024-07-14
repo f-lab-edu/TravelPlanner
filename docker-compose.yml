@@ -46,6 +46,11 @@ services:
       POSTGRES_DB: ${POSTGRES_DB_NAME}
       POSTGRES_USER: ${POSTGRES_USERNAME}
       POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
+    labels:
+      co.elastic.logs/enabled: "true"
+      co.elastic.logs/module: "redis"
+      co.elastic.logs/fileset.stdout: "log"
+      co.elastic.logs/fileset.stderr: "log"
     ports:
       - "5432:5432"
     networks:
@@ -56,6 +61,11 @@ services:
   redis:
     image: "redis:alpine"
     container_name: redis
+    labels:
+      co.elastic.logs/enabled: "true"
+      co.elastic.logs/module: "postgresql"
+      co.elastic.logs/fileset.stdout: "log"
+      co.elastic.logs/fileset.stderr: "log"
     networks:
       - my-network
     ports:
@@ -70,7 +80,7 @@ services:
     command: ["--strict.perms=false"]
     user: root
     volumes:
-      - ./filebeat.yml:/usr/share/filebeat/filebeat.yml:ro  # Mount local filebeat.yml
+      - ./observability/filebeat/filebeat.yml:/usr/share/filebeat/filebeat.yml:ro  # Mount local filebeat.yml
       - /var/run/docker.sock:/var/run/docker.sock
       # This is needed for filebeat to load container log path as specified in filebeat.yml
       - /var/lib/docker/containers/:/var/lib/docker/containers/:ro
