@@ -75,7 +75,7 @@ services:
       # This is needed for filebeat to load container log path as specified in filebeat.yml
       - /var/lib/docker/containers/:/var/lib/docker/containers/:ro
       # This is needed for filebeat to load spring boot app log path as specified in filebeat.yml
-      - /var/lib/docker/volumes/spring-boot-app/_data/:/usr/share/filebeat/logs/:ro
+      - /var/lib/docker/volumes/spring-boot-app/_data/:/var/log/spring-boot-app/:ro
       # This is needed for filebeat to load logs for system and auth modules
       - /var/log/:/var/log/:ro
       # This is needed for filebeat to load logs for auditd module. you might have to install audit system
