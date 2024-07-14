@@ -76,6 +76,7 @@ public class ResourceService {
         resourcePermissionRepository.flush();
     }
 
+    @Transactional
     public List<UUID> getPublicResourceIds(String resourceType) {
         return resourceRepository.findPublicResourceIdsByType(PUBLIC, resourceType);
     }

@@ -13,6 +13,7 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 import java.util.UUID;
@@ -32,12 +33,14 @@ public class ReviewAccessService {
         return reviewRepository.findById(reviewId).orElseThrow();
     }
 
+    @Transactional
     @CheckAccess(resourceType = Schedule.class, spelResourceId = "#scheduleId", permission = "VIEW")
     public Page<Review> getAllReviewsFromSchedule(UUID scheduleId, Integer page, Integer size) {
         Pageable pageable = PageRequest.of(page, size);
         return reviewRepository.findAllByScheduleId(scheduleId, pageable);
     }
 
+    @Transactional
     @InjectAuthorisedResourceIds(parameterName = "resourceIds", resourceType = "Review", permissionType = UserResourcePermissionTypes.VIEW)
     public Page<Review> getAllAuthorisedReviews(List<UUID> resourceIds, Integer page, Integer size) {
         Pageable pageable = PageRequest.of(page, size);
@@ -45,6 +48,7 @@ public class ReviewAccessService {
         return result;
     }
 
+    @Transactional
     @InjectPublicResourceIds(parameterName = "resourceIds", resourceType = "Review")
     public Page<Review> getAllPublicReviews(List<UUID> resourceIds, Integer page, Integer size) {
         Pageable pageable = PageRequest.of(page, size);
@@ -52,6 +56,7 @@ public class ReviewAccessService {
         return result;
     }
 
+    @Transactional
     @InjectPublicResourceIds(parameterName = "resourceIds", resourceType = "Review")
     public Page<Review> getAllPublicReviewsFromGoogleMapsId(List<UUID> resourceIds,  String googleMapsId, Integer page, Integer size) {
         Pageable pageable = PageRequest.of(page, size);
