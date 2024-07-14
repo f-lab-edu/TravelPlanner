@@ -54,4 +54,5 @@ public class ResourcePermissionService {
         log.info("at ResourcePermissionService#getResourceIdsByUserPermissionAndType, UserProfile {}", userProfile);
         return resourcePermissionRepository.findResourceIdsByUserProfileAndPermissionAndType(userProfile, permission.getLevel(), type);
     }
+
 }

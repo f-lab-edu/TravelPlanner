@@ -2,7 +2,7 @@ package com.roamgram.travelDiary.application.service.travel.schedule;
 
 import com.roamgram.travelDiary.application.service.travel.event.ActivityAccessService;
 import com.roamgram.travelDiary.common.permissions.aop.CheckAccess;
-import com.roamgram.travelDiary.common.permissions.aop.InjectResourceIds;
+import com.roamgram.travelDiary.common.permissions.aop.InjectAuthorisedResourceIds;
 import com.roamgram.travelDiary.common.permissions.domain.UserResourcePermissionTypes;
 import com.roamgram.travelDiary.domain.model.travel.Activity;
 import com.roamgram.travelDiary.domain.model.travel.Schedule;
@@ -36,7 +36,7 @@ public class ScheduleQueryService {
         return scheduleRepository.findById(scheduleId).orElseThrow();
     }
 
-    @InjectResourceIds(parameterName = "resourceIds", resourceType = "Schedule", permissionType = UserResourcePermissionTypes.VIEW)
+    @InjectAuthorisedResourceIds(parameterName = "resourceIds", resourceType = "Schedule", permissionType = UserResourcePermissionTypes.VIEW)
     public Page<Schedule> getAllAuthorisedSchedulesOnGivenDay(LocalDate date, Integer pageNumber, Integer pageSize, List<UUID> resourceIds) {
         PageRequest pageable = PageRequest.of(pageNumber,pageSize);
         LocalDateTime start = date.atStartOfDay();
@@ -44,14 +44,14 @@ public class ScheduleQueryService {
         return scheduleRepository.findAllByTravelDate(start, end, resourceIds, pageable);
     }
 
-    @InjectResourceIds(parameterName = "resourceIds", resourceType = "Schedule", permissionType = UserResourcePermissionTypes.VIEW)
+    @InjectAuthorisedResourceIds(parameterName = "resourceIds", resourceType = "Schedule", permissionType = UserResourcePermissionTypes.VIEW)
     public Page<Schedule> getAllAuthorisedScheduleContainingName(String name, Integer pageNumber, Integer pageSize, List<UUID> resourceIds) {
         PageRequest pageable = PageRequest.of(pageNumber,pageSize);
         return scheduleRepository.findAllByPlaceNameContaining(name, resourceIds, pageable);
     }
 
     @CheckAccess(resourceType = TravelPlan.class, spelResourceId = "#travelPlanId", permission = "VIEW")
-    @InjectResourceIds(parameterName = "resourceIds", resourceType = "Schedule", permissionType = UserResourcePermissionTypes.VIEW)
+    @InjectAuthorisedResourceIds(parameterName = "resourceIds", resourceType = "Schedule", permissionType = UserResourcePermissionTypes.VIEW)
     public List<Schedule> getAllAuthorisedSchedulesInTravelPlan(UUID travelPlanId, List<UUID> resourceIds) {
         return scheduleRepository.findAllByTravelPlanId(travelPlanId, resourceIds);
     }

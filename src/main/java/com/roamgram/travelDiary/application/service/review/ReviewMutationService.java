@@ -149,7 +149,7 @@ public class ReviewMutationService {
         uploadResponse.setReview(conversionService.convert(review, ReviewResponse.class));
         uploadResponse.setPendingOrFailedFiles(pendingOrFailedFiles);
 
-        eventPublisher.publishEvent(new ReviewCreatedEvent(scheduleId, review));
+        eventPublisher.publishEvent(new ReviewCreatedEvent(scheduleId, review, reviewUploadRequest.isPublic));
         return uploadResponse;
     }
 

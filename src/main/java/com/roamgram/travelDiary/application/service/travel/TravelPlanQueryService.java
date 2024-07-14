@@ -2,7 +2,7 @@ package com.roamgram.travelDiary.application.service.travel;
 
 import com.roamgram.travelDiary.application.service.travel.schedule.ScheduleQueryService;
 import com.roamgram.travelDiary.common.permissions.aop.CheckAccess;
-import com.roamgram.travelDiary.common.permissions.aop.InjectResourceIds;
+import com.roamgram.travelDiary.common.permissions.aop.InjectAuthorisedResourceIds;
 import com.roamgram.travelDiary.common.permissions.domain.UserResourcePermissionTypes;
 import com.roamgram.travelDiary.domain.model.travel.TravelPlan;
 import com.roamgram.travelDiary.domain.model.wallet.aggregate.MonetaryEvent;
@@ -38,7 +38,7 @@ public class TravelPlanQueryService {
     }
 
     @Transactional(readOnly = true)
-    @InjectResourceIds(parameterName = "resourceIds", resourceType = "TravelPlan", permissionType = UserResourcePermissionTypes.VIEW)
+    @InjectAuthorisedResourceIds(parameterName = "resourceIds", resourceType = "TravelPlan", permissionType = UserResourcePermissionTypes.VIEW)
     public List<TravelPlan> getAllAuthorisedTravelPlan(List<UUID> resourceIds) {
         log.info("resourceIds: {}", resourceIds);
         List<TravelPlan> result = travelPlanRepository.findAllByResourceIds(resourceIds);
@@ -47,7 +47,7 @@ public class TravelPlanQueryService {
     }
     // Delegate the permission handling to PermissionService
     @Transactional(readOnly = true)
-    @InjectResourceIds(parameterName = "resourceIds", resourceType = "TravelPlan", permissionType = UserResourcePermissionTypes.VIEW)
+    @InjectAuthorisedResourceIds(parameterName = "resourceIds", resourceType = "TravelPlan", permissionType = UserResourcePermissionTypes.VIEW)
     public Page<TravelPlan> getAuthorisedTravelPageContainingName(String name, int pageNumber, int pageSize, List<UUID> resourceIds) {
         PageRequest pageRequest = PageRequest.of(pageNumber, pageSize);
         // Fetch travel plans by resource IDs

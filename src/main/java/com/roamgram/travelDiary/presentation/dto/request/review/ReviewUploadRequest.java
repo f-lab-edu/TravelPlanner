@@ -17,4 +17,6 @@ public class ReviewUploadRequest {
 
     public Double rating;
 
+    public boolean isPublic;
+
 }

@@ -3,10 +3,10 @@ spring:
     name: travelDiary
 
 #    uncomment below before doing local dev work.
-#  profiles:
-#    include: secretsLocal
+  profiles:
+    include: secretsLocal
 
 #    uncomment below before using buildx or GitHub workflow
-  profiles:
-    active: prod
-    include: prodsecrets
+#  profiles:
+#    active: prod
+#    include: prodsecrets

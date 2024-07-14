@@ -9,4 +9,5 @@ import java.util.UUID;
 public class ReviewCreatedEvent {
     private final UUID scheduleId;
     private final Review review;
+    private final boolean isPublic;
 }

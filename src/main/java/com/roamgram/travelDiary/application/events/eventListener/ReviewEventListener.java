@@ -39,7 +39,8 @@ public class ReviewEventListener {
     public void handleReviewCreatedEvent (ReviewCreatedEvent event) {
         Review review = event.getReview();
         UUID scheduleId = event.getScheduleId();
-        Resource resource = resourceService.createResource(review, "private");
+        String publicSetting = event.isPublic() ? "public" : "private";
+        Resource resource = resourceService.createResource(review, publicSetting);
         scheduleMutationService.linkReview(scheduleId, review);
         review.setResource(resource);
         reviewRepository.save(review);

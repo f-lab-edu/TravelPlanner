@@ -22,6 +22,7 @@ public class ResourceService {
     private final ResourcePermissionRepository resourcePermissionRepository;
     private final AuthUserService authUserService;
     private final ResourcePermissionService resourcePermissionService;
+    private final String PUBLIC = "public";
 
 
     @Autowired
@@ -73,5 +74,9 @@ public class ResourceService {
         // and that the implementation as of current may be modified in the future for greater gains in efficiency by reducing database calls.
         resourcePermissionRepository.deleteAllByResourceIn(resourceId);
         resourcePermissionRepository.flush();
+    }
+
+    public List<UUID> getPublicResourceIds(String resourceType) {
+        return resourceRepository.findPublicResourceIdsByType(PUBLIC, resourceType);
     }
 }

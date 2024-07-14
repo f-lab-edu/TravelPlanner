@@ -1,8 +1,10 @@
 package com.roamgram.travelDiary.application.service.review;
 
 import com.roamgram.travelDiary.common.permissions.aop.CheckAccess;
-import com.roamgram.travelDiary.common.permissions.aop.InjectResourceIds;
+import com.roamgram.travelDiary.common.permissions.aop.InjectAuthorisedResourceIds;
+import com.roamgram.travelDiary.common.permissions.aop.InjectPublicResourceIds;
 import com.roamgram.travelDiary.common.permissions.domain.UserResourcePermissionTypes;
+import com.roamgram.travelDiary.domain.model.location.Place;
 import com.roamgram.travelDiary.domain.model.review.Review;
 import com.roamgram.travelDiary.domain.model.travel.Schedule;
 import com.roamgram.travelDiary.repository.persistence.review.ReviewRepository;
@@ -36,10 +38,24 @@ public class ReviewAccessService {
         return reviewRepository.findAllByScheduleId(scheduleId, pageable);
     }
 
-    @InjectResourceIds(parameterName = "resourceIds", resourceType = "Review", permissionType = UserResourcePermissionTypes.VIEW)
+    @InjectAuthorisedResourceIds(parameterName = "resourceIds", resourceType = "Review", permissionType = UserResourcePermissionTypes.VIEW)
     public Page<Review> getAllAuthorisedReviews(List<UUID> resourceIds, Integer page, Integer size) {
         Pageable pageable = PageRequest.of(page, size);
-        Page<Review> result = reviewRepository.findAllAuthorized(resourceIds, pageable);
+        Page<Review> result = reviewRepository.findAllFromAuthorizedIds(resourceIds, pageable);
+        return result;
+    }
+
+    @InjectPublicResourceIds(parameterName = "resourceIds", resourceType = "Review")
+    public Page<Review> getAllPublicReviews(List<UUID> resourceIds, Integer page, Integer size) {
+        Pageable pageable = PageRequest.of(page, size);
+        Page<Review> result = reviewRepository.findAllFromAuthorizedIds(resourceIds, pageable);
+        return result;
+    }
+
+    @InjectPublicResourceIds(parameterName = "resourceIds", resourceType = "Review")
+    public Page<Review> getAllPublicReviewsFromGoogleMapsId(List<UUID> resourceIds,  String googleMapsId, Integer page, Integer size) {
+        Pageable pageable = PageRequest.of(page, size);
+        Page<Review> result = reviewRepository.findAllFromAuthorizedIdsAndPlace(resourceIds, googleMapsId, pageable);
         return result;
     }
 
