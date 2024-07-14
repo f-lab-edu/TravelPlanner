@@ -71,7 +71,6 @@ filebeat.autodiscover:
       # https://www.elastic.co/guide/en/beats/filebeat/current/configuration-autodiscover-hints.html
       # This URL also contains instructions on multi-line logs
       hints.enabled: true
-      hints.default_config.enabled: false
 
 processors:
   - add_docker_metadata: ~
