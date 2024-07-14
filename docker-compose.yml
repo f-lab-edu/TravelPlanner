@@ -57,6 +57,7 @@ services:
       - my-network
     volumes:
       - postgres_data:/var/lib/postgresql/data
+      - /var/lib/docker/containers/:/var/lib/docker/containers/:ro  # Mount Docker container logs
 
   redis:
     image: "redis:alpine"
@@ -72,6 +73,8 @@ services:
       - "6379:6379"
     expose:
       - "6379"
+    volumes:
+      - /var/lib/docker/containers/:/var/lib/docker/containers/:ro  # Mount Docker container logs
 
   filebeat:
     image: docker.elastic.co/beats/filebeat:8.14.2

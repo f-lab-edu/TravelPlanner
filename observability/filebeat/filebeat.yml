@@ -1,15 +1,15 @@
 filebeat.inputs:
-  - type: log
-    id: roamgram-log
-    enabled: true
-    paths:
-      - /usr/share/filebeat/spring-boot-app/roamgram.log
-    multiline:
-      pattern: '^[0-9]{4}-[0-9]{2}-[0-9]{2}'  # Matches the timestamp format at the beginning of each line
-      negate: true
-      match: after
-    fields:
-      log_type: main-log  # Assigning a field to indicate the log type
+#  - type: log
+#    id: roamgram-log
+#    enabled: true
+#    paths:
+#      - /usr/share/filebeat/spring-boot-app/roamgram.log
+#    multiline:
+#      pattern: '^[0-9]{4}-[0-9]{2}-[0-9]{2}'  # Matches the timestamp format at the beginning of each line
+#      negate: true
+#      match: after
+#    fields:
+#      log_type: main-log  # Assigning a field to indicate the log type
 
   - type: log
     enabled: true
