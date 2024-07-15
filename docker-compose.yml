@@ -103,25 +103,6 @@ services:
     networks:
       - my-network
 
-  metricbeat:
-    image: docker.elastic.co/beats/metricbeat:8.14.2
-    container_name: metricbeat
-    user: root
-    volumes:
-      - ./observability/metricbeat/metricbeat.yml:/usr/share/metricbeat/metricbeat.yml:ro
-      - /var/run/docker.sock:/var/run/docker.sock
-      - /sys/fs/cgroup:/hostfs/sys/fs/cgroup:ro
-      - /proc:/hostfs/proc:ro
-      - /:/hostfs:ro
-      - /var/log/metricbeat:/var/log/metricbeat
-    # disable strict permission checks
-    command: [ "--strict.perms=false", "-system.hostfs=/hostfs" ]
-    depends_on:
-      - spring-boot-app
-    networks:
-      - my-network
-
-
 networks:
   my-network:
     driver: bridge

@@ -10,3 +10,11 @@ spring:
   profiles:
     active: prod
     include: prodsecrets
+
+management:
+  endpoints:
+    web:
+      exposure:
+        include: "*"
+  jolokia:
+    enabled: true
