@@ -42,3 +42,6 @@ spring:
 
 frontend:
   uri: https://roamgram-deployment.vercel.app/
+
+devserver:
+  uri: https://3.24.135.223:443

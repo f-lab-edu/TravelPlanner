@@ -9,7 +9,7 @@ services:
       dockerfile: Dockerfile
     ports:
       - "8080:8080"
-      - "443:443"
+      - "6974:443"
     labels:
       co.elastic.logs/enabled: false
     extra_hosts:
@@ -81,7 +81,7 @@ services:
   filebeat:
     image: docker.elastic.co/beats/filebeat:8.14.2
     container_name: filebeat
-#       Need to override user so we can access the log files, and docker.sock
+    #       Need to override user so we can access the log files, and docker.sock
     command: ["--strict.perms=false"]
     user: root
     volumes:
@@ -92,10 +92,10 @@ services:
       # This is needed for filebeat to load spring boot app log path as specified in filebeat.yml
       - /var/lib/docker/volumes/travelplanner_spring-boot-logs/_data:/usr/share/filebeat/spring-boot-app/:ro
       # This is needed for filebeat to load logs for system and auth modules
-#      - /var/log/:/var/log/:ro
+      #      - /var/log/:/var/log/:ro
       # This is needed for filebeat to load logs for auditd module. you might have to install audit system
       # on ubuntu first (sudo apt-get install -y auditd audispd-plugins)
-#      - /var/log/audit/:/var/log/audit/:ro
+    #      - /var/log/audit/:/var/log/audit/:ro
     depends_on:
       - spring-boot-app
       - redis
