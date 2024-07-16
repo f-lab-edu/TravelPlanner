@@ -34,9 +34,10 @@ dependencies {
 
     implementation("com.fasterxml.jackson.datatype:jackson-datatype-hibernate6:2.17.1")
     implementation("io.github.cdimascio:dotenv-java:3.0.0")
-    implementation("org.springframework.boot:spring-boot-actuator:3.3.1")
-    implementation("org.jolokia:jolokia-core:1.7.2")
-    implementation("io.micrometer:micrometer-registry-elastic:1.13.2")
+    implementation("org.springframework.boot:spring-boot-starter-actuator:3.3.1")
+    implementation("org.jolokia:jolokia-support-spring:2.0.3")
+    implementation("co.elastic.apm:apm-agent-attach:1.50.0")
+    implementation("co.elastic.apm:elastic-apm-agent:1.50.0")
     implementation("org.springframework.boot:spring-boot-starter-security")
     implementation("org.springframework.boot:spring-boot-starter-oauth2-client")
     implementation("org.thymeleaf.extras:thymeleaf-extras-springsecurity6")

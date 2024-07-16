@@ -60,7 +60,9 @@ public class SecurityConfig {
                                 "/v3/api-docs/**",
                                 "/swagger-resources/**",
                                 "/webjars/**",
-                                "/h2-console/**"
+                                "/h2-console/**",
+                                "/actuator",
+                                "/actuator/**"
                         ).permitAll()  // Allow access to Swagger UI and documentation
                         .requestMatchers("/media-file/complete-upload").permitAll() //aws callback
                         .anyRequest().authenticated()

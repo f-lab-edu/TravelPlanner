@@ -18,7 +18,7 @@ public interface ResourceRepository extends JpaRepository<Resource, UUID> {
 
     List<Resource> findAllByResourceUUIDIn(Collection<UUID> resourceUUID);
 
-    @Query("SELECT r FROM Resource r WHERE r.visibility = :resourceType" +
+    @Query("SELECT r.id FROM Resource r WHERE r.visibility = :resourceType" +
             " AND r.type = :simpleName")
     List<UUID> findPublicResourceIdsByType(@Param("resourceType")String resourceType, @Param("simpleName")String simpleName);
 }

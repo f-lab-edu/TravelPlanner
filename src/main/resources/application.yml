@@ -16,5 +16,4 @@ management:
     web:
       exposure:
         include: "*"
-  jolokia:
-    enabled: true
+

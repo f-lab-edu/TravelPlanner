@@ -9,7 +9,7 @@ services:
       dockerfile: Dockerfile
     ports:
       - "8080:8080"
-      - "443:443"
+      - "6974:443"
     labels:
       co.elastic.logs/enabled: false
     extra_hosts:
