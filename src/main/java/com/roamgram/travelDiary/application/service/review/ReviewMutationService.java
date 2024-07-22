@@ -46,7 +46,7 @@ public class ReviewMutationService {
     }
 
     @Transactional
-    @CheckAccess(resourceType = Review.class, spelResourceId = "#reviewEditAppendRequest.reviewId", permission = "EDIT")
+    @CheckAccess(resourceType = Review.class, spelResourceId = "#reviewEditAppendRequest.reviewId", permission = "EDITOR")
     public Review editReviewAppendFiles(ReviewEditAppendRequest reviewEditAppendRequest) {
         UUID reviewId = reviewEditAppendRequest.getReviewId();
         Review review = reviewRepository.findById(reviewId)
@@ -83,7 +83,7 @@ public class ReviewMutationService {
     }
 
     @Transactional
-    @CheckAccess(resourceType = Review.class, spelResourceId = "#reviewEditRemoveRequest.reviewId", permission = "EDIT")
+    @CheckAccess(resourceType = Review.class, spelResourceId = "#reviewEditRemoveRequest.reviewId", permission = "EDITOR")
     public Review editReviewRemoveFiles(ReviewEditRemoveRequest reviewEditRemoveRequest) {
         UUID reviewId = reviewEditRemoveRequest.getReviewId();
         Review reviewToUpdate = reviewRepository.findById(reviewId).orElseThrow();
@@ -103,8 +103,8 @@ public class ReviewMutationService {
     }
 
     @Transactional
-    @CheckAccess(resourceType = Schedule.class, spelResourceId = "#scheduleId", permission = "EDIT")
-    @CheckAccess(resourceType = Review.class, spelResourceId = "#reviewId", permission = "EDIT")
+    @CheckAccess(resourceType = Schedule.class, spelResourceId = "#scheduleId", permission = "EDITOR")
+    @CheckAccess(resourceType = Review.class, spelResourceId = "#reviewId", permission = "EDITOR")
     public UUID deleteReview(UUID scheduleId, UUID reviewId) {
         eventPublisher.publishEvent(new ReviewPreDeletedEvent(scheduleId, reviewId));
         reviewRepository.deleteById(reviewId);
@@ -112,7 +112,7 @@ public class ReviewMutationService {
     }
 
     @Transactional
-    @CheckAccess(resourceType = Schedule.class, spelResourceId = "#scheduleId", permission = "EDIT")
+    @CheckAccess(resourceType = Schedule.class, spelResourceId = "#scheduleId", permission = "EDITOR")
     public ReviewUploadResponse uploadReview(UUID scheduleId, ReviewUploadRequest reviewUploadRequest) {
         List<MediaFile> uploadedFiles = new ArrayList<>();
         List<MediaFile> pendingOrFailedFiles = new ArrayList<>();

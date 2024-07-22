@@ -17,8 +17,7 @@ public class ExpenditureConverterStrategy implements MonetaryEventEntityConverte
         return List.of(
                 MonetaryEventEntity
                         .builder()
-                        .transactionId(UUID.randomUUID().toString())
-                        .source("source")
+                        .monetaryTransactionId(UUID.randomUUID())
                         .amount(expenditure.getAmount())
                         .currency(expenditure.getCurrency())
                         .timestamp(Instant.now())

@@ -6,7 +6,8 @@ import lombok.Getter;
 public enum UserResourcePermissionTypes {
     VIEW(1),
     CLONE(2),
-    EDIT(3),
+    PARTICIPANT(2),
+    EDITOR(3),
     OWNER(4);
 
     private final int level;

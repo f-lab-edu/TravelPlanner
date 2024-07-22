@@ -14,6 +14,9 @@ public class IncomeRequestToAggregate implements Converter<IncomeRequest, Income
         if (source.getId() != null) {
             income.setId(source.getId());
         }
+        if(source.getParentActivityId() != null) {
+            income.setParentActivityId(source.getParentActivityId());
+        }
         if (source.getDescription() != null) {
             income.setDescription(source.getDescription());
         }

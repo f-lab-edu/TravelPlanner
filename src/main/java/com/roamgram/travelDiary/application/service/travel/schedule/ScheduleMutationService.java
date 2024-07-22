@@ -48,7 +48,7 @@ public class ScheduleMutationService {
     }
 
     @Transactional
-    @CheckAccess(resourceType = TravelPlan.class, spelResourceId = "#travelPlanId", permission = "EDIT")
+    @CheckAccess(resourceType = TravelPlan.class, spelResourceId = "#travelPlanId", permission = "EDITOR")
     public UUID createSchedule(UUID travelPlanId, ScheduleInsertRequest request) {
         Schedule schedule = conversionService.convert(request, Schedule.class);
         assert schedule != null;
@@ -66,7 +66,7 @@ public class ScheduleMutationService {
     }
 
     @Transactional
-    @CheckAccess(resourceType = Schedule.class, spelResourceId = "#scheduleId", permission = "EDIT")
+    @CheckAccess(resourceType = Schedule.class, spelResourceId = "#scheduleId", permission = "EDITOR")
     public UUID deleteSchedule(UUID travelPlanId, UUID scheduleId) {
         Schedule schedule = scheduleRepository.findById(scheduleId).orElseThrow(() -> new EntityNotFoundException("Schedule not found"));
         eventPublisher.publishEvent(new SchedulePreDeletedEvent(travelPlanId,scheduleId));
@@ -80,7 +80,7 @@ public class ScheduleMutationService {
 
 
     @Transactional
-    @CheckAccess(resourceType = Schedule.class, spelResourceId = "#request.scheduleId", permission = "EDIT")
+    @CheckAccess(resourceType = Schedule.class, spelResourceId = "#request.scheduleId", permission = "EDITOR")
     public Schedule updateScheduleMetadata(UUID travelPlanId, ScheduleMetadataUpdateRequest request) {
         Schedule schedule = scheduleRepository.findById(request.getScheduleId()).orElseThrow();
         updateNonNullMetaDataFields(request, schedule);
@@ -93,7 +93,7 @@ public class ScheduleMutationService {
 
     //PLACE UPDATES
     @Transactional
-    @CheckAccess(resourceType = Schedule.class, spelResourceId = "#scheduleId", permission = "EDIT")
+    @CheckAccess(resourceType = Schedule.class, spelResourceId = "#scheduleId", permission = "EDITOR")
     public Schedule reassignPlace(UUID scheduleId, PlaceUpdateRequest request) {
         //move to controller
         Place place = placeMutationService.createNewPlaceIfNotExists(request);
@@ -114,8 +114,8 @@ public class ScheduleMutationService {
 
     //ROUTE related
     @Transactional
-    @CheckAccess(resourceType = Schedule.class, spelResourceId = "#updateRequest.outBoundScheduleId", permission = "EDIT")
-    @CheckAccess(resourceType = Schedule.class, spelResourceId = "#updateRequest.inBoundScheduleId", permission = "EDIT")
+    @CheckAccess(resourceType = Schedule.class, spelResourceId = "#updateRequest.outBoundScheduleId", permission = "EDITOR")
+    @CheckAccess(resourceType = Schedule.class, spelResourceId = "#updateRequest.inBoundScheduleId", permission = "EDITOR")
     public Route updateRouteDetails(RouteUpdateRequest updateRequest) {
         Schedule inboundSchedule = scheduleRepository
                 .findById(

@@ -5,6 +5,7 @@ import com.roamgram.travelDiary.domain.model.wallet.entity.MonetaryEventEntity;
 
 import java.util.List;
 import java.util.Map;
+import java.util.UUID;
 import java.util.stream.Collectors;
 
 public class MonetaryEventAssembler {
@@ -15,8 +16,8 @@ public class MonetaryEventAssembler {
     }
 
     public static List<MonetaryEvent> toAggregates(List<MonetaryEventEntity> entities) {
-        Map<String, List<MonetaryEventEntity>> groupedByTransactionId = entities.stream()
-                .collect(Collectors.groupingByConcurrent(MonetaryEventEntity::getTransactionId));
+        Map<UUID, List<MonetaryEventEntity>> groupedByTransactionId = entities.stream()
+                .collect(Collectors.groupingByConcurrent(MonetaryEventEntity::getMonetaryTransactionId));
 
         return groupedByTransactionId.values().stream()
                 .map(group -> {
@@ -25,7 +26,7 @@ public class MonetaryEventAssembler {
                     } else if (group.size() == 2) {
                         return toAggregate(group.getFirst(), group);
                     } else {
-                        throw new IllegalArgumentException("Unexpected number of entities for transaction ID: " + group.get(0).getTransactionId());
+                        throw new IllegalArgumentException("Unexpected number of entities for transaction ID: " + group.get(0).getMonetaryTransactionId());
                     }
                 })
                 .collect(Collectors.toList());

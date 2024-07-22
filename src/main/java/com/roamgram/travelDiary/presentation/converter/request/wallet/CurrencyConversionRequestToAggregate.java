@@ -13,6 +13,9 @@ public class CurrencyConversionRequestToAggregate implements Converter<CurrencyC
         if(source.getId() != null) {
             currencyConversion.setId(source.getId());
         }
+        if(source.getParentActivityId() != null) {
+            currencyConversion.setParentActivityId(source.getParentActivityId());
+        }
         if(source.getCurrencyFrom() != null) {
             currencyConversion.setCurrencyFrom(Currency.getInstance(source.getCurrencyFrom()));
         }

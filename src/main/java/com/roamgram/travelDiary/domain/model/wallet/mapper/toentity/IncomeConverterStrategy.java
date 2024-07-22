@@ -17,8 +17,8 @@ public class IncomeConverterStrategy implements MonetaryEventEntityConverterStra
         return List.of(
                 MonetaryEventEntity
                         .builder()
-                        .transactionId(UUID.randomUUID().toString())
-                        .source("source")
+                        .monetaryTransactionId(UUID.randomUUID())
+                        .isSource(true)
                         .amount(income.getAmount())
                         .currency(income.getCurrency())
                         .description(income.getDescription())

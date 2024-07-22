@@ -370,3 +370,4 @@ services:
       - KIBANA_FLEET_USERNAME=elastic
       - KIBANA_FLEET_PASSWORD=${ELASTIC_PASSWORD}
       - KIBANA_HOST=https://kibana:5601
+      - JAVA_OPTS=-Delastic.apm.verify_server_cert=false

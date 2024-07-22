@@ -9,6 +9,7 @@ import java.util.UUID;
 @Data
 public class CurrencyConvertRequest {
     private UUID id;
+    private UUID parentActivityId;
     private String currencyFrom;
     private String currencyTo;
     private Amount convertedAmountFrom;

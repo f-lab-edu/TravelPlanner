@@ -17,6 +17,7 @@ import java.util.UUID;
 @NoArgsConstructor
 public class CurrencyConversion implements MonetaryEvent {
     private UUID id;
+    private UUID parentActivityId;
     private Currency currencyFrom;
     private Currency currencyTo;
     private Amount convertedAmountFrom;

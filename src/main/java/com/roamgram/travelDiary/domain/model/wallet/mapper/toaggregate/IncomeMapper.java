@@ -16,9 +16,9 @@ public class IncomeMapper implements MonetaryEventMapper {
         MonetaryEventEntity entity = entities.getFirst();
         return Income.builder()
                 .id(entity.getId())
+                .parentActivityId(entity.getParentActivityId())
                 .amount(entity.getAmount())
                 .currency(entity.getCurrency())
-                .source(entity.getSource())
                 .description(entity.getDescription())
                 .timestamp(entity.getTimestamp())
                 .build();

@@ -31,7 +31,7 @@ repositories {
 }
 
 dependencies {
-
+    implementation("org.springframework.boot:spring-boot-starter-websocket:3.3.1")
     implementation("com.fasterxml.jackson.datatype:jackson-datatype-hibernate6:2.17.1")
     implementation("io.github.cdimascio:dotenv-java:3.0.0")
     implementation("org.springframework.boot:spring-boot-starter-actuator:3.3.1")

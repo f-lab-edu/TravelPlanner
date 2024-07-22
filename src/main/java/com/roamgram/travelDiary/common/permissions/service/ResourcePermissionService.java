@@ -13,6 +13,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
+import java.util.Optional;
 import java.util.UUID;
 
 @Service
@@ -44,6 +45,20 @@ public class ResourcePermissionService {
         ResourcePermission tempPerm = resourcePermissionRepository.findById(permission.getId()).orElseThrow();
     }
 
+    @Transactional
+    public void assignPermission(UserResourcePermissionTypes permissionTypes, Resource resource, UserProfile targetUser) {
+        ResourcePermission permission = ResourcePermission.builder()
+                .userProfile(targetUser)
+                .resource(resource)
+                .permissions(permissionTypes)
+                .build();
+        String string = permission.toString();
+        resourcePermissionRepository.save(permission);
+        resource.getPermissions().add(permission);
+        resourceRepository.save(resource);
+        ResourcePermission tempPerm = resourcePermissionRepository.findById(permission.getId()).orElseThrow();
+    }
+
     public List<UUID> getResourceIdsByUserPermission(UserResourcePermissionTypes permission) {
         UserProfile userProfile = authUserService.getCurrentUser();
         return resourcePermissionRepository.findResourceIdsByUserProfileAndPermission(userProfile, permission.getLevel());
@@ -55,4 +70,7 @@ public class ResourcePermissionService {
         return resourcePermissionRepository.findResourceIdsByUserProfileAndPermissionAndType(userProfile, permission.getLevel(), type);
     }
 
+    public Optional<ResourcePermission> checkIfPermissionExists(Resource chatRoomInternalResource, UserProfile user) {
+        return resourcePermissionRepository.findByUserProfileAndResource(user, chatRoomInternalResource);
+    }
 }

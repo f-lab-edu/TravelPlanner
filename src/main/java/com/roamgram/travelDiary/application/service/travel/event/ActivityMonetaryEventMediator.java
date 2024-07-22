@@ -35,14 +35,14 @@ public class ActivityMonetaryEventMediator {
     @Transactional
     public UUID deleteMonetaryEvent(UUID eventId, UUID monetaryEventId) {
         Activity activity = activityRepository.findById(eventId).orElseThrow();
-        monetaryDomainMutationService.delete(String.valueOf(monetaryEventId));
+        monetaryDomainMutationService.delete(monetaryEventId);
         return monetaryEventId;
     }
 
     @Transactional
     public Activity updateMonetaryEvent(UUID eventId, UUID monetaryEventId, MonetaryEvent monetaryEvent) {
         Activity activity = activityRepository.findById(eventId).orElseThrow();
-        monetaryDomainMutationService.update(String.valueOf(monetaryEventId), monetaryEvent);
+        monetaryDomainMutationService.update(monetaryEventId, monetaryEvent);
         return activityRepository.save(activity);
     }
 

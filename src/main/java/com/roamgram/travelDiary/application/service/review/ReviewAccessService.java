@@ -29,7 +29,7 @@ public class ReviewAccessService {
     }
 
     @Transactional
-    @CheckAccess(resourceType = Review.class, spelResourceId = "#reviewId", permission = "EDIT")
+    @CheckAccess(resourceType = Review.class, spelResourceId = "#reviewId", permission = "EDITOR")
     public Review getReviewById(UUID reviewId) {
         return reviewRepository.findById(reviewId).orElseThrow();
     }

@@ -15,9 +15,14 @@ public class CurrencyConversionMapper implements MonetaryEventMapper {
         MonetaryEventEntity entity1 = entities.get(0);
         MonetaryEventEntity entity2 = entities.get(1);
 
+        if (entity1.getParentActivityId() != entity2.getParentActivityId()) {
+            throw new IllegalArgumentException("the 2 currencyConversion events have different parentActivities id. corrupted data");
+        }
+
         if (entity1.getIsSource()) {
             return CurrencyConversion.builder()
                     .id(entity1.getId())
+                    .parentActivityId(entity1.getParentActivityId())
                     .currencyFrom(entity1.getCurrency())
                     .currencyTo(entity2.getCurrency())
                     .convertedAmountFrom(entity1.getAmount())
@@ -28,6 +33,7 @@ public class CurrencyConversionMapper implements MonetaryEventMapper {
         } else {
             return CurrencyConversion.builder()
                     .id(entity1.getId())
+                    .parentActivityId(entity2.getParentActivityId())
                     .currencyFrom(entity2.getCurrency())
                     .currencyTo(entity1.getCurrency())
                     .convertedAmountFrom(entity2.getAmount())

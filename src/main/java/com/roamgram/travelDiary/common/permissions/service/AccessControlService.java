@@ -91,7 +91,7 @@ public class AccessControlService {
 
     private boolean hasPermissionToAssign(UserProfile currentUserProfile, Resource resource) {
         Optional<ResourcePermission> resourcePermissionOpt = resourcePermissionRepository.findByUserProfileAndResource(currentUserProfile, resource);
-        return resourcePermissionOpt.isPresent() && resourcePermissionOpt.get().getPermissions().compareTo(UserResourcePermissionTypes.EDIT) > 0;
+        return resourcePermissionOpt.isPresent() && resourcePermissionOpt.get().getPermissions().compareTo(UserResourcePermissionTypes.EDITOR) > 0;
     }
 
     public void inheritParentPermissions(Resource childResource, Resource parentResource) {

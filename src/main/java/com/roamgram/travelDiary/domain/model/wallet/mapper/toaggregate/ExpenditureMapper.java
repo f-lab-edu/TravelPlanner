@@ -15,6 +15,7 @@ public class ExpenditureMapper implements MonetaryEventMapper {
         MonetaryEventEntity entity = entities.getFirst();
         return Expenditure.builder()
                 .id(entity.getId())
+                .parentActivityId(entity.getParentActivityId())
                 .amount(entity.getAmount())
                 .currency(entity.getCurrency())
                 .description(entity.getDescription())

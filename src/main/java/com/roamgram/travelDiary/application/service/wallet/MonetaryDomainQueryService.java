@@ -1,7 +1,10 @@
 package com.roamgram.travelDiary.application.service.wallet;
 
 import com.roamgram.travelDiary.application.service.tags.TagsAccessService;
+import com.roamgram.travelDiary.common.permissions.aop.CheckAccess;
 import com.roamgram.travelDiary.domain.model.tags.Tags;
+import com.roamgram.travelDiary.domain.model.travel.Schedule;
+import com.roamgram.travelDiary.domain.model.travel.TravelPlan;
 import com.roamgram.travelDiary.domain.model.wallet.aggregate.CurrencyConversion;
 import com.roamgram.travelDiary.domain.model.wallet.aggregate.Expenditure;
 import com.roamgram.travelDiary.domain.model.wallet.aggregate.Income;
@@ -15,6 +18,7 @@ import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
+import java.time.Instant;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
@@ -38,10 +42,43 @@ public class MonetaryDomainQueryService {
         return toAggregates(entities);
     }
 
-    public Page<Income> getAllIncome(Integer pageSize, Integer pageNumber) {
+    @CheckAccess(resourceType = TravelPlan.class, spelResourceId = "#travelPlanId", permission = "VIEW")
+    public Page<Income> getAllIncomeFromTravelPlan(UUID travelPlanId, int pageNumber, int pageSize) {
         Pageable page = PageRequest.of(pageNumber, pageSize);
-        return repository.findAllIncomes(page);
+        return repository.findAllIncomeFromTravelPlan(travelPlanId,page);
     }
+    @CheckAccess(resourceType = TravelPlan.class, spelResourceId = "#travelPlanId", permission = "VIEW")
+    public Page<Expenditure> getAllExpenditureFromTravelPlan(UUID travelPlanId, int pageNumber, int pageSize) {
+        Pageable page = PageRequest.of(pageNumber, pageSize);
+        return repository.findAllExpenditureFromTravelPlan(travelPlanId,page);
+    }
+    @CheckAccess(resourceType = TravelPlan.class, spelResourceId = "#travelPlanId", permission = "VIEW")
+    public Page<CurrencyConversion> getAllCurrencyConversionFromTravelPlan(UUID travelPlanId, int pageNumber, int pageSize) {
+        Pageable page = PageRequest.of(pageNumber, pageSize);
+        return repository.findAllCurrencyConversionFromTravelPlan(travelPlanId,page);
+    }
+    @CheckAccess(resourceType = TravelPlan.class, spelResourceId = "#travelPlanId", permission = "VIEW")
+    public Page<MonetaryEvent> getAllMonetaryEventBetween (UUID travelPlanId, Instant to, Instant from, int pageNumber, int pageSize) {
+        Pageable page = PageRequest.of(pageNumber, pageSize);
+        return repository.findAllMonetaryEventBetweenTimeStampInTravelPlan(travelPlanId,to, from, page);
+    }
+
+    @CheckAccess(resourceType = Schedule.class, spelResourceId = "#scheduleId", permission = "VIEW")
+    public Page<Income> getAllIncomeFromSchedule(UUID scheduleId, int pageNumber, int pageSize) {
+        Pageable page = PageRequest.of(pageNumber, pageSize);
+        return repository.findAllIncomeFromTravelPlan(scheduleId,page);
+    }
+    @CheckAccess(resourceType = Schedule.class, spelResourceId = "#scheduleId", permission = "VIEW")
+    public Page<Expenditure> getAllExpenditureFromSchedule(UUID scheduleId, int pageNumber, int pageSize) {
+        Pageable page = PageRequest.of(pageNumber, pageSize);
+        return repository.findAllExpenditureFromTravelPlan(scheduleId,page);
+    }
+    @CheckAccess(resourceType = Schedule.class, spelResourceId = "#scheduleId", permission = "VIEW")
+    public Page<CurrencyConversion> getAllCurrencyConversionFromSchedule(UUID scheduleId, int pageNumber, int pageSize) {
+        Pageable page = PageRequest.of(pageNumber, pageSize);
+        return repository.findAllCurrencyConversionFromTravelPlan(scheduleId,page);
+    }
+
 
     public Page<Expenditure> getAllExpenditure(Integer pageSize, Integer pageNumber){
         Pageable page = PageRequest.of(pageNumber, pageSize);

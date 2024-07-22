@@ -53,7 +53,7 @@ public class TravelPlanMutationService {
     }
 
     @Transactional
-    @CheckAccess(resourceType = TravelPlan.class, spelResourceId = "#travelPlanId", permission = "EDIT")
+    @CheckAccess(resourceType = TravelPlan.class, spelResourceId = "#travelPlanId", permission = "EDITOR")
     public void deleteTravelPlan(UUID travelPlanId) {
         TravelPlan travelPlan = travelPlanRepository.findById(travelPlanId)
                 .orElseThrow(() -> new EntityNotFoundException("TravelPlan not found"));
@@ -78,7 +78,7 @@ public class TravelPlanMutationService {
     }
 
     @Transactional
-    @CheckAccess(resourceType = TravelPlan.class, spelResourceId = "#request.uuid", permission = "EDIT")
+    @CheckAccess(resourceType = TravelPlan.class, spelResourceId = "#request.uuid", permission = "EDITOR")
     public TravelPlan modifyPlanMetadata(TravelPlanUpsertRequestDTO request) {
         TravelPlan travelPlan = travelPlanRepository.findById(request.getUuid()).orElseThrow();
         updateNonNullFields(request, travelPlan);
@@ -86,7 +86,7 @@ public class TravelPlanMutationService {
         return travelPlan;
     }
 
-    @CheckAccess(resourceType = TravelPlan.class, spelResourceId = "#travelPlanId", permission = "EDIT")
+    @CheckAccess(resourceType = TravelPlan.class, spelResourceId = "#travelPlanId", permission = "EDITOR")
     public TravelPlan importPlan(UUID travelPlanId){
         TravelPlan travelPlan = travelPlanRepository.findById(travelPlanId).orElseThrow();
         TravelPlan importedTravelPlan = TravelPlan

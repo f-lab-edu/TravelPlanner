@@ -11,12 +11,12 @@ import com.roamgram.travelDiary.presentation.dto.request.wallet.ExpenditureReque
 import com.roamgram.travelDiary.presentation.dto.request.wallet.IncomeRequest;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.convert.ConversionService;
+import org.springframework.data.domain.Page;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
+
 import java.util.List;
+import java.util.UUID;
 
 @RestController
 @RequestMapping("/api/monetary")
@@ -32,19 +32,23 @@ public class MonetaryEventController {
         this.conversionService = conversionService;
     }
 
-    @PostMapping("/income")
+    @PostMapping("/new-income")
     public ResponseEntity<List<MonetaryEventEntity>> createIncome(@RequestBody IncomeRequest income){
         return ResponseEntity.ok(monetaryDomainMutationService.save(conversionService.convert(income,Income.class)));
     }
 
-    @PostMapping("/expenditure")
+    @GetMapping("/allIncome")
+    public ResponseEntity<Page<Income>> getAllTravelPlanIncome(UUID travelPlanId, int pageNumber, int pageSize) {
+        return ResponseEntity.ok(monetaryDomainQueryService.getAllIncomeFromTravelPlan(travelPlanId, pageNumber, pageSize));
+    }
+    @PostMapping("/new-expenditure")
     public ResponseEntity<List<MonetaryEventEntity>> createExpenditure(
         @RequestBody ExpenditureRequest expenditure
     ) {
         return ResponseEntity.ok(monetaryDomainMutationService.save(conversionService.convert(expenditure,Expenditure.class)));
     }
 
-    @PostMapping("/currency-conversion")
+    @PostMapping("/new-currency-conversion")
     public ResponseEntity<List<MonetaryEventEntity>> createCurrencyConversion(
         @RequestBody CurrencyConvertRequest currencyConversion
     ) {

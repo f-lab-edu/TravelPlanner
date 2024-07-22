@@ -18,18 +18,18 @@ public class CurrencyConversionConverterStrategy implements MonetaryEventEntityC
         Instant now = Instant.now();
         MonetaryEventEntity from = MonetaryEventEntity
                 .builder()
-                .transactionId(transactionId.toString())
-                .source("source")
+                .monetaryTransactionId(transactionId)
                 .amount(currencyConversion.getConvertedAmountFrom().negate())
                 .currency(currencyConversion.getCurrencyFrom())
+                .isSource(true)
                 .timestamp(now)
                 .eventType(EventType.CURRENCY_CONVERSION)
                 .build();
         MonetaryEventEntity to = MonetaryEventEntity
                 .builder()
-                .transactionId(transactionId.toString())
-                .source("source")
+                .monetaryTransactionId(transactionId)
                 .amount(currencyConversion.getConvertedAmountTo())
+                .isSource(false)
                 .currency(currencyConversion.getCurrencyTo())
                 .timestamp(now)
                 .eventType(EventType.CURRENCY_CONVERSION)

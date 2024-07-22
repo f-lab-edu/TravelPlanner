@@ -105,12 +105,12 @@ public class AccessControlServiceTest {
     void testHasPermission_ValidPermission() {
         Resource resource = new Resource();
         ResourcePermission resourcePermission = new ResourcePermission();
-        resourcePermission.setPermissions(UserResourcePermissionTypes.EDIT);
+        resourcePermission.setPermissions(UserResourcePermissionTypes.EDITOR);
 
         when(resourceRepository.findByResourceUUIDAndType(any(UUID.class), anyString())).thenReturn(Optional.of(resource));
         when(resourcePermissionRepository.findByUserProfileAndResource(any(UserProfile.class), any(Resource.class))).thenReturn(Optional.of(resourcePermission));
 
-        boolean result = accessControlService.hasPermission(IdentifiableResource.class, UUID.randomUUID(), "EDIT");
+        boolean result = accessControlService.hasPermission(IdentifiableResource.class, UUID.randomUUID(), "EDITOR");
         assertTrue(result);
     }
 
@@ -124,7 +124,7 @@ public class AccessControlServiceTest {
         when(resourceRepository.findByResourceUUIDAndType(any(UUID.class), anyString())).thenReturn(Optional.of(resource));
         when(resourcePermissionRepository.findByUserProfileAndResource(any(UserProfile.class), any(Resource.class))).thenReturn(Optional.of(resourcePermission));
 
-        boolean result = accessControlService.hasPermission(IdentifiableResource.class, UUID.randomUUID(), "EDIT");
+        boolean result = accessControlService.hasPermission(IdentifiableResource.class, UUID.randomUUID(), "EDITOR");
         assertFalse(result);
     }
 
@@ -137,7 +137,7 @@ public class AccessControlServiceTest {
 
         when(resourcePermissionRepository.findByUserProfileAndResource(any(UserProfile.class), any(Resource.class))).thenReturn(Optional.of(resourcePermission));
 
-        assertDoesNotThrow(() -> accessControlService.assignPermission(resource, mockUser, UserResourcePermissionTypes.EDIT));
+        assertDoesNotThrow(() -> accessControlService.assignPermission(resource, mockUser, UserResourcePermissionTypes.EDITOR));
     }
 
     @Test
@@ -147,7 +147,7 @@ public class AccessControlServiceTest {
 
         when(resourcePermissionRepository.findByUserProfileAndResource(any(UserProfile.class), any(Resource.class))).thenReturn(Optional.empty());
 
-        assertThrows(AccessDeniedException.class, () -> accessControlService.assignPermission(resource, mockUser, UserResourcePermissionTypes.EDIT));
+        assertThrows(AccessDeniedException.class, () -> accessControlService.assignPermission(resource, mockUser, UserResourcePermissionTypes.EDITOR));
     }
 
     @Test
@@ -157,7 +157,7 @@ public class AccessControlServiceTest {
         Resource childResource = new Resource();
         ResourcePermission parentPermission = new ResourcePermission();
         parentPermission.setUserProfile(this.userProfile);
-        parentPermission.setPermissions(UserResourcePermissionTypes.EDIT);
+        parentPermission.setPermissions(UserResourcePermissionTypes.EDITOR);
 
         when(resourcePermissionRepository.findByResource(parentResource)).thenReturn(Collections.singletonList(parentPermission));
 
