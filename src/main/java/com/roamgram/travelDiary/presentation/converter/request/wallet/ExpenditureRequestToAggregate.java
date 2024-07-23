@@ -13,8 +13,8 @@ public class ExpenditureRequestToAggregate implements Converter<ExpenditureReque
         if (source.getId() != null) {
             expenditure.setId(source.getId());
         }
-        if(source.getParentActivityId() != null) {
-            expenditure.setParentActivityId(source.getParentActivityId());
+        if(source.getParentScheduleId() != null) {
+            expenditure.setParentScheduleId(source.getParentScheduleId());
         }
         if (source.getCurrency() != null) {
             expenditure.setCurrency(Currency.getInstance(source.getCurrency()));

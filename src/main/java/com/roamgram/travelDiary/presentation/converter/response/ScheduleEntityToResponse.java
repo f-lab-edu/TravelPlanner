@@ -23,7 +23,6 @@ public class ScheduleEntityToResponse implements Converter<Schedule, ScheduleRes
         dto.setTravelDepartTimeEstimate(source.getTravelDepartTimeEstimate());
         dto.setInwardRoute(source.getInwardRoute()); // Assuming Route is used as-is for now
         dto.setOutwardRoute(source.getOutwardRoute()); // Assuming Route is used as-is for now
-        dto.setActivities(source.getActivities()); // Assuming Activity is used as-is for now
 
         return dto;
     }

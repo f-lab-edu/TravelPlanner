@@ -353,17 +353,4 @@ public class TravelPlanServiceIntegratedTest {
     }
 
 
-    //    Todo
-    @WithMockAuthUser(id = authUserId)
-    @Transactional
-    @DirtiesContext
-    void testGetAssociatedMonetaryEvent() {
-        UUID planId = createTravelPlanUtils("Test Plan 1");
-
-        PageRequest pageRequest = PageRequest.of(0, 10);
-        Page<MonetaryEvent> result = travelPlanQueryService.getAssociatedMonetaryEvent(planId, pageRequest);
-
-        assertThat(result.getContent()).isEmpty();
-    }
-
 }

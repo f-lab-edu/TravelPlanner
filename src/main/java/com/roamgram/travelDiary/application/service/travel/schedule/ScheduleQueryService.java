@@ -1,10 +1,8 @@
 package com.roamgram.travelDiary.application.service.travel.schedule;
 
-import com.roamgram.travelDiary.application.service.travel.event.ActivityAccessService;
 import com.roamgram.travelDiary.common.permissions.aop.CheckAccess;
 import com.roamgram.travelDiary.common.permissions.aop.InjectAuthorisedResourceIds;
 import com.roamgram.travelDiary.common.permissions.domain.UserResourcePermissionTypes;
-import com.roamgram.travelDiary.domain.model.travel.Activity;
 import com.roamgram.travelDiary.domain.model.travel.Schedule;
 import com.roamgram.travelDiary.domain.model.travel.TravelPlan;
 import com.roamgram.travelDiary.domain.model.wallet.aggregate.MonetaryEvent;
@@ -23,12 +21,9 @@ import java.util.UUID;
 @Service
 public class ScheduleQueryService {
     private final ScheduleRepository scheduleRepository;
-    private final ActivityAccessService activityAccessService;
-
     @Autowired
-    public ScheduleQueryService(ScheduleRepository scheduleRepository, ActivityAccessService activityAccessService) {
+    public ScheduleQueryService(ScheduleRepository scheduleRepository) {
         this.scheduleRepository = scheduleRepository;
-        this.activityAccessService = activityAccessService;
     }
 
     @CheckAccess(resourceType = Schedule.class, spelResourceId = "#scheduleId", permission = "VIEW")
@@ -54,12 +49,6 @@ public class ScheduleQueryService {
     @InjectAuthorisedResourceIds(parameterName = "resourceIds", resourceType = "Schedule", permissionType = UserResourcePermissionTypes.VIEW)
     public List<Schedule> getAllAuthorisedSchedulesInTravelPlan(UUID travelPlanId, List<UUID> resourceIds) {
         return scheduleRepository.findAllByTravelPlanId(travelPlanId, resourceIds);
-    }
-
-    @CheckAccess(resourceType = Schedule.class, spelResourceId = "#scheduleId", permission = "VIEW")
-    public List<MonetaryEvent> getAssociatedMonetaryEvent(UUID scheduleId) {
-        List<Activity> activities = scheduleRepository.findById(scheduleId).orElseThrow().getActivities();
-        return activities.stream().flatMap(event -> activityAccessService.getAllMonetaryEvents(event.getId()).stream()).toList();
     }
 
 //"    public List<Schedule> getImmediatePrecedingAndSucceedingSchedule(UUID travelPlanId, LocalDateTime

@@ -55,23 +55,5 @@ public class TravelPlanQueryService {
         return result;
     }
 
-    @CheckAccess(resourceType = TravelPlan.class, spelResourceId = "#travelPlanId", permission = "VIEW")
-    public Page<MonetaryEvent> getAssociatedMonetaryEvent(UUID travelPlanId, PageRequest pageRequest) {
-        List<MonetaryEvent> monetaryEvents = travelPlanRepository
-                .findById(travelPlanId)
-                .orElseThrow()
-                .getScheduleList()
-                .stream()
-                .flatMap(schedule -> scheduleQueryService
-                        .getAssociatedMonetaryEvent(
-                                schedule
-                                        .getId()
-                        )
-                        .stream()
-                )
-                .toList();
-
-        return new PageImpl<>(monetaryEvents, pageRequest, monetaryEvents.size());
-    }
 
 }

@@ -15,11 +15,11 @@ import java.util.UUID;
 @Builder
 public class Income implements MonetaryEvent {
     private UUID id;
-    private UUID parentActivityId;
+    private UUID parentScheduleId;
     private Amount amount;
     private Currency currency;
     private String source;
     private String description;
     private Instant timestamp;
-
+    private final String type = "income";
 }

@@ -1,10 +1,13 @@
 package com.roamgram.travelDiary.application.service.wallet;
 
 import com.roamgram.travelDiary.application.service.tags.TagsAccessService;
+import com.roamgram.travelDiary.application.service.travel.schedule.ScheduleQueryService;
 import com.roamgram.travelDiary.common.auth.service.AuthUserServiceImpl;
 import com.roamgram.travelDiary.domain.model.tags.Tags;
+import com.roamgram.travelDiary.domain.model.travel.Schedule;
 import com.roamgram.travelDiary.domain.model.wallet.mapper.toentity.MonetaryEventEntityConverterFactory;
 import com.roamgram.travelDiary.domain.model.wallet.mapper.toentity.MonetaryEventEntityConverterStrategy;
+import com.roamgram.travelDiary.repository.persistence.travel.ScheduleRepository;
 import com.roamgram.travelDiary.repository.persistence.user.UserProfileRepository;
 import com.roamgram.travelDiary.repository.persistence.wallet.MonetaryEventEntityRepository;
 import com.roamgram.travelDiary.domain.model.wallet.aggregate.MonetaryEvent;
@@ -14,6 +17,7 @@ import jakarta.transaction.Transactional;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
 import java.util.stream.IntStream;
@@ -26,12 +30,16 @@ public class MonetaryDomainMutationService {
     private final MonetaryEventEntityRepository monetaryEventEntityRepository;
     private final TagsAccessService tagsAccessService;
     private final AuthUserServiceImpl authUserServiceImpl;
+    private final ScheduleRepository scheduleRepository;
+    private final ScheduleQueryService scheduleQueryService;
 
     @Autowired
-    public MonetaryDomainMutationService(MonetaryEventEntityRepository monetaryEventEntityRepository, TagsAccessService tagsAccessService, UserProfileRepository userProfileRepository, AuthUserServiceImpl authUserServiceImpl) {
+    public MonetaryDomainMutationService(MonetaryEventEntityRepository monetaryEventEntityRepository, TagsAccessService tagsAccessService, UserProfileRepository userProfileRepository, AuthUserServiceImpl authUserServiceImpl, ScheduleRepository scheduleRepository, ScheduleQueryService scheduleQueryService) {
         this.monetaryEventEntityRepository = monetaryEventEntityRepository;
         this.tagsAccessService = tagsAccessService;
         this.authUserServiceImpl = authUserServiceImpl;
+        this.scheduleRepository = scheduleRepository;
+        this.scheduleQueryService = scheduleQueryService;
     }
 
     @Transactional
@@ -64,6 +72,13 @@ public class MonetaryDomainMutationService {
     @Transactional
     public void delete(UUID transactionId) {
         List<MonetaryEventEntity> deletable = monetaryEventEntityRepository.findAllByMonetaryTransactionId(transactionId);
+        Schedule schedule = scheduleQueryService.getSchedule(deletable.getFirst().getParentScheduleId());
+        if (schedule != null) {
+            // Remove the event from the schedule's list
+            schedule.getMonetaryEvents().remove(schedule);
+            // Save the schedule to persist the change
+            scheduleRepository.save(schedule);
+        }
         monetaryEventEntityRepository.deleteAll(deletable);
     }
 
@@ -92,11 +107,18 @@ public class MonetaryDomainMutationService {
     }
 
     @Transactional
-    public List<MonetaryEventEntity> save(MonetaryEvent monetaryEvent) {
+    public List<MonetaryEventEntity> save(UUID scheduleId, MonetaryEvent monetaryEvent) {
         List<MonetaryEventEntity> convertedList = convertToEntity(monetaryEvent);
         UUID userProfileId = authUserServiceImpl.getCurrentUser().getId();
         convertedList.forEach(mon->mon.setUserProfileId(userProfileId));
-        return monetaryEventEntityRepository.saveAll(convertedList);
+        List<MonetaryEventEntity> me =  monetaryEventEntityRepository.saveAll(convertedList);
+        Schedule schedule = scheduleQueryService.getSchedule(scheduleId);
+        if(schedule.getMonetaryEvents() == null) {
+            schedule.setMonetaryEvents(new ArrayList<>());
+        }
+        schedule.getMonetaryEvents().addAll(me);
+        scheduleRepository.save(schedule);
+        return me;
     }
 
 

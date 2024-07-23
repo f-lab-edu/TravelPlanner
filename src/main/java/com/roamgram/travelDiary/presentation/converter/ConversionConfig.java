@@ -48,7 +48,6 @@ public class ConversionConfig implements WebMvcConfigurer {
         registry.addConverter(new IncomeRequestToAggregate());
         registry.addConverter(new ExpenditureRequestToAggregate());
         registry.addConverter(new CurrencyConversionRequestToAggregate());
-        registry.addConverter(new ActivityCreateRequestToEntity());
         registry.addConverter(new RouteUpdateRequestToEntity());
         registry.addConverter(travelPlanEntityToResponse());
         registry.addConverter(scheduleEntityToResponse());

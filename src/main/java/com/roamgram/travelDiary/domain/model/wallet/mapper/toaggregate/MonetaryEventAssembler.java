@@ -15,7 +15,7 @@ public class MonetaryEventAssembler {
         return mapper.toAggregate(pairedEntities);
     }
 
-    public static List<MonetaryEvent> toAggregates(List<MonetaryEventEntity> entities) {
+    public static List<? extends MonetaryEvent> toAggregates(List<MonetaryEventEntity> entities) {
         Map<UUID, List<MonetaryEventEntity>> groupedByTransactionId = entities.stream()
                 .collect(Collectors.groupingByConcurrent(MonetaryEventEntity::getMonetaryTransactionId));
 

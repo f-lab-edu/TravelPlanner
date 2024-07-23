@@ -17,11 +17,12 @@ import java.util.UUID;
 @NoArgsConstructor
 public class CurrencyConversion implements MonetaryEvent {
     private UUID id;
-    private UUID parentActivityId;
+    private UUID parentScheduleId;
     private Currency currencyFrom;
     private Currency currencyTo;
     private Amount convertedAmountFrom;
     private Amount convertedAmountTo;
-    private BigDecimal rate;
+    private Amount rate;
     private Instant timestamp;
+    private final String type = "currency_conversion";
 }

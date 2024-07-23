@@ -21,6 +21,7 @@ public class ExpenditureConverterStrategy implements MonetaryEventEntityConverte
                         .amount(expenditure.getAmount())
                         .currency(expenditure.getCurrency())
                         .timestamp(Instant.now())
+                        .parentScheduleId(expenditure.getParentScheduleId())
                         .description(expenditure.getDescription())
                         .eventType(EventType.EXPENDITURE)
                         .build()

@@ -1,11 +1,14 @@
 package com.roamgram.travelDiary.domain.model.wallet;
 
+import com.fasterxml.jackson.annotation.JsonCreator;
+import com.fasterxml.jackson.annotation.JsonValue;
 import jakarta.persistence.Column;
 import jakarta.persistence.Embeddable;
 import lombok.AccessLevel;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
 import lombok.NoArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 
 import java.math.BigDecimal;
 import java.math.RoundingMode;
@@ -14,13 +17,16 @@ import java.math.RoundingMode;
 @Embeddable
 @Data
 @NoArgsConstructor(access= AccessLevel.PROTECTED)
+@Slf4j
 public class Amount extends Number {
 
     public static final Amount ZERO = new Amount(0);
 
+    @JsonValue
     @Column(name = "amount", precision = 38, scale = 3)
     private BigDecimal value;
 
+    @JsonCreator
     public <T extends Number> Amount(final T value) {
         this.value = new BigDecimal(value.toString());
     }

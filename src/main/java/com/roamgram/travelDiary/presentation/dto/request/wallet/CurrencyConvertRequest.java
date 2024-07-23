@@ -9,10 +9,9 @@ import java.util.UUID;
 @Data
 public class CurrencyConvertRequest {
     private UUID id;
-    private UUID parentActivityId;
+    private UUID parentScheduleId;
     private String currencyFrom;
     private String currencyTo;
     private Amount convertedAmountFrom;
-    private Amount convertedAmountTo;
-    private BigDecimal rate;
+    private Amount rate;
 }

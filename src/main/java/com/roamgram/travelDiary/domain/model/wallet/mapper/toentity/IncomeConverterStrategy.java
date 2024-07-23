@@ -21,6 +21,7 @@ public class IncomeConverterStrategy implements MonetaryEventEntityConverterStra
                         .isSource(true)
                         .amount(income.getAmount())
                         .currency(income.getCurrency())
+                        .parentScheduleId(income.getParentScheduleId())
                         .description(income.getDescription())
                         .timestamp(Instant.now())
                         .eventType(EventType.INCOME)

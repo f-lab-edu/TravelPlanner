@@ -1,4 +1,4 @@
-package com.roamgram.travelDiary.presentation.dto.request;
+package com.roamgram.travelDiary.presentation.dto.request.travel;
 
 import lombok.Data;
 

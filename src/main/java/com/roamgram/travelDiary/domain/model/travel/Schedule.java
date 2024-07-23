@@ -4,11 +4,9 @@ import com.roamgram.travelDiary.common.permissions.domain.Resource;
 import com.roamgram.travelDiary.domain.IdentifiableResource;
 import com.roamgram.travelDiary.domain.model.location.Place;
 import com.roamgram.travelDiary.domain.model.review.Review;
+import com.roamgram.travelDiary.domain.model.wallet.entity.MonetaryEventEntity;
 import jakarta.persistence.*;
-import lombok.AllArgsConstructor;
-import lombok.Builder;
-import lombok.Data;
-import lombok.NoArgsConstructor;
+import lombok.*;
 import org.hibernate.annotations.Cascade;
 import org.hibernate.annotations.CascadeType;
 
@@ -41,7 +39,6 @@ public class Schedule implements IdentifiableResource {
 
     public Boolean isActuallyVisited;
 
-
     public LocalDateTime travelStartTimeEstimate;
 
     public LocalDateTime travelDepartTimeEstimate;
@@ -56,7 +53,8 @@ public class Schedule implements IdentifiableResource {
 
     @OneToMany
     @Cascade(CascadeType.ALL)
-    public List<Activity> activities;
+    @ToString.Exclude
+    public List<MonetaryEventEntity> monetaryEvents;
 
     @OneToOne(fetch = FetchType.LAZY, orphanRemoval = true)
     @Cascade(CascadeType.ALL)

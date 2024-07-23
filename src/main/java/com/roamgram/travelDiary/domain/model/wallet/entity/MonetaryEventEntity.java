@@ -22,7 +22,14 @@ public class MonetaryEventEntity {
     @GeneratedValue(strategy = GenerationType.UUID)
     private UUID id;
     private UUID monetaryTransactionId;
-    private BigDecimal conversionRate;
+    @AttributeOverrides({
+            @AttributeOverride(name = "value", column = @Column(name = "conversionRate_value"))
+    })
+    private Amount conversionRate;
+
+    @AttributeOverrides({
+            @AttributeOverride(name = "value", column = @Column(name = "amount_value"))
+    })
     private Amount amount;
     private Currency currency;
     private Boolean isSource; // true if it's the source entity, false if it's the destination
@@ -30,6 +37,6 @@ public class MonetaryEventEntity {
     @Enumerated(EnumType.STRING)
     private EventType eventType;
     private String description;
-    private UUID parentActivityId;
+    private UUID parentScheduleId;
     private UUID userProfileId;
 }

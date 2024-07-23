@@ -19,22 +19,10 @@ import java.util.UUID;
 public interface MonetaryEventEntityRepository extends JpaRepository<MonetaryEventEntity, UUID> {
 
     @Query("SELECT e FROM MonetaryEventEntity e WHERE e.eventType = 'EXPENDITURE'")
-    Page<Expenditure> findAllExpenditure(Pageable page);
+    Page<MonetaryEventEntity> findAllExpenditure(Pageable page);
 
-    @Query("SELECT e FROM MonetaryEventEntity e WHERE e.eventType = 'CURRENCYCONVERSION' ORDER BY CAST(e.monetaryTransactionId AS string)")
-    Page<CurrencyConversion> findAllCurrencyConversion(Pageable page);
-
-    @Query("SELECT e FROM MonetaryEventEntity e WHERE e.eventType = 'INCOME' AND e.timestamp >= :from AND e.timestamp <= :to")
-    Page<Income> findAllIncomesBetweenTimeStamp(Pageable pageable, Instant from, Instant to);
-
-    @Query("SELECT e FROM MonetaryEventEntity e WHERE e.eventType = 'EXPENDITURE' AND e.timestamp >= :from AND e.timestamp <= :to")
-    Page<Expenditure> findAllExpenditureBetweenTimeStamp(Pageable page, Instant from, Instant to);
-
-    @Query("SELECT e FROM MonetaryEventEntity e WHERE e.eventType = 'CURRENCYCONVERSION'AND e.timestamp >= :from AND e.timestamp <= :to ORDER BY CAST(e.monetaryTransactionId AS string)")
-    Page<CurrencyConversion> findAllCurrencyConversionBetweenTimeStamp(Pageable page, Instant from, Instant to);
-
-    @Query("SELECT e FROM MonetaryEventEntity e WHERE e.timestamp >= :from AND e.timestamp <= :to ORDER BY CAST(e.monetaryTransactionId AS string)")
-    Page<MonetaryEvent> findAllMonetaryEventBetweenTimeStamp(Pageable page, Instant from, Instant to);
+    @Query("SELECT e FROM MonetaryEventEntity e WHERE e.eventType = 'CURRENCY_CONVERSION' ORDER BY CAST(e.monetaryTransactionId AS string)")
+    Page<MonetaryEventEntity> findAllCurrencyConversion(Pageable page);
 
     MonetaryEventEntity findByMonetaryTransactionId(UUID monetaryTransactionId);
 
@@ -42,37 +30,67 @@ public interface MonetaryEventEntityRepository extends JpaRepository<MonetaryEve
 
     @Query("SELECT mee FROM TravelPlan tp " +
             "JOIN tp.scheduleList s " +
-            "JOIN s.activities a " +
-            "JOIN a.monetaryEvents mee " +
+            "JOIN s.monetaryEvents mee " +
             "WHERE tp.id = :travelPlanId " +
-            "AND mee.eventType = 'INCOME'" )
-    Page<Income> findAllIncomeFromTravelPlan(UUID travelPlanId, Pageable page);
+            "AND mee.eventType = 'INCOME'" +
+            "ORDER BY mee.timestamp" )
+    Page<MonetaryEventEntity> findAllIncomeFromTravelPlan(UUID travelPlanId, Pageable page);
 
     @Query("SELECT mee FROM TravelPlan tp " +
             "JOIN tp.scheduleList s " +
-            "JOIN s.activities a " +
-            "JOIN a.monetaryEvents mee " +
+            "JOIN s.monetaryEvents mee " +
             "WHERE tp.id = :travelPlanId " +
-            "AND mee.eventType = 'EXPENDITURE'" )
-    Page<Expenditure> findAllExpenditureFromTravelPlan(UUID travelPlanId, Pageable page);
+            "AND mee.eventType = 'EXPENDITURE'" +
+            "ORDER BY mee.timestamp" )
+    Page<MonetaryEventEntity> findAllExpenditureFromTravelPlan(UUID travelPlanId, Pageable page);
 
     @Query("SELECT mee FROM TravelPlan tp " +
             "JOIN tp.scheduleList s " +
-            "JOIN s.activities a " +
-            "JOIN a.monetaryEvents mee " +
+            "JOIN s.monetaryEvents mee " +
             "WHERE tp.id = :travelPlanId " +
-            "AND mee.eventType = 'CURRENCYCONVERSION'" +
-            "ORDER BY CAST(mee.monetaryTransactionId AS string)" )
-    Page<CurrencyConversion> findAllCurrencyConversionFromTravelPlan(UUID travelPlanId, Pageable page);
-
+            "AND mee.eventType = 'CURRENCY_CONVERSION'" +
+            "ORDER BY mee.monetaryTransactionId, mee.timestamp ASC"  )
+    Page<MonetaryEventEntity> findAllCurrencyConversionFromTravelPlan(UUID travelPlanId, Pageable page);
 
     @Query("SELECT mee FROM TravelPlan tp " +
             "JOIN tp.scheduleList s " +
-            "JOIN s.activities a " +
-            "JOIN a.monetaryEvents mee " +
+            "JOIN s.monetaryEvents mee " +
             "WHERE tp.id = :travelPlanId " +
             "AND mee.timestamp >= :from " +
             "AND mee.timestamp <= :to " +
-            "ORDER BY CAST(mee.monetaryTransactionId AS string)" )
-    Page<MonetaryEvent> findAllMonetaryEventBetweenTimeStampInTravelPlan(UUID travelPlanId, Instant from, Instant to, Pageable page);
+            "ORDER BY mee.monetaryTransactionId, mee.timestamp ASC"  )
+    Page<MonetaryEventEntity> findAllMonetaryEventBetweenTimeStampInTravelPlan(UUID travelPlanId, Instant from, Instant to, Pageable page);
+
+    @Query("SELECT mee FROM TravelPlan tp " +
+            "JOIN tp.scheduleList s " +
+            "JOIN s.monetaryEvents mee " +
+            "WHERE tp.id = :travelPlanId " +
+            "ORDER BY mee.monetaryTransactionId , mee.timestamp ASC" )
+    Page<MonetaryEventEntity> findAllMonetaryEventInTravelPlan(UUID travelPlanId, Pageable page);
+
+    @Query("SELECT mee FROM Schedule s " +
+            "JOIN s.monetaryEvents mee " +
+            "WHERE s.id = :scheduleId " +
+            "AND mee.eventType = 'INCOME'" +
+            "ORDER BY mee.timestamp" )
+    Page<MonetaryEventEntity> findAllIncomeFromSchedule(UUID scheduleId, Pageable page);
+
+    @Query("SELECT mee FROM Schedule s " +
+            "JOIN s.monetaryEvents mee " +
+            "WHERE s.id = :scheduleId " +
+            "AND mee.eventType = 'EXPENDITURE'" +
+            "ORDER BY mee.timestamp" )
+    Page<MonetaryEventEntity> findAllExpenditureFromSchedule(UUID scheduleId, Pageable page);
+    @Query("SELECT mee FROM Schedule s " +
+            "JOIN s.monetaryEvents mee " +
+            "WHERE s.id = :scheduleId " +
+            "AND mee.eventType = 'CURRENCY_CONVERSION'" +
+            "ORDER BY mee.monetaryTransactionId, mee.timestamp ASC" )
+    Page<MonetaryEventEntity> findAllCurrencyConversionFromSchedule(UUID scheduleId, Pageable page);
+    @Query("SELECT mee FROM Schedule s " +
+            "JOIN s.monetaryEvents mee " +
+            "WHERE s.id = :scheduleId " +
+            "ORDER BY mee.monetaryTransactionId, mee.timestamp ASC")
+    Page<MonetaryEventEntity> findAllMonetaryEventFromSchedule(UUID scheduleId, Pageable page);
 }
+

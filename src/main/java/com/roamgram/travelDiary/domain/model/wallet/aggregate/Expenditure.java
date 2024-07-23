@@ -15,10 +15,10 @@ import java.util.UUID;
 @Builder
 public class Expenditure implements MonetaryEvent {
     private UUID id;
-    private UUID parentActivityId;
+    private UUID parentScheduleId;
     private Amount amount;
     private Currency currency;
     private String description;
     private Instant timestamp;
-
+    private final String type = "expenditure";
 }

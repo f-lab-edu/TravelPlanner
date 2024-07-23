@@ -14,6 +14,7 @@ import com.roamgram.travelDiary.domain.model.wallet.entity.MonetaryEventEntity;
 import com.roamgram.travelDiary.repository.persistence.wallet.MonetaryEventEntityRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
@@ -39,64 +40,111 @@ public class MonetaryDomainQueryService {
 
     public List<MonetaryEvent> getAllMonetaryEvents() {
         List<MonetaryEventEntity> entities = repository.findAll();
-        return toAggregates(entities);
+        return (List<MonetaryEvent>)(toAggregates(entities));
     }
 
     @CheckAccess(resourceType = TravelPlan.class, spelResourceId = "#travelPlanId", permission = "VIEW")
-    public Page<Income> getAllIncomeFromTravelPlan(UUID travelPlanId, int pageNumber, int pageSize) {
+    public Page<Income> getAllIncomeFromTravelPlan(UUID travelPlanId, Integer pageNumber, Integer pageSize) {
         Pageable page = PageRequest.of(pageNumber, pageSize);
-        return repository.findAllIncomeFromTravelPlan(travelPlanId,page);
+        Page<MonetaryEventEntity> entities = repository.findAllIncomeFromTravelPlan(travelPlanId,page);
+        List<? extends MonetaryEvent> aggregateList = toAggregates(entities.getContent());
+        // Step 4: Convert the List back to a Page
+        return (Page<Income>) new PageImpl<>(aggregateList, page, entities.getTotalElements());
     }
     @CheckAccess(resourceType = TravelPlan.class, spelResourceId = "#travelPlanId", permission = "VIEW")
-    public Page<Expenditure> getAllExpenditureFromTravelPlan(UUID travelPlanId, int pageNumber, int pageSize) {
+    public Page<Expenditure> getAllExpenditureFromTravelPlan(UUID travelPlanId, Integer pageNumber, Integer pageSize) {
         Pageable page = PageRequest.of(pageNumber, pageSize);
-        return repository.findAllExpenditureFromTravelPlan(travelPlanId,page);
+        Page<MonetaryEventEntity> entities = repository.findAllExpenditureFromTravelPlan(travelPlanId,page);
+        List<? extends MonetaryEvent> aggregateList = toAggregates(entities.getContent());
+        // Step 4: Convert the List back to a Page
+        return (Page<Expenditure>) new PageImpl<>(aggregateList, page, entities.getTotalElements());
     }
     @CheckAccess(resourceType = TravelPlan.class, spelResourceId = "#travelPlanId", permission = "VIEW")
-    public Page<CurrencyConversion> getAllCurrencyConversionFromTravelPlan(UUID travelPlanId, int pageNumber, int pageSize) {
-        Pageable page = PageRequest.of(pageNumber, pageSize);
-        return repository.findAllCurrencyConversionFromTravelPlan(travelPlanId,page);
+    public Page<CurrencyConversion> getAllCurrencyConversionFromTravelPlan(UUID travelPlanId, Integer pageNumber, Integer pageSize) {
+        Pageable page = PageRequest.of(pageNumber, pageSize * 2);
+        Page<MonetaryEventEntity> entities = repository.findAllCurrencyConversionFromTravelPlan(travelPlanId,page);
+        List<? extends MonetaryEvent> aggregateList = toAggregates(entities.getContent());
+        // Step 4: Convert the List back to a Page
+        return (Page<CurrencyConversion>) new PageImpl<>(aggregateList, page, pageSize);
     }
     @CheckAccess(resourceType = TravelPlan.class, spelResourceId = "#travelPlanId", permission = "VIEW")
-    public Page<MonetaryEvent> getAllMonetaryEventBetween (UUID travelPlanId, Instant to, Instant from, int pageNumber, int pageSize) {
-        Pageable page = PageRequest.of(pageNumber, pageSize);
-        return repository.findAllMonetaryEventBetweenTimeStampInTravelPlan(travelPlanId,to, from, page);
+    public Page<MonetaryEvent> getAllMonetaryEventBetween (UUID travelPlanId, Instant to, Instant from, Integer pageNumber, Integer pageSize) {
+        Pageable page = PageRequest.of(pageNumber, pageSize * 2);
+        Page<MonetaryEventEntity> entities = repository.findAllMonetaryEventBetweenTimeStampInTravelPlan(travelPlanId, to, from, page);
+        List<? extends MonetaryEvent> aggregateList = toAggregates(entities.getContent());
+        // Step 4: Convert the List back to a Page
+        return (Page<MonetaryEvent>) new PageImpl<>(aggregateList, page, pageSize);
+    }
+    @CheckAccess(resourceType = TravelPlan.class, spelResourceId = "#travelPlanId", permission = "VIEW")
+    public Page<MonetaryEvent> getAllMonetaryEventsInTravelPlan(UUID travelPlanId, Integer pageNumber, Integer pageSize) {
+        Pageable page = PageRequest.of(pageNumber, pageSize * 2);
+        Page<MonetaryEventEntity> entities = repository.findAllMonetaryEventInTravelPlan(travelPlanId, page);
+        List<? extends MonetaryEvent> aggregateList = toAggregates(entities.getContent());
+        // Step 4: Convert the List back to a Page
+        return (Page<MonetaryEvent>) new PageImpl<>(aggregateList, page, pageSize);
     }
 
     @CheckAccess(resourceType = Schedule.class, spelResourceId = "#scheduleId", permission = "VIEW")
-    public Page<Income> getAllIncomeFromSchedule(UUID scheduleId, int pageNumber, int pageSize) {
+    public Page<Income> getAllIncomeFromSchedule(UUID scheduleId, Integer pageNumber, Integer pageSize) {
         Pageable page = PageRequest.of(pageNumber, pageSize);
-        return repository.findAllIncomeFromTravelPlan(scheduleId,page);
+        Page<MonetaryEventEntity> entities = repository.findAllIncomeFromSchedule(scheduleId,page);
+        List<? extends MonetaryEvent> aggregateList = toAggregates(entities.getContent());
+        // Step 4: Convert the List back to a Page
+        return (Page<Income>) new PageImpl<>(aggregateList, page, entities.getTotalElements());
     }
     @CheckAccess(resourceType = Schedule.class, spelResourceId = "#scheduleId", permission = "VIEW")
-    public Page<Expenditure> getAllExpenditureFromSchedule(UUID scheduleId, int pageNumber, int pageSize) {
+    public Page<Expenditure> getAllExpenditureFromSchedule(UUID scheduleId, Integer pageNumber, Integer pageSize) {
         Pageable page = PageRequest.of(pageNumber, pageSize);
-        return repository.findAllExpenditureFromTravelPlan(scheduleId,page);
+        Page<MonetaryEventEntity> entities = repository.findAllExpenditureFromSchedule(scheduleId,page);
+        List<? extends MonetaryEvent> aggregateList = toAggregates(entities.getContent());
+        // Step 4: Convert the List back to a Page
+        return (Page<Expenditure>) new PageImpl<>(aggregateList, page, entities.getTotalElements());
     }
     @CheckAccess(resourceType = Schedule.class, spelResourceId = "#scheduleId", permission = "VIEW")
-    public Page<CurrencyConversion> getAllCurrencyConversionFromSchedule(UUID scheduleId, int pageNumber, int pageSize) {
+    public Page<CurrencyConversion> getAllCurrencyConversionFromSchedule(UUID scheduleId, Integer pageNumber, Integer pageSize) {
         Pageable page = PageRequest.of(pageNumber, pageSize);
-        return repository.findAllCurrencyConversionFromTravelPlan(scheduleId,page);
+        Page<MonetaryEventEntity> entities = repository.findAllCurrencyConversionFromSchedule(scheduleId,page);
+        List<? extends MonetaryEvent> aggregateList = toAggregates(entities.getContent());
+        // Step 4: Convert the List back to a Page
+        return (Page<CurrencyConversion>) new PageImpl<>(aggregateList, page, aggregateList.size());
     }
+
+    @CheckAccess(resourceType = Schedule.class, spelResourceId = "#scheduleId", permission = "VIEW")
+    public Page<MonetaryEvent> getAllMonetaryEventsFromSchedule(UUID scheduleId, Integer pageNumber, Integer pageSize) {
+        Pageable page = PageRequest.of(pageNumber, pageSize);
+        Page<MonetaryEventEntity> entities = repository.findAllMonetaryEventFromSchedule(scheduleId,page);
+        List<? extends MonetaryEvent> aggregateList = toAggregates(entities.getContent());
+        // Step 4: Convert the List back to a Page
+        return (Page<MonetaryEvent>) new PageImpl<>(aggregateList, page, aggregateList.size());
+    }
+
 
 
     public Page<Expenditure> getAllExpenditure(Integer pageSize, Integer pageNumber){
         Pageable page = PageRequest.of(pageNumber, pageSize);
-        return repository.findAllExpenditure(page);
+        Page<MonetaryEventEntity> entities = repository.findAllExpenditure(page);
+        List<? extends MonetaryEvent> aggregateList = toAggregates(entities.getContent());
+        // Step 4: Convert the List back to a Page
+        return (Page<Expenditure>) new PageImpl<>(aggregateList, page, aggregateList.size());
     }
 
     public Page<CurrencyConversion> getAllCurrencyConversion(Integer pageSize, Integer pageNumber){
         Pageable page = PageRequest.of(pageNumber, pageSize);
-        return repository.findAllCurrencyConversion(page);
+        Page<MonetaryEventEntity> entities = repository.findAllCurrencyConversion(page);
+        List<? extends MonetaryEvent> aggregateList = toAggregates(entities.getContent());
+        // Step 4: Convert the List back to a Page
+        return (Page<CurrencyConversion>) new PageImpl<>(aggregateList, page, aggregateList.size());
     }
 
     public List<MonetaryEvent> findAllById(List<UUID> ids) {
-        List<MonetaryEventEntity> entity = repository.findAllById(ids);
-        return toAggregates(entity);
+        List<MonetaryEventEntity> entities = repository.findAllById(ids);
+        List<? extends MonetaryEvent> aggregateList = toAggregates(entities);
+        // Step 4: Convert the List back to a Page
+        return (List<MonetaryEvent>) aggregateList;
     }
 
     public List<MonetaryEvent> convertAllToAggregates(List<MonetaryEventEntity> monetaryEvents) {
-        return toAggregates(monetaryEvents);
+        return (List<MonetaryEvent>)toAggregates(monetaryEvents);
     }
 
     public List<Tags> getTagsFromMonetaryEntity(UUID transactionId) {
@@ -119,4 +167,6 @@ public class MonetaryDomainQueryService {
         }
         return tags;
     }
+
+
 }

@@ -8,7 +8,7 @@ import java.util.UUID;
 @Data
 public class ExpenditureRequest {
     private UUID id;
-    private UUID parentActivityId;
+    private UUID parentScheduleId;
     private Amount amount;
     private String currency;
     private String description;
