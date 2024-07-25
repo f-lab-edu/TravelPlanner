@@ -127,6 +127,7 @@ public class JwtProvider {
     // verify token info
     public boolean validateToken(String token) {
         try {
+            log.info("token is {}", token);
             Jwts.parser()
                     .verifyWith(KEY)
                     .build()

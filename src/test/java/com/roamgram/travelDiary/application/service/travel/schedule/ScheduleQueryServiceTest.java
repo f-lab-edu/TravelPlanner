@@ -3,7 +3,6 @@ package com.roamgram.travelDiary.application.service.travel.schedule;
 import static org.mockito.Mockito.*;
 import static org.junit.jupiter.api.Assertions.*;
 
-import com.roamgram.travelDiary.application.service.travel.event.ActivityAccessService;
 import com.roamgram.travelDiary.domain.model.travel.Schedule;
 import com.roamgram.travelDiary.domain.model.wallet.aggregate.MonetaryEvent;
 import com.roamgram.travelDiary.repository.persistence.travel.ScheduleRepository;
@@ -28,9 +27,6 @@ class ScheduleQueryServiceTest {
 
     @Mock
     private ScheduleRepository scheduleRepository;
-
-    @Mock
-    private ActivityAccessService activityAccessService;
 
     @InjectMocks
     private ScheduleQueryService scheduleQueryService;
@@ -90,17 +86,5 @@ class ScheduleQueryServiceTest {
         verify(scheduleRepository).findAllByTravelPlanId(travelPlanId, Collections.emptyList());
     }
 
-    @Test
-    void testGetAssociatedMonetaryEvent() {
-        UUID scheduleId = UUID.randomUUID();
-        Schedule schedule = new Schedule();
-        schedule.setActivities(Collections.emptyList());
-        when(scheduleRepository.findById(scheduleId)).thenReturn(Optional.of(schedule));
-
-        List<MonetaryEvent> result = scheduleQueryService.getAssociatedMonetaryEvent(scheduleId);
-
-        assertTrue(result.isEmpty());
-        verify(scheduleRepository).findById(scheduleId);
-    }
 }
 

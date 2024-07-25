@@ -16,6 +16,7 @@ import java.util.UUID;
 public class Income implements MonetaryEvent {
     private UUID id;
     private UUID parentScheduleId;
+    private UUID transactionId;
     private Amount amount;
     private Currency currency;
     private String source;

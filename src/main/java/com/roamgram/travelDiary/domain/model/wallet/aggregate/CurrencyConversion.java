@@ -18,6 +18,7 @@ import java.util.UUID;
 public class CurrencyConversion implements MonetaryEvent {
     private UUID id;
     private UUID parentScheduleId;
+    private UUID transactionId;
     private Currency currencyFrom;
     private Currency currencyTo;
     private Amount convertedAmountFrom;

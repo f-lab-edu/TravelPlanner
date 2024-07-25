@@ -10,8 +10,6 @@ services:
     ports:
       - "8080:8080"
       - "6974:443"
-    labels:
-      co.elastic.logs/enabled: false
     extra_hosts:
       - "host.docker.internal:host-gateway"
     environment:
@@ -48,11 +46,6 @@ services:
       POSTGRES_DB: ${POSTGRES_DB_NAME}
       POSTGRES_USER: ${POSTGRES_USERNAME}
       POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
-    labels:
-      co.elastic.logs/enabled: true
-      co.elastic.logs/module: postgresql
-      co.elastic.logs/fileset.stdout: log
-      co.elastic.logs/fileset.stderr: log
     ports:
       - "5432:5432"
     networks:
@@ -61,14 +54,35 @@ services:
       - postgres_data:/var/lib/postgresql/data
       - /var/lib/docker/containers/:/var/lib/docker/containers/:ro  # Mount Docker container logs
 
+#  postgres-replica:
+#    image: postgres:16
+#    container_name: postgres-replica
+#    environment:
+#      POSTGRES_DB: ${POSTGRES_DB_NAME}
+#      POSTGRES_USER: ${POSTGRES_USERNAME}
+#      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
+#      POSTGRES_REPLICATION_USER: replication_user
+#      POSTGRES_REPLICATION_PASSWORD: replication_password
+#      POSTGRES_PRIMARY_HOST: postgres-primary
+#      POSTGRES_PRIMARY_PORT: 5432
+#    labels:
+#      co.elastic.logs/enabled: true
+#      co.elastic.logs/module: postgresql
+#      co.elastic.logs/fileset.stdout: log
+#      co.elastic.logs/fileset.stderr: log
+#    ports:
+#      - "5433:5432"
+#    networks:
+#      - my-network
+#    volumes:
+#      - postgres_replica_data:/var/lib/postgresql/data
+#      - /var/lib/docker/containers/:/var/lib/docker/containers/:ro  # Mount Docker container logs
+#    depends_on:
+#      - postgres-primary
+
   redis:
     image: "redis:alpine"
     container_name: redis
-    labels:
-      co.elastic.logs/enabled: true
-      co.elastic.logs/module: redis
-      co.elastic.logs/fileset.stdout: log
-      co.elastic.logs/fileset.stderr: log
     networks:
       - my-network
     ports:
@@ -78,30 +92,6 @@ services:
     volumes:
       - /var/lib/docker/containers/:/var/lib/docker/containers/:ro  # Mount Docker container logs
 
-  filebeat:
-    image: docker.elastic.co/beats/filebeat:8.14.2
-    container_name: filebeat
-#       Need to override user so we can access the log files, and docker.sock
-    command: ["--strict.perms=false"]
-    user: root
-    volumes:
-      - ./observability/filebeat/filebeat.yml:/usr/share/filebeat/filebeat.yml:ro  # Mount local filebeat.yml
-      - /var/run/docker.sock:/var/run/docker.sock
-      # This is needed for filebeat to load container log path as specified in filebeat.yml
-      - /var/lib/docker/containers/:/var/lib/docker/containers/:ro
-      # This is needed for filebeat to load spring boot app log path as specified in filebeat.yml
-      - /var/lib/docker/volumes/travelplanner_spring-boot-logs/_data:/usr/share/filebeat/spring-boot-app/:ro
-      # This is needed for filebeat to load logs for system and auth modules
-#      - /var/log/:/var/log/:ro
-      # This is needed for filebeat to load logs for auditd module. you might have to install audit system
-      # on ubuntu first (sudo apt-get install -y auditd audispd-plugins)
-#      - /var/log/audit/:/var/log/audit/:ro
-    depends_on:
-      - spring-boot-app
-      - redis
-      - postgres
-    networks:
-      - my-network
 
 networks:
   my-network:
