@@ -32,6 +32,7 @@ repositories {
 
 dependencies {
     implementation("org.springframework.boot:spring-boot-starter-websocket:3.3.1")
+    implementation("org.springframework.kafka:spring-kafka:3.2.2")
     implementation("com.fasterxml.jackson.datatype:jackson-datatype-hibernate6:2.17.1")
     implementation("io.github.cdimascio:dotenv-java:3.0.0")
     implementation("org.springframework.boot:spring-boot-starter-actuator:3.3.1")
@@ -45,6 +46,7 @@ dependencies {
     implementation("io.jsonwebtoken:jjwt-impl:0.12.5")
     implementation("io.jsonwebtoken:jjwt-jackson:0.12.5")
     implementation("org.springframework.boot:spring-boot-starter-data-jpa")
+    implementation("org.springframework.boot:spring-boot-starter-data-mongodb:3.3.2")
     implementation("org.springframework.boot:spring-boot-starter-data-redis:3.3.0")
     implementation("org.springframework.boot:spring-boot-starter-thymeleaf")
     implementation("org.springframework.boot:spring-boot-starter-web")

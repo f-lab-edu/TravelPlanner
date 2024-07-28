@@ -74,8 +74,7 @@ public class MonetaryDomainMutationService {
         List<MonetaryEventEntity> deletable = monetaryEventEntityRepository.findAllByMonetaryTransactionId(transactionId);
         Schedule schedule = scheduleQueryService.getSchedule(deletable.getFirst().getParentScheduleId());
         if (schedule != null) {
-            // Remove the event from the schedule's list
-            schedule.getMonetaryEvents().remove(schedule);
+            schedule.getMonetaryEvents().removeAll(deletable);
             // Save the schedule to persist the change
             scheduleRepository.save(schedule);
         }

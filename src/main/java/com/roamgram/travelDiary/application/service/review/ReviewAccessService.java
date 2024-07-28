@@ -3,11 +3,15 @@ package com.roamgram.travelDiary.application.service.review;
 import com.roamgram.travelDiary.common.permissions.aop.CheckAccess;
 import com.roamgram.travelDiary.common.permissions.aop.InjectAuthorisedResourceIds;
 import com.roamgram.travelDiary.common.permissions.aop.InjectPublicResourceIds;
+import com.roamgram.travelDiary.common.permissions.domain.Resource;
 import com.roamgram.travelDiary.common.permissions.domain.UserResourcePermissionTypes;
-import com.roamgram.travelDiary.domain.model.location.Place;
+import com.roamgram.travelDiary.common.permissions.domain.exception.ResourceNotFoundException;
+import com.roamgram.travelDiary.common.permissions.service.ResourcePermissionService;
 import com.roamgram.travelDiary.domain.model.review.Review;
 import com.roamgram.travelDiary.domain.model.travel.Schedule;
+import com.roamgram.travelDiary.domain.model.user.UserProfile;
 import com.roamgram.travelDiary.repository.persistence.review.ReviewRepository;
+import com.roamgram.travelDiary.repository.persistence.user.UserProfileRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
@@ -22,10 +26,14 @@ import java.util.UUID;
 public class ReviewAccessService {
 
     private final ReviewRepository reviewRepository;
+    private final UserProfileRepository userProfileRepository;
+    private final ResourcePermissionService resourcePermissionService;
 
     @Autowired
-    public ReviewAccessService(ReviewRepository reviewRepository) {
+    public ReviewAccessService(ReviewRepository reviewRepository, UserProfileRepository userProfileRepository, ResourcePermissionService resourcePermissionService) {
         this.reviewRepository = reviewRepository;
+        this.userProfileRepository = userProfileRepository;
+        this.resourcePermissionService = resourcePermissionService;
     }
 
     @Transactional
@@ -65,4 +73,15 @@ public class ReviewAccessService {
         return result;
     }
 
+
+    @Transactional
+    public void shareReview(Review review, UUID userProfileId, String permissionLevel) {
+        Review reviewManaged = reviewRepository.findById(review.getId()).orElseThrow();
+        Resource resource = reviewManaged.getResource();
+        UserProfile userProfile = userProfileRepository.findById(userProfileId).orElseThrow(() ->
+                new ResourceNotFoundException("the user with ID " + userProfileId.toString() +" is not found"));
+        resourcePermissionService.assignPermission(UserResourcePermissionTypes.valueOf(permissionLevel.toUpperCase()),
+                resource,
+                userProfile);
+    }
 }

@@ -3,13 +3,19 @@ package com.roamgram.travelDiary.application.service.travel;
 import com.roamgram.travelDiary.application.events.EventPublisher;
 import com.roamgram.travelDiary.application.events.travelplan.TravelPlanDeletionEvent;
 import com.roamgram.travelDiary.application.service.travel.schedule.ScheduleMutationService;
+import com.roamgram.travelDiary.application.service.travel.schedule.ScheduleQueryService;
 import com.roamgram.travelDiary.common.permissions.aop.CheckAccess;
 import com.roamgram.travelDiary.common.permissions.domain.Resource;
+import com.roamgram.travelDiary.common.permissions.domain.UserResourcePermissionTypes;
+import com.roamgram.travelDiary.common.permissions.domain.exception.ResourceNotFoundException;
+import com.roamgram.travelDiary.common.permissions.service.ResourcePermissionService;
 import com.roamgram.travelDiary.common.permissions.service.ResourceService;
 import com.roamgram.travelDiary.domain.model.travel.Schedule;
 import com.roamgram.travelDiary.domain.model.travel.TravelPlan;
+import com.roamgram.travelDiary.domain.model.user.UserProfile;
 import com.roamgram.travelDiary.presentation.dto.request.travel.TravelPlanUpsertRequestDTO;
 import com.roamgram.travelDiary.repository.persistence.travel.TravelPlanRepository;
+import com.roamgram.travelDiary.repository.persistence.user.UserProfileRepository;
 import jakarta.persistence.EntityNotFoundException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.convert.ConversionService;
@@ -26,6 +32,9 @@ public class TravelPlanMutationService {
     private final ScheduleMutationService scheduleMutationService;
     private final ResourceService resourceService;
     private final EventPublisher eventPublisher;
+    private final ResourcePermissionService resourcePermissionService;
+    private final UserProfileRepository userProfileRepository;
+    private final ScheduleQueryService scheduleQueryService;
 
 
     @Autowired
@@ -33,12 +42,15 @@ public class TravelPlanMutationService {
                                      ConversionService conversionService,
                                      ScheduleMutationService scheduleMutationService,
                                      ResourceService resourceService,
-                                     EventPublisher eventPublisher) {
+                                     EventPublisher eventPublisher, ResourcePermissionService resourcePermissionService, UserProfileRepository userProfileRepository, ScheduleQueryService scheduleQueryService) {
         this.travelPlanRepository = travelPlanRepository;
         this.conversionService = conversionService;
         this.scheduleMutationService = scheduleMutationService;
         this.resourceService = resourceService;
         this.eventPublisher = eventPublisher;
+        this.resourcePermissionService = resourcePermissionService;
+        this.userProfileRepository = userProfileRepository;
+        this.scheduleQueryService = scheduleQueryService;
     }
 
     @Transactional
@@ -119,4 +131,21 @@ public class TravelPlanMutationService {
         }
     }
 
+    //TODO
+    @Transactional
+    @CheckAccess(resourceType = TravelPlan.class, spelResourceId = "#travelPlanId", permission = "EDITOR")
+    public void shareTravelPlan(UUID travelPlanId, UUID userProfileId, String permissionLevel) {
+        TravelPlan travelPlan = travelPlanRepository.findById(travelPlanId).orElseThrow(() -> new ResourceNotFoundException("this TravelPlan is not found"));
+        Resource resource = travelPlan.getResource();
+        UserProfile userProfile = userProfileRepository.findById(userProfileId).orElseThrow(() ->
+                new ResourceNotFoundException("the user with ID " + userProfileId.toString() +" is not found"));
+        resourcePermissionService.assignPermission(UserResourcePermissionTypes.valueOf(permissionLevel.toUpperCase()),
+                resource,
+                userProfile);
+
+        for(Schedule schedule : travelPlan.getScheduleList()) {
+            scheduleQueryService.shareSchedule(schedule, userProfileId, permissionLevel);
+        }
+
+    }
 }

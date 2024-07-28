@@ -11,6 +11,7 @@ import com.roamgram.travelDiary.presentation.converter.request.wallet.IncomeRequ
 import com.roamgram.travelDiary.presentation.converter.response.ReviewEntityToResponse;
 import com.roamgram.travelDiary.presentation.converter.response.ScheduleEntityToResponse;
 import com.roamgram.travelDiary.presentation.converter.response.TravelPlanEntityToResponse;
+import com.roamgram.travelDiary.presentation.converter.response.UserProfileEntityToResponse;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.ComponentScan;
 import org.springframework.context.annotation.Configuration;
@@ -34,6 +35,10 @@ public class ConversionConfig implements WebMvcConfigurer {
     @Bean
     public ReviewEntityToResponse reviewEntityToResponse() {
         return new ReviewEntityToResponse();
+    }
+    @Bean
+    public UserProfileEntityToResponse userProfileEntityToResponse() {
+        return new UserProfileEntityToResponse();
     }
     @Override
     public void addFormatters(FormatterRegistry registry) {

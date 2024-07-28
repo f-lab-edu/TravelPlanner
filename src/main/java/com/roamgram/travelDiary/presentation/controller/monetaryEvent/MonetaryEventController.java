@@ -43,7 +43,7 @@ public class MonetaryEventController {
     }
 
     @PatchMapping("/update-event")
-    public ResponseEntity<List<MonetaryEvent>> updateEvent(UUID transactionId, MonetaryEvent updateFields) {
+    public ResponseEntity<List<MonetaryEvent>> updateEvent(UUID transactionId, @RequestBody MonetaryEvent updateFields) {
         List<MonetaryEventEntity> event = monetaryDomainMutationService.update(transactionId, updateFields);
         return ResponseEntity.ok((List<MonetaryEvent>)toAggregates(event));
     }

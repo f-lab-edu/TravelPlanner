@@ -27,7 +27,10 @@ public class TravelPlanController {
     private final ConversionService conversionService;
 
     @Autowired
-    public TravelPlanController(RestTemplate restTemplate, TravelPlanMutationService planAccessService, TravelPlanQueryService planQueryService, ConversionService conversionService) {
+    public TravelPlanController(RestTemplate restTemplate,
+                                TravelPlanMutationService planAccessService,
+                                TravelPlanQueryService planQueryService,
+                                ConversionService conversionService) {
         this.restTemplate = restTemplate;
         this.planAccessService = planAccessService;
         this.planQueryService = planQueryService;
@@ -74,6 +77,12 @@ public class TravelPlanController {
     public TravelPlanResponse modifyTravelPlanMetadata(@RequestBody TravelPlanUpsertRequestDTO request) {
         TravelPlan travelPlan = planAccessService.modifyPlanMetadata(request);
         return conversionService.convert(travelPlan, TravelPlanResponse.class);
+    }
+
+    @PostMapping("/share_travel_plan")
+    public ResponseEntity<String> shareUser(UUID travelPlanId, UUID userProfileId, String permissionLevel) {
+        planAccessService.shareTravelPlan(travelPlanId, userProfileId, permissionLevel);
+        return ResponseEntity.ok("successfully shared");
     }
 
 }

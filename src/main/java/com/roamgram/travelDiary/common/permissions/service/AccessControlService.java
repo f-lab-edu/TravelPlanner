@@ -47,8 +47,8 @@ public class AccessControlService {
             }
 
             Resource resource = resourceOpt.get();
-            // If resource is public, allow view permission
-            if ("public".equals(resource.getVisibility()) && requiredPermission.hasHigherOrEqualPermission(UserResourcePermissionTypes.VIEW)) {
+            // If resource is public, allow access
+            if ("public".equals(resource.getVisibility())) {
                 return true;
             }
 
