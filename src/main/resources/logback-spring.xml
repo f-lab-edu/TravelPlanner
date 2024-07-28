@@ -14,10 +14,6 @@
 
     <!--    FILEBEAT SEND    -->
     <springProfile name="prod">
-        <appender name="FILEBEAT" class="net.logstash.logback.appender.LogstashTcpSocketAppender">
-            <destination>filebeat:5044</destination>
-            <encoder class="net.logstash.logback.encoder.LogstashEncoder"/>
-        </appender>
 
         <!-- main Logging -->
         <appender name="MainLogFile" class="ch.qos.logback.core.rolling.RollingFileAppender">
@@ -85,7 +81,6 @@
         <root level="INFO">
             <appender-ref ref="CONSOLE"/>
             <appender-ref ref="MainLogFile"/>
-            <appender-ref ref="FILEBEAT"/>
         </root>
     </springProfile>
 
