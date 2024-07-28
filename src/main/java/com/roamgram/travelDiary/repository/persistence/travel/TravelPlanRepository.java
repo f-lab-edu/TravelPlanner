@@ -34,6 +34,6 @@ public interface TravelPlanRepository extends JpaRepository<TravelPlan, UUID> {
 
     @Query("SELECT tp FROM TravelPlan tp " +
             "WHERE tp.resource.id IN :resourceIds ")
-    List<TravelPlan> findAllByResourceIds(List<UUID> resourceIds);
+    Page<TravelPlan> findAllByResourceIds(List<UUID> resourceIds, Pageable pageable);
 }
 

@@ -9,6 +9,8 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.convert.ConversionService;
 import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.client.RestTemplate;
@@ -54,10 +56,11 @@ public class TravelPlanController {
 
 
     @GetMapping("/get_all")
-    public ResponseEntity<List<TravelPlanResponse>> getAll() {
+    public ResponseEntity<Page<TravelPlanResponse>> getAll(Integer pageNo, Integer pageSize) {
         log.info("get all METHOD TRIGGERED BY REACT");
-        List<TravelPlan> travelPlanList = planQueryService.getAllAuthorisedTravelPlan(new ArrayList<>());
-        List<TravelPlanResponse> responseList = travelPlanList.stream().map(travelPlan -> conversionService.convert(travelPlan, TravelPlanResponse.class)).toList();
+        Pageable page = PageRequest.of(pageNo, pageSize);
+        Page<TravelPlan> travelPlanPage = planQueryService.getAllAuthorisedTravelPlan(new ArrayList<>(), page);
+        Page<TravelPlanResponse> responseList = travelPlanPage.map(travelPlan -> conversionService.convert(travelPlan, TravelPlanResponse.class));
         return ResponseEntity.ok(responseList);
     }
 

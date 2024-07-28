@@ -14,4 +14,6 @@ public interface UserProfileRepository extends JpaRepository<UserProfile, UUID> 
     Optional<UserProfile> findByAuthUserId(UUID authUserId);
 
     Page<UserProfile> findByUserProfileName(String name, Pageable pageable);
+
+    Page<UserProfile> findByUserProfileNameContaining(String name, Pageable pageable);
 }

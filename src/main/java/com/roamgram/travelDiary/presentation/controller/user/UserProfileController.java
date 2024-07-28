@@ -1,6 +1,7 @@
 package com.roamgram.travelDiary.presentation.controller.user;
 
 import com.roamgram.travelDiary.application.service.user.UserProfileService;
+import com.roamgram.travelDiary.common.auth.service.AuthUserServiceImpl;
 import com.roamgram.travelDiary.domain.model.user.UserProfile;
 import com.roamgram.travelDiary.presentation.dto.request.user.UserProfileUpdateRequest;
 import com.roamgram.travelDiary.presentation.dto.response.user.UserProfileResponse;
@@ -18,10 +19,12 @@ import java.util.UUID;
 public class UserProfileController {
     private final UserProfileService userProfileService;
     private final ConversionService conversionService;
+    private final AuthUserServiceImpl authUserServiceImpl;
 
-    public UserProfileController(UserProfileService userProfileService, ConversionService conversionService) {
+    public UserProfileController(UserProfileService userProfileService, ConversionService conversionService, AuthUserServiceImpl authUserServiceImpl) {
         this.userProfileService = userProfileService;
         this.conversionService = conversionService;
+        this.authUserServiceImpl = authUserServiceImpl;
     }
 
     @GetMapping("/find-by-name")
@@ -35,5 +38,11 @@ public class UserProfileController {
     public ResponseEntity<String> updateUserProfileName(@RequestBody UserProfileUpdateRequest name, UUID userProfileId){
         userProfileService.changeName(name, userProfileId);
         return ResponseEntity.ok("ok");
+    }
+
+    @GetMapping("/whoami")
+    public ResponseEntity<UserProfileResponse> updateUserProfileName(){
+        UserProfile userProfile = authUserServiceImpl.getCurrentUser();
+        return ResponseEntity.ok(conversionService.convert(userProfile, UserProfileResponse.class));
     }
 }

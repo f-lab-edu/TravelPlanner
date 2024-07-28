@@ -143,6 +143,9 @@ public class TravelPlanMutationService {
                 resource,
                 userProfile);
 
+        if(travelPlan.getScheduleList() == null) {
+            return;
+        }
         for(Schedule schedule : travelPlan.getScheduleList()) {
             scheduleQueryService.shareSchedule(schedule, userProfileId, permissionLevel);
         }

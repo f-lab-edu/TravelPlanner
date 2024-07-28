@@ -21,7 +21,7 @@ public class UserProfileService {
 
     @Transactional
     public Page<UserProfile> findUsersByName(String name, Pageable pageable) {
-        Page<UserProfile> userProfiles = userProfileRepository.findByUserProfileName(name, pageable);
+        Page<UserProfile> userProfiles = userProfileRepository.findByUserProfileNameContaining(name, pageable);
         return userProfiles;
     }
 

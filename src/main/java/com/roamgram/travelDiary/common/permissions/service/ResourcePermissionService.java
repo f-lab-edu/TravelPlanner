@@ -47,6 +47,11 @@ public class ResourcePermissionService {
 
     @Transactional
     public void assignPermission(UserResourcePermissionTypes permissionTypes, Resource resource, UserProfile targetUser) {
+        //check if userPermissions exist first
+        if(resourcePermissionRepository.findByUserProfileAndResource(targetUser, resource).isPresent()) {
+            log.info("permission already present");
+            return;
+        }
         ResourcePermission permission = ResourcePermission.builder()
                 .userProfile(targetUser)
                 .resource(resource)

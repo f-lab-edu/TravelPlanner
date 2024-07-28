@@ -74,6 +74,9 @@ public class ScheduleQueryService {
                 resource,
                 userProfile);
 
+        if(schedule.getReview() == null) {
+            return;
+        }
         reviewAccessService.shareReview(schedule.getReview(), userProfileId, permissionLevel);
     }
 

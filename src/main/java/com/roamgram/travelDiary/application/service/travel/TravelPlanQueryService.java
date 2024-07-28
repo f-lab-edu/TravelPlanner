@@ -12,6 +12,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -39,9 +40,9 @@ public class TravelPlanQueryService {
 
     @Transactional(readOnly = true)
     @InjectAuthorisedResourceIds(parameterName = "resourceIds", resourceType = "TravelPlan", permissionType = UserResourcePermissionTypes.VIEW)
-    public List<TravelPlan> getAllAuthorisedTravelPlan(List<UUID> resourceIds) {
+    public Page<TravelPlan> getAllAuthorisedTravelPlan(List<UUID> resourceIds, Pageable pageable) {
         log.info("resourceIds: {}", resourceIds);
-        List<TravelPlan> result = travelPlanRepository.findAllByResourceIds(resourceIds);
+        Page<TravelPlan> result = travelPlanRepository.findAllByResourceIds(resourceIds, pageable);
         log.info("travelPlanAuthorizedGet result : {}", result);
         return result;
     }

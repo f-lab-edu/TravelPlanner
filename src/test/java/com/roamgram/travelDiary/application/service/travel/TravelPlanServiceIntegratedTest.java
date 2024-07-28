@@ -233,9 +233,9 @@ public class TravelPlanServiceIntegratedTest {
         createTravelPlanUtils("Test Plan1");
         createTravelPlanUtils("Test Plan2");
 
-        List<TravelPlan> result = travelPlanQueryService.getAllAuthorisedTravelPlan(null);
+        Page<TravelPlan> result = travelPlanQueryService.getAllAuthorisedTravelPlan(new ArrayList<>(), PageRequest.of(0,10));
         assertThat(result).isNotEmpty();
-        assertThat(result.size()).isEqualTo(3);
+        assertThat(result.getTotalElements()).isEqualTo(3);
     }
 
     @Test
@@ -247,10 +247,10 @@ public class TravelPlanServiceIntegratedTest {
         createTravelPlanUtils("Test Plan2");
         createTravelPlanUtilsDiffUser("Test Plan3");
 
-        List<TravelPlan> result = travelPlanQueryService.getAllAuthorisedTravelPlan(null);
+        Page<TravelPlan> result = travelPlanQueryService.getAllAuthorisedTravelPlan(new ArrayList<>(), PageRequest.of(0,10));
         assertThat(result).isNotEmpty();
         //3 because one was created by the beforeEach
-        assertThat(result.size()).isEqualTo(3);
+        assertThat(result.getTotalElements()).isEqualTo(3);
     }
 
     @Test

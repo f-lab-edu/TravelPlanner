@@ -53,7 +53,7 @@ public class LoggingAspect {
             final Object result = joinPoint.proceed(joinPoint.getArgs());
 
             // Method가 Get이 아닌 로그만 수집
-            if (!logInfo.getMethod().equals("GET")) {
+            if (logInfo.getMethod() != null && !logInfo.getMethod().equals("GET")) {
                 final String logMessage = objectMapper.writeValueAsString(Map.entry("logInfo", logInfo));
                 logger.info(logMessage);
             }
