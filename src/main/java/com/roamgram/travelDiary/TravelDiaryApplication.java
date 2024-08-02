@@ -10,7 +10,7 @@ import org.springframework.context.annotation.EnableAspectJAutoProxy;
 public class TravelDiaryApplication {
 
 	public static void main(String[] args) {
-		ElasticApmAttacher.attach();
+//		ElasticApmAttacher.attach();
 		SpringApplication.run(TravelDiaryApplication.class, args);
 	}
 

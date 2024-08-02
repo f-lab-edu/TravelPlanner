@@ -97,7 +97,6 @@
         <logger name="com.roamgram.travelDiary" level = "INFO">
             <appender-ref ref="MainLogFile"/>
         </logger>
-
     </springProfile>
 
 

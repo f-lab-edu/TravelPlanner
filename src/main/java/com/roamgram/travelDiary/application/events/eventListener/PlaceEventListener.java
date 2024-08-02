@@ -25,7 +25,7 @@ public class PlaceEventListener {
         this.routeAccessService = routeAccessService;
     }
 
-    @TransactionalEventListener(fallbackExecution=true)
+    @TransactionalEventListener(fallbackExecution = true)
     public void handlePlaceUpdatedEvent(PlaceUpdatedEvent event) {
         Place updatedPlace = event.getPlace();
         List<Schedule> schedules = scheduleRepository.findByPlaceId(updatedPlace.getId());
